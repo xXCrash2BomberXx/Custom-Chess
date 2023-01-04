@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script type="text/javascript" src="Chess.js"></script>
+	<script type="text/javascript">
+		function drawBoard (canvas, pieces=[]) {
+			var ctx = canvas.getContext("2d");
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			ctx.fillStyle = "#7F7F7F";
+			for (var y = 0; y < 8; y++) {
+				for (var x = 0; x < 8; x++) {
+					if ((x%2 == 0 && y%2 !== 0) || (x%2 !== 0 && y%2 == 0)) {
+						ctx.fillRect(x*canvas.width/8,
+							y*canvas.height/8,
+							canvas.width/8,
+							canvas.height/8);
+					}
+				}
+			}
+			for (let i = 0; i < pieces.length; i++) {
+				pieces[i].plot(canvas);
+			}
+		}
+
+		function draw(canvas, moves, color="rgba(0, 255, 0, 0.5)") {
+			var ctx = canvas.getContext("2d");
+			ctx.fillStyle = color;
+			for (let i = 0; i < moves.length; i++) {
+				ctx.fillRect(moves[i][0]*canvas.width/8, moves[i][1]*canvas.height/8, canvas.width/8, canvas.height/8);
+			}
+		}
+	</script>
+</head>
+<body>
+	<div>
+		<canvas id="canvas"></canvas>
+		<script type="text/javascript">
+			var canvas = document.getElementById("canvas");
+			canvas.height = Math.min(window.innerWidth-50, window.innerHeight-100);
+			canvas.width = canvas.height;
+
+			var global = [];
+			var p1 = [new Rook(0, 0, 1),
+					new Knight(1, 0, 1),
+					new Bishop(2, 0, 1),
+					new King(3, 0, 1),
+					new Queen(4, 0, 1),
+					new Bishop(5, 0, 1),
+					new Knight(6, 0, 1),
+					new Rook(7, 0, 1),
+					new Pawn(0, 1, 1),
+					new Pawn(1, 1, 1),
+					new Pawn(2, 1, 1),
+					new Pawn(3, 1, 1),
+					new Pawn(4, 1, 1),
+					new Pawn(5, 1, 1),
+					new Pawn(6, 1, 1),
+					new Pawn(7, 1, 1)];
+			var p2 = [new Pawn(0, 6, -1),
+					new Pawn(1, 6, -1),
+					new Pawn(2, 6, -1),
+					new Pawn(3, 6, -1),
+					new Pawn(4, 6, -1),
+					new Pawn(5, 6, -1),
+					new Pawn(6, 6, -1),
+					new Pawn(7, 6, -1),
+					new Rook(0, 7, -1),
+					new Knight(1, 7, -1),
+					new Bishop(2, 7, -1),
+					new King(3, 7, -1),
+					new Queen(4, 7, -1),
+					new Bishop(5, 7, -1),
+					new Knight(6, 7, -1),
+					new Rook(7, 7, -1)];
+			drawBoard(canvas, [...p1, ...p2]);
+			var direction = 1;
+
+			canvas.addEventListener("click", function (event) {
+				global.push(Math.floor((event.clientX-event.target.getBoundingClientRect().left)/canvas.width*8));
+				global.push(Math.floor((event.clientY-event.target.getBoundingClientRect().top)/canvas.height*8));
+				drawBoard(canvas, [...p1, ...p2]);
+				p = Piece.getPiece(global[0], global[1], [...p1, ...p2]);
+				if (p != null && p.direction == direction) {
+					draw(canvas, p.getMoves([...p1, ...p2]), "rgba(0, 255, 0, 0.5)");
+					draw(canvas, p.check([...p1, ...p2]), "rgba(255, 128, 0, 0.5)");
+					draw(canvas, p.getAttacks([...p1, ...p2]), "rgba(255, 0, 0, 0.5)");
+				}
+				if (global.length == 4) {
+					global = global.slice(2);
+					// attack
+					if (p != null && p.direction == direction && p.attack(global[0], global[1], [...p1, ...p2])) {
+						drawBoard(canvas, [...p1, ...p2]);
+						direction = -direction;
+					// move
+					} else if (p != null && p.direction == direction && p.move(global[0], global[1], [...p1, ...p2])) {
+						drawBoard(canvas, [...p1, ...p2]);
+						direction = -direction;
+					// new selection
+					} else {
+						p = Piece.getPiece(global[0], global[1], [...p1, ...p2]);
+						if (p != null && p.direction == direction) {
+							drawBoard(canvas, [...p1, ...p2]);
+							draw(canvas, p.getMoves([...p1, ...p2]), "rgba(0, 255, 0, 0.5)");
+							draw(canvas, p.check([...p1, ...p2]), "rgba(255, 128, 0, 0.5)");
+							draw(canvas, p.getAttacks([...p1, ...p2]), "rgba(255, 0, 0, 0.5)");
+						} else {
+							drawBoard(canvas, [...p1, ...p2]);
+						}
+					}
+				}
+				fillInfo(global[0], global[1]);
+			});
+
+		function fillInfo (px, py) {
+			p = Piece.getPiece(px, py, [...p1, ...p2]);
+			if (p != null)
+				document.getElementById('guide').value = "Piece: "+p.name+
+					"\nMovement: "+p.moves+
+					"\nLocation: "+"abcdefgh"[p.x]+(8-p.y)+
+					"\nDirection: "+p.direction+
+					"\nMoves: "+p.turns+
+					"\nColor: "+p.color;
+			else
+				document.getElementById('guide').value = "Piece: null"+
+														"\nMovement: null"+
+														"\nLocation: "+"abcdefgh"[px]+(8-py)+
+														"\nDirection: null"+
+														"\nMoves: null"+
+														"\nColor: null";
+		}
+
+		function change (px, py) {
+			nl = document.getElementById('guide').value.indexOf("\n");
+			piece = document.getElementById('guide').value.slice(document.getElementById('guide').value.indexOf("Piece: ")+"Piece: ".length, nl).trim();
+			nl = document.getElementById('guide').value.indexOf("\n", nl+1);
+			movement = document.getElementById('guide').value.slice(document.getElementById('guide').value.indexOf("Movement: ")+"Movement: ".length, nl).trim();
+			nl = document.getElementById('guide').value.indexOf("\n", nl+1);
+			loc = document.getElementById('guide').value.slice(document.getElementById('guide').value.indexOf("Location: ")+"Location: ".length, nl).trim();
+			nl = document.getElementById('guide').value.indexOf("\n", nl+1);
+			dir = parseInt(document.getElementById('guide').value.slice(document.getElementById('guide').value.indexOf("Direction: ")+"Direction: ".length, nl));
+			nl = document.getElementById('guide').value.indexOf("\n", nl+1);
+			moves = parseInt(document.getElementById('guide').value.slice(document.getElementById('guide').value.indexOf("Moves: ")+"Moves: ".length, nl));
+			color = document.getElementById('guide').value.slice(document.getElementById('guide').value.indexOf("Color: ")+"Color: ".length);
+			p = Piece.getPiece(px, py, [...p1, ...p2]);
+			if (isNaN(dir))
+				dir = 1;
+			if (p == null && piece != "null") {
+				try {
+					p = eval("new "+piece[0].toUpperCase()+piece.slice(1).toLowerCase()+"("+px+", "+py+", "+dir+")");
+				} catch {
+					p = new Checker(px, py, dir);
+				}
+				(dir==p1[0].dir?p1:p2).push(p);
+			}
+			p.name = piece;
+			if (movement != "null")
+				p.moves = movement;
+			if (loc != "null") {
+				p.x = "abcdefgh".indexOf(loc[0]);
+				p.y = 8-parseInt(loc[1]);
+			}
+			p.direction = dir;
+			if (!isNaN(moves))
+				p.turns = moves;
+			if (color != "null")
+				p.color = color;
+			drawBoard(canvas, [...p1, ...p2]);
+		}
+		</script>
+		<textarea spellcheck=false id="guide" onchange="change(global[global.length-2], global[global.length-1]);"></textarea>
+		<textarea spellcheck=false id="info" onchange="change(global[global.length-2], global[global.length-1]);" disabled></textarea>
+		<script type="text/javascript">
+			document.getElementById("guide").style.height =  document.getElementById("canvas").height+"px";
+			document.getElementById("guide").style.width = (window.innerWidth-50-document.getElementById("canvas").width)/2-50+"px";
+			document.getElementById("info").style.height =  document.getElementById("guide").style.height;
+			document.getElementById("info").style.width = document.getElementById("guide").style.width;
+			document.getElementById("info").value = '1, 2, ..., n - Distance of n\n\n'+
+													'x-y - Distance in Inclusive Range from X to Y\n\n'+
+													'* - Orthogonal of Diagonal Movement\n\n'+
+													'+ - Orthogonal Movement\n\n'+
+													'= - Orthogonally Sideways Movement\n\n'+
+													'x = Diagonal Movement\n\n'+
+													'> - Forwards Movement\n\n'+
+													'< - Backwards Movement\n\n'+
+													'x/y - Distance of X and Y in Different Orthogonal Directions\n\n'+
+													'x/ys - Strict Distance of X Horizontally and then Y Vertically in Different Orthogonal Directions\n\n'+
+													'i - Only Use on First Movement of Piece\n\n'+
+													'c - Only Use on Capturing Piece\n\n'+
+													'o - Only Use on Not Capturing Piece\n\n'+
+													', - Separate Movements of a Piece\n\n'+
+													'r - Right (Relative to Direction 1)\n\n'+
+													'l - Left (Relative to Direction 1)\n\n'+
+													'd - Cannot be Killed nor Moved\n\n'+
+													'() - Grouping Operator (Nightriders)\n\n'+
+													'. - Then Operator (Aanca)\n\n'+
+													'^ - Locust Operator (Checkers)';
+		</script>
+	</div>
+</body>
+</html>
