@@ -22,10 +22,13 @@
 			}
 		}
 
-		function draw(canvas, moves, color="rgba(0, 255, 0, 0.5)") {
+		function draw(canvas, moves, attack="rgba(255, 0, 0, 0.5)", move="rgba(0, 255, 0, 0.5)") {
 			var ctx = canvas.getContext("2d");
-			ctx.fillStyle = color;
 			for (let i = 0; i < moves.length; i++) {
+				if (moves[i][2])
+					ctx.fillStyle = attack;
+				else
+					ctx.fillStyle = move;
 				ctx.fillRect(moves[i][0]*canvas.width/8, moves[i][1]*canvas.height/8, canvas.width/8, canvas.height/8);
 			}
 		}
@@ -81,28 +84,20 @@
 				drawBoard(canvas, [...p1, ...p2]);
 				p = Piece.getPiece(global[0], global[1], [...p1, ...p2]);
 				if (p != null && p.direction == direction) {
-					draw(canvas, p.getMoves([...p1, ...p2]), "rgba(0, 255, 0, 0.5)");
-					draw(canvas, p.check([...p1, ...p2]), "rgba(255, 128, 0, 0.5)");
-					draw(canvas, p.getAttacks([...p1, ...p2]), "rgba(255, 0, 0, 0.5)");
+					draw(canvas, p.getMoves([...p1, ...p2]), "rgba(255, 0, 0, 0.5)", "rgba(0, 255, 0, 0.5)");
 				}
 				if (global.length == 4) {
 					global = global.slice(2);
-					// attack
-					if (p != null && p.direction == direction && p.attack(global[0], global[1], [...p1, ...p2])) {
+					// move/attack
+					if (p != null && p.direction == direction && p.move(global[0], global[1], [...p1, ...p2])) {
 						drawBoard(canvas, [...p1, ...p2]);
-						direction = -direction;
-					// move
-					} else if (p != null && p.direction == direction && p.move(global[0], global[1], [...p1, ...p2])) {
-						drawBoard(canvas, [...p1, ...p2]);
-						direction = -direction;
+						direction *= -1;
 					// new selection
 					} else {
 						p = Piece.getPiece(global[0], global[1], [...p1, ...p2]);
 						if (p != null && p.direction == direction) {
 							drawBoard(canvas, [...p1, ...p2]);
-							draw(canvas, p.getMoves([...p1, ...p2]), "rgba(0, 255, 0, 0.5)");
-							draw(canvas, p.check([...p1, ...p2]), "rgba(255, 128, 0, 0.5)");
-							draw(canvas, p.getAttacks([...p1, ...p2]), "rgba(255, 0, 0, 0.5)");
+							draw(canvas, p.getMoves([...p1, ...p2]), "rgba(255, 0, 0, 0.5)", "rgba(0, 255, 0, 0.5)");
 						} else {
 							drawBoard(canvas, [...p1, ...p2]);
 						}

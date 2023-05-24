@@ -337,74 +337,13 @@ class Piece {
         return null;
     }
 
-    // moves: str, x1: int, y1: int, x2: int, y2: int, direction: int = 1, turns: int = 0, xLim: int = 8, yLim: int = 8, lxLim: int = 0, lyLim: int = 0, others: array[Piece, ...] = [] -> bool
-    static move(moves, x1, y1, x2, y2, direction = 1, turns = 0, xLim = 8, yLim = 8, lxLim = 0, lyLim = 0, others = []) {
-        if (Piece.getPiece(x2, y2, others) != null)
-            return false;
-        moves = moves.toLowerCase().replaceAll(" ", "").split(",");
-        for (let i = 0; i < moves.length; i++) {
-            // Capture Only (c/C/^)
-            if (moves[i].includes("c") || moves[i].includes("^")) {
-                continue;
-            }
-            // Leaper (~)
-            if (!moves[i].includes("~") && Piece.path(x1, y1, x2, y2).filter(
-                    value => Piece.getPiece(value[0], value[1], others) != null).length != 0) {
-                continue;
-            }
-            if (moves[i].includes("(") || moves[i].includes(".")) {
-                var step;
-                if (moves[i].includes("(") && moves[i].includes(".")) {
-                    for (let t = 0; t < moves[i].length; t++) {
-                        if (moves[i][t] == "." && moves[i].slice(0, t).count("(") == moves[i].slice(0, t).count(")")) {
-                            step = Piece.#then(moves[i], x1, y1, x2, y2, direction, turns, xLim, yLim, lxLim, lyLim);
-                            break;
-                        } else if (t == moves[i].length - 1) {
-                            step = Piece.#rider(moves[i], x1, y1, x2, y2, direction, turns, xLim, yLim, lxLim, lyLim);
-                        }
-                    }
-                } else if (moves[i].includes("(")) {
-                    step = Piece.#rider(moves[i], x1, y1, x2, y2, direction, turns, xLim, yLim, lxLim, lyLim);
-                } else if (moves[i].includes(".")) {
-                    step = Piece.#then(moves[i], x1, y1, x2, y2, direction, turns, xLim, yLim, lxLim, lyLim);
-                }
-                if (!step || step.filter(
-                        value => Piece.getPiece(value[0], value[1], others) != null).length != 0) {
-                    continue;
-                }
-            // Basic Move
-            } else if (!Piece.#move(moves[i], x1, y1, x2, y2, direction, turns, xLim, yLim, lxLim, lyLim)) {
-                continue;
-            }
-            return true;
-        }
-        return false;
-    }
-
-    // moves: str, x1: int, y1: int, direction: int = 1, turns: int = 0, xLim: int = 8, yLim: int = 8, lxLim: int = 0, lyLim: int = 0, others: array[Piece, ...] = [] -> array[array[int, int], ...]
-    static getMoves(moves, x1, y1, direction = 1, turns = 0, xLim = 8, yLim = 8, lxLim = 0, lyLim = 0, others = []) {
-        let arr = [];
-        for (let x2 = lxLim; x2 < xLim; x2++) {
-            for (let y2 = lyLim; y2 < yLim; y2++) {
-                if (Piece.move(moves, x1, y1, x2, y2, direction, turns, xLim, yLim, lxLim, lyLim, others)) {
-                    arr.push([x2, y2]);
-                }
-            }
-        }
-        return arr;
-    }
-
     // moves: str, x1: int, y1: int, x2: int, y2: int, direction: int = 1, turns: int = 0, xLim: int = 8, yLim: int = 8, lxLim: int = 0, lyLim: int = 0, others: array[Piece, ...] = [] -> array[bool, array[Piece, ...]]
-    static attack(moves, x1, y1, x2, y2, direction = 1, turns = 0, xLim = 8, yLim = 8, lxLim = 0, lyLim = 0, others = []) {  // -> Array[Bool, Array[Piece]]
+    static move(moves, x1, y1, x2, y2, direction = 1, turns = 0, xLim = 8, yLim = 8, lxLim = 0, lyLim = 0, others = []) {  // -> Array[Bool, Array[Piece]]
         let other = Piece.getPiece(x2, y2, others);
-        if (other == null || (direction == other.direction || other.moves.toLowerCase().includes("d")))
-            return false;
+        if (other != null && (direction == other.direction || other.moves.toLowerCase().includes("d")))
+            return [false];
         moves = moves.toLowerCase().replaceAll(" ", "").split(",");
         for (let i = 0; i < moves.length; i++) {
-            // Non-Capture Only (o/O)
-            if (moves[i].includes("o")) {
-                continue;
-            }
             // Leaper (~)
             if (!moves[i].includes("~") && !moves[i].includes("^") && Piece.path(x1, y1, x2, y2).slice(0, -1).filter(
                     value => Piece.getPiece(value[0], value[1], others) != null).length != 0) {
@@ -445,24 +384,44 @@ class Piece {
             }
             // Locust (^)
             if (moves[i].includes("^")) {
+                // Non-Capture Only (o/O)
+                if (moves[i].includes("o")) {
+                    continue;
+                }
                 let pieces = Piece.path(x1, y1, x2, y2, 2);
                 for (let i = 0; i < pieces.length; i++) {
                     pieces[i] = Piece.getPiece(...pieces[i], others);
                 }
+                if (pieces.length == 0)
+                    continue;
+                if (moves[i].includes("c") && other == null)
+                        continue;
+                else if (other != null)
+                    pieces.push(other);
                 return [true, pieces];
-            } else {
-                return [true, [other]];
-            }
+            // Return success
+            } else
+                if (other == null && !moves[i].includes("c"))
+                    return [true, []];
+                else if (other != null && !moves[i].includes("o"))
+                    return [true, [other]];
         }
         return [false];
     }
 
-    // moves: str, x1: int, y1: int, direction: int = 1, turns: int = 0, xLim: int = 8, yLim: int = 8, lxLim: int = 0, lyLim: int = 0, others: array[Piece, ...] = [] -> array[array[int, int], ...]
-    static getAttacks(moves, x1, y1, direction = 1, turns = 0, xLim = 8, yLim = 8, lxLim = 0, lyLim = 0, others = []) {
+    // moves: str, x1: int, y1: int, direction: int = 1, turns: int = 0, xLim: int = 8, yLim: int = 8, lxLim: int = 0, lyLim: int = 0, others: array[Piece, ...] = [] -> array[array[int, int, bool], ...]
+    static getMoves(moves, x1, y1, direction = 1, turns = 0, xLim = 8, yLim = 8, lxLim = 0, lyLim = 0, others = []) {
         let arr = [];
-        for (let i = 0; i < others.length; i++) {
-            if (Piece.attack(moves, x1, y1, others[i].x, others[i].y, direction, turns, xLim, yLim, lxLim, lyLim, others)[0] && direction != others[i].direction) {
-                arr.push([others[i].x, others[i].y]);
+        for (let x2 = lxLim; x2 < xLim; x2++) {
+            for (let y2 = lyLim; y2 < yLim; y2++) {
+                let move = Piece.move(moves, x1, y1, x2, y2, direction, turns, xLim, yLim, lxLim, lyLim, others);
+                // attack = true; move = false
+                if (move[0])
+                    if (move[1].length > 0)
+                        arr.push([x2, y2, true]);
+                    else
+                        arr.push([x2, y2, false]);
+                
             }
         }
         return arr;
@@ -483,17 +442,6 @@ class Piece {
         return null;
     }
 
-    // x1: int, y1: int, direction: int = 1, array[Piece, ...] = [] -> array[array[int, int], ...]
-    static check(x1, y1, direction = 1, others=[]) {
-        let attackers = [];
-        for (let i = 0; i < others.length; i++) {
-            if (JSON.stringify(others[i].direction != direction && others[i].getAttacks([new Piece(x1, y1, "", direction), ...others])).includes(JSON.stringify([x1, y1]))) {
-                attackers.push([others[i].x, others[i].y]);
-            }
-        }
-        return attackers;
-    }
-
     // x: int, y: int, moves: str = "", direction: int = 1, turns: int = 0, xLim: int = 8, yLim: int = 8, lxLim: int = 0, lyLim: int = 0 -> null
     constructor(x, y, moves = "", direction = 1, turns = 0, xLim = 8, yLim = 8, lxLim = 0, lyLim = 0, colors = ["#FF00FF", "#00FFFF"]) {
         this.name = this.constructor.name;
@@ -512,36 +460,8 @@ class Piece {
     }
 
     // x: int, y: int, others: array[Piece, ...] = [] -> bool
-    moveTest(x, y, others = []) {
-        return Piece.move(this.moves, this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
-    }
-
-    // x: int, y: int, others: array[Piece, ...] = [] -> bool
     move(x, y, others = []) {
-        if (Piece.move(this.moves, this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)) {
-            this.x = x;
-            this.y = y;
-            this.turns++;
-            this.test();
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    // others: array[Piece, ...] = [] -> array[array[int, int], ...]
-    getMoves(others = []) {
-        return Piece.getMoves(this.moves, this.x, this.y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
-    }
-
-    // x: int, y: int, others: array[Piece, ...] = [] -> bool
-    attackTest(x, y, others = []) {
-        return Piece.attack(this.moves, this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0];
-    }
-
-    // x: int, y: int, others: array[Piece, ...] = [] -> bool
-    attack(x, y, others = []) {
-        let test = Piece.attack(this.moves, this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
+        let test = Piece.move(this.moves, this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
         if (test[0]) {
             this.x = x;
             this.y = y;
@@ -557,14 +477,9 @@ class Piece {
         }
     }
 
-    // others: array[Piece, ...] = [] -> array[array[int, int], ...]
-    getAttacks(others = []) {
-        return Piece.getAttacks(this.moves, this.x, this.y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
-    }
-
-    // others: array[Piece, ...] = [] -> array[array[int, int], ...]
-    check (others = []) {
-        return Piece.check(this.x, this.y, this.direction, others);
+    // others: array[Piece, ...] = [] -> array[array[int, int, bool], ...]
+    getMoves(others = []) {
+        return Piece.getMoves(this.moves, this.x, this.y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
     }
 
     // x: int, y: int -> bool[true]
@@ -580,6 +495,8 @@ class Piece {
     forceAttack(other) {
         this.x = other.x;
         this.y = other.y;
+        other.x = -1;
+        other.y = -1;
         this.turns++;
         this.test();
         return true;
