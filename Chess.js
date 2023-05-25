@@ -485,7 +485,7 @@ class Piece {
 class Checker extends Piece {
     // x: int, y: int, direction: int = 1, turns: int = 0, xLim: int = 8, yLim: int = 8, lxLim: int = 0, lyLim: int = 0 -> null
     constructor (x, y, direction = 1, turns = 0, xLim = 8, yLim = 8, lxLim = 0, lyLim = 0, colors = ["#FF00FF", "#00FFFF"]) {
-        return super(x, y, "cn(^2x>), o1x>", direction, turns, xLim, yLim, lxLim, lyLim, colors);
+        return super(x, y, "n(^2x>), o1x>", direction, turns, xLim, yLim, lxLim, lyLim, colors);
     }
 
     // canvas: canvas, xSquares: int = 8, ySquares: int = 8 -> null
@@ -508,7 +508,7 @@ class Checker extends Piece {
     // null -> bool
     test () {
         if (this.y == (this.direction == 1 ? this.yLim-1 : 0)) {
-            this.moves = "cn(^2x), o1x";
+            this.moves = "n(^2x), o1x";
             this.plot = function (canvas, xSquares = 8, ySquares = 8) {
                 this.plotBase(canvas, xSquares, ySquares);
                 let ctx = canvas.getContext("2d");
