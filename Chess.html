@@ -19,7 +19,7 @@
 				pieces[i].plot(canvas);
 		}
 
-		function draw(canvas, moves, attack="rgba(255, 0, 0, 0.5)", move="rgba(0, 255, 0, 0.5)") {
+		function draw(canvas, moves, checks, attack="rgba(255, 0, 0, 0.5)", move="rgba(0, 255, 0, 0.5)", check="rgba(255, 128, 0, 0.5)") {
 			var ctx = canvas.getContext("2d");
 			for (let i = 0; i < moves.length; i++) {
 				if (moves[i][2])
@@ -28,6 +28,9 @@
 					ctx.fillStyle = move;
 				ctx.fillRect(moves[i][0]*canvas.width/8, moves[i][1]*canvas.height/8, canvas.width/8, canvas.height/8);
 			}
+			ctx.fillStyle = check;
+			for (let i = 0; i < checks.length; i++)
+				ctx.fillRect(checks[i].x*canvas.width/8, checks[i].y*canvas.height/8, canvas.width/8, canvas.height/8)
 		}
 	</script>
 </head>
@@ -72,6 +75,8 @@
 					new Bishop(5, 7, -1),
 					new Knight(6, 7, -1),
 					new Rook(7, 7, -1)];
+			//p1 = [new Checker(5, 3, 1)];
+			//p2 = [new Pawn(0, 6, -1), new Pawn(4, 4, -1), new Pawn(4, 6, -1)];
 			drawBoard(canvas, [...p1, ...p2]);
 			var direction = 1;
 
@@ -81,7 +86,7 @@
 				drawBoard(canvas, [...p1, ...p2]);
 				p = Piece.getPiece(global[0], global[1], [...p1, ...p2]);
 				if (p != null && p.direction == direction) {
-					draw(canvas, p.getMoves([...p1, ...p2]), "rgba(255, 0, 0, 0.5)", "rgba(0, 255, 0, 0.5)");
+					draw(canvas, p.getMoves([...p1, ...p2]), p.getChecks([...p1, ...p2]));
 				}
 				if (global.length == 4) {
 					global = global.slice(2);
@@ -94,7 +99,7 @@
 						p = Piece.getPiece(global[0], global[1], [...p1, ...p2]);
 						if (p != null && p.direction == direction) {
 							drawBoard(canvas, [...p1, ...p2]);
-							draw(canvas, p.getMoves([...p1, ...p2]), "rgba(255, 0, 0, 0.5)", "rgba(0, 255, 0, 0.5)");
+							draw(canvas, p.getMoves([...p1, ...p2]), p.getChecks([...p1, ...p2]));
 						} else
 							drawBoard(canvas, [...p1, ...p2]);
 					}

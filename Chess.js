@@ -445,6 +445,14 @@ class Piece {
         return Piece.getMoves(this.moves, this.x, this.y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
     }
 
+    getChecks(others = []) {
+        let checks = [];
+        for (let i = 0; i < others.length; i++)
+            if (JSON.stringify(others[i].direction != direction && others[i].getMoves(others)).includes(JSON.stringify([this.x, this.y, true])))
+            checks.push(others[i]);
+        return checks;
+    }
+
     // x: int, y: int -> bool[true]
     forceMove(x, y) {
         this.x = x;
