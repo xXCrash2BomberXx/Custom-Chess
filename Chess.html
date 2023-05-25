@@ -7,19 +7,16 @@
 			var ctx = canvas.getContext("2d");
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			ctx.fillStyle = "#7F7F7F";
-			for (var y = 0; y < 8; y++) {
-				for (var x = 0; x < 8; x++) {
+			for (var y = 0; y < 8; y++)
+				for (var x = 0; x < 8; x++)
 					if ((x%2 == 0 && y%2 !== 0) || (x%2 !== 0 && y%2 == 0)) {
 						ctx.fillRect(x*canvas.width/8,
 							y*canvas.height/8,
 							canvas.width/8,
 							canvas.height/8);
 					}
-				}
-			}
-			for (let i = 0; i < pieces.length; i++) {
+			for (let i = 0; i < pieces.length; i++)
 				pieces[i].plot(canvas);
-			}
 		}
 
 		function draw(canvas, moves, attack="rgba(255, 0, 0, 0.5)", move="rgba(0, 255, 0, 0.5)") {
@@ -98,9 +95,8 @@
 						if (p != null && p.direction == direction) {
 							drawBoard(canvas, [...p1, ...p2]);
 							draw(canvas, p.getMoves([...p1, ...p2]), "rgba(255, 0, 0, 0.5)", "rgba(0, 255, 0, 0.5)");
-						} else {
+						} else
 							drawBoard(canvas, [...p1, ...p2]);
-						}
 					}
 				}
 				fillInfo(global[0], global[1]);

@@ -7,9 +7,8 @@ function range(start, end = NaN, step = 1) {
         start = 0;
     }
     let arr = [];
-    for (let i = start; i < end; i += step) {
+    for (let i = start; i < end; i += step)
         arr.push(i);
-    }
     return arr;
 }
 
@@ -67,16 +66,13 @@ class Piece {
     // Rider (n())
     // move: str, x1: int, y2: int, x2: int, y2: int, direction: int = 1, turns: int = 0, xLim: int = 8, yLim: int = 8, lxLim: int = 0, lyLim: int = 0 -> bool
     static #rider(move, x1, y1, x2, y2, direction = 1, turns = 0, xLim = 8, yLim = 8, lxLim = 0, lyLim = 0) {
-        while (move.count("(") > move.count(")")) {
-            move = move + ")";
-        }
-        while (move.count("(") < move.count(")")) {
+        while (move.count("(") > move.count(")"))
+            move += ")";
+        while (move.count("(") < move.count(")"))
             move = "(" + move;
-        }
         let factor = move.slice(0, move.indexOf("("));
-        if (!(factor.match(/[0-9]+$/) || factor.match(/[nN]$/))) {
+        if (!(factor.match(/[0-9]+$/) || factor.match(/[nN]$/)))
             factor = factor + "1";
-        }
         let pattern = move.slice(move.indexOf("(") + 1, move.lastIndexOf(")"));
         if (factor.match(/[0-9]+$/)) {
             if (Math.abs(x2 - x1) % parseInt(factor.match(/[0-9]+$/g)[0]) == 0 && Math.abs(y2 - y1) % parseInt(factor.match(/[0-9]+$/g)[0]) == 0) {
@@ -84,7 +80,7 @@ class Piece {
                 for (let i = 0; i < parseInt(factor.match(/[0-9]+$/g)[0]); i++) {
                     if (pattern.includes("(") && pattern.includes(".")) {
                         var temp2;
-                        for (let t = 0; t < pattern.length; t++) {
+                        for (let t = 0; t < pattern.length; t++)
                             if (pattern[t] == "." && pattern.slice(0, t).count("(") == pattern.slice(0, t).count(")")) {
                                 temp2 = Piece.#then(factor.slice(0, factor.match(/[0-9]+$/).index) +
                                     pattern.slice(0, t) + "." +
@@ -99,22 +95,19 @@ class Piece {
                                     x1 + (i + 1) * (x2 - x1) / factor.match(/[0-9]+$/g)[0], y1 + (i + 1) * (y2 - y1) / factor.match(/[0-9]+$/g)[0],
                                     direction, turns, xLim, yLim, lxLim, lyLim);
                             }
-                        }
-                        if (temp2) {
+                        if (temp2)
                             temp.push(...temp2);
-                        } else {
+                        else
                             return false;
-                        }
                     } else if (pattern.includes("(")) {
                         let temp2 = Piece.#rider(factor.slice(0, factor.match(/[0-9]+$/).index) + pattern,
                             x1 + i * (x2 - x1) / factor.match(/[0-9]+$/g)[0], y1 + i * (y2 - y1) / factor.match(/[0-9]+$/g)[0],
                             x1 + (i + 1) * (x2 - x1) / factor.match(/[0-9]+$/g)[0], y1 + (i + 1) * (y2 - y1) / factor.match(/[0-9]+$/g)[0],
                             direction, turns, xLim, yLim, lxLim, lyLim);
-                        if (temp2) {
+                        if (temp2)
                             temp.push(...temp2);
-                        } else {
+                        else
                             return false;
-                        }
                     } else if (move.includes(".")) {
                         let temp2 = Piece.#then(factor.slice(0, factor.match(/[0-9]+$/).index) +
                             pattern.slice(0, pattern.indexOf(".")) + "." +
@@ -122,19 +115,17 @@ class Piece {
                             x1 + i * (x2 - x1) / factor.match(/[0-9]+$/g)[0], y1 + i * (y2 - y1) / factor.match(/[0-9]+$/g)[0],
                             x1 + (i + 1) * (x2 - x1) / factor.match(/[0-9]+$/g)[0], y1 + (i + 1) * (y2 - y1) / factor.match(/[0-9]+$/g)[0],
                             direction, turns, xLim, yLim, lxLim, lyLim);
-                        if (temp2) {
+                        if (temp2)
                             temp.push(...temp2);
-                        } else {
+                        else
                             return false;
-                        }
                     } else if (Piece.#move(factor.slice(0, factor.match(/[0-9]+$/).index) + pattern,
                             x1 + i * (x2 - x1) / factor.match(/[0-9]+$/g)[0], y1 + i * (y2 - y1) / factor.match(/[0-9]+$/g)[0],
                             x1 + (i + 1) * (x2 - x1) / factor.match(/[0-9]+$/g)[0], y1 + (i + 1) * (y2 - y1) / factor.match(/[0-9]+$/g)[0],
-                            direction, turns, xLim, yLim, lxLim, lyLim)) {
+                            direction, turns, xLim, yLim, lxLim, lyLim))
                         temp.push([x1 + (i + 1) * (x2 - x1) / factor.match(/[0-9]+$/g)[0], y1 + (i + 1) * (y2 - y1) / factor.match(/[0-9]+$/g)[0]]);
-                    } else {
+                    else
                         return false;
-                    }
                 }
                 return temp;
             }
@@ -143,82 +134,74 @@ class Piece {
             for (let i = 1; i < Math.max(Math.abs(x2 - x1), Math.abs(y2 - y1)); i++) {
                 temp = Piece.#rider(factor.slice(0, factor.match(/[nN]$/).index) + String(i) + move.slice(move.indexOf("("), move.indexOf(")") + 1),
                     x1, y1, x2, y2, direction, turns, xLim, yLim, lxLim, lyLim);
-                if (temp) {
+                if (temp)
                     return temp;
-                }
             }
             return false;
-        } else {
+        } else
             return false;
-        }
     }
 
     // Then (.)
     // move: str, x1: int, y1: int, x3: int, y3: int, direction: int = 1, turns: int = 0, xLim: int = 8, yLim: int = 8, lxLim: int = 0, lyLim: int = 0 -> bool
     static #then(move, x1, y1, x3, y3, direction = 1, turns = 0, xLim = 8, yLim = 8, lxLim = 0, lyLim = 0) {
-        if (move.includes("(")) {
-            for (let t = 0; t < move.length; t++) {
+        var p1;
+        var p2;
+        if (move.includes("("))
+            for (let t = 0; t < move.length; t++)
                 if (move[t] == "." && move.slice(0, t).count("(") == move.slice(0, t).count(")")) {
-                    var p1 = move.slice(0, t);
-                    var p2 = move.slice(t + 1);
+                    p1 = move.slice(0, t);
+                    p2 = move.slice(t + 1);
                     break;
                 }
-            }
-        } else {
-            var p1 = move.slice(0, move.indexOf("."));
-            var p2 = move.slice(move.indexOf(".") + 1);
+        else {
+            p1 = move.slice(0, move.indexOf("."));
+            p2 = move.slice(move.indexOf(".") + 1);
         }
-        for (let x2 = lxLim; x2 < xLim; x2++) {
+        for (let x2 = lxLim; x2 < xLim; x2++)
             for (let y2 = lyLim; y2 < xLim; y2++) {
                 var p1r;
-                if (p1.includes(".") && p1.includes("(")) {
+                if (p1.includes(".") && p1.includes("("))
                     for (let t = 0; t < p1.length; t++) {
                         if (p1[t] == "." && p1.slice(0, t).count("(") == p1.slice(0, t).count(")")) {
                             p1r = Piece.#then(p1, x1, y1, x2, y2, direction, turns, xLim, yLim, lxLim, lyLim);
                             break;
-                        } else if (t == p1.length - 1) {
+                        } else if (t == p1.length - 1)
                             p1r = Piece.#rider(p1, x1, y1, x2, y2, direction, turns, xLim, yLim, lxLim, lyLim);
-                        }
                     }
-                } else if (p1.includes(".")) {
+                else if (p1.includes("."))
                     p1r = Piece.#then(p1, x1, y1, x2, y2, direction, turns, xLim, yLim, lxLim, lyLim);
-                } else if (p1.includes("(")) {
+                else if (p1.includes("("))
                     p1r = Piece.#rider(p1, x1, y1, x2, y2, direction, turns, xLim, yLim, lxLim, lyLim);
-                } else {
+                else
                     p1r = Piece.#move(p1, x1, y1, x2, y2, direction, turns, xLim, yLim, lxLim, lyLim);
-                }
                 var p2r;
-                if (p2.includes(".") && p2.includes("(")) {
+                if (p2.includes(".") && p2.includes("("))
                     for (let t = 0; t < p2.length; t++) {
                         if (p2[t] == "." && p2.slice(0, t).count("(") == p2.slice(0, t).count(")")) {
                             p2r = Piece.#then(p2, x2, y2, x3, y3, direction, turns, xLim, yLim, lxLim, lyLim);
                             break;
-                        } else if (t == p2.length - 1) {
+                        } else if (t == p2.length - 1)
                             p2r = Piece.#rider(p2, x2, y2, x3, y3, direction, turns, xLim, yLim, lxLim, lyLim);
-                        }
                     }
-                } else if (p2.includes(".")) {
+                else if (p2.includes("."))
                     p2r = Piece.#then(p2, x2, y2, x3, y3, direction, turns, xLim, yLim, lxLim, lyLim);
-                } else if (p2.includes("(")) {
+                else if (p2.includes("("))
                     p2r = Piece.#rider(p2, x2, y2, x3, y3, direction, turns, xLim, yLim, lxLim, lyLim);
-                } else {
+                else
                     p2r = Piece.#move(p2, x2, y2, x3, y3, direction, turns, xLim, yLim, lxLim, lyLim);
-                }
                 if (p1r && p2r) {
                     let temp = [
                         [x2, y2],
                         [x3, y3]
                     ];
-                    if (typeof(p1r) != "boolean") {
+                    if (typeof(p1r) != "boolean")
                         temp.push(...p1r);
-                    }
-                    if (typeof(p2r) != "boolean") {
+                    if (typeof(p2r) != "boolean")
                         temp.push(...p2r);
-                    }
                     return temp;
                 }
             }
-        }
         return false;
     }
 
@@ -231,52 +214,52 @@ class Piece {
             var match3 = match2[0].match(/[0-9nN]+(-[0-9nN]+)?/g); //.match(/[0-9n]+/g);
         }
         // In X-Range
-        if (x2 >= xLim || x2 < lxLim) {
+        if (x2 >= xLim || x2 < lxLim)
             return false;
         // In Y-Range
-        } else if (y2 >= yLim || y2 < lyLim) {
+        if (y2 >= yLim || y2 < lyLim)
             return false;
-        } else if (x1 == x2 && y1 == y2) {
+        if (x1 == x2 && y1 == y2)
             return false;
         // Dummy Piece (d)
-        } else if (move.includes("d")) {
+        if (move.includes("d"))
             return false;
         // Only On First Turn (i/I)
-        } else if (move.includes("i") && turns > 0) {
+        if (move.includes("i") && turns > 0)
             return false;
         // Orthogonally (+)
-        } else if (move.includes("+") && !((x1 != x2 && y1 == y2) || (y1 != y2 && x1 == x2))) {
+        if (move.includes("+") && !((x1 != x2 && y1 == y2) || (y1 != y2 && x1 == x2)))
             return false;
         //Diagonally (x, X)
-        } else if (move.includes("x") && !(Math.abs(x1 - x2) == Math.abs(y1 - y2))) {
+        if (move.includes("x") && !(Math.abs(x1 - x2) == Math.abs(y1 - y2)))
             return false;
         // Orthogonally or Diagonally (*)
-        } else if ((move.includes("*") || (!move.includes("+") && !move.includes("x") && !move.includes("/"))) && !(((x1 != x2 && y1 == y2) || (y1 != y2 && x1 == x2)) || Math.abs(x1 - x2) == Math.abs(y1 - y2))) {
+        if ((move.includes("*") || (!move.includes("+") && !move.includes("x") && !move.includes("/"))) && !(((x1 != x2 && y1 == y2) || (y1 != y2 && x1 == x2)) || Math.abs(x1 - x2) == Math.abs(y1 - y2)))
             return false;
         // Forward (>, >=, >r, >l)
-        } else if (move.includes(">") && !move.includes("<") &&
-            ((move.includes("=") || move.includes("r") || move.includes("l")) ? y1 * direction > y2 * direction  : y1 * direction >= y2 * direction)) {
+        if (move.includes(">") && !move.includes("<") &&
+            ((move.includes("=") || move.includes("r") || move.includes("l")) ? y1 * direction > y2 * direction  : y1 * direction >= y2 * direction))
             return false;
         // Backward (<, <=, <r, <l)
-        } else if (move.includes("<") && !move.includes(">") &&
-            ((move.includes("=") || move.includes("r") || move.includes("l")) ? y1 * direction < y2 * direction: y1 * direction <= y2 * direction)) {
+        if (move.includes("<") && !move.includes(">") &&
+            ((move.includes("=") || move.includes("r") || move.includes("l")) ? y1 * direction < y2 * direction: y1 * direction <= y2 * direction))
             return false;
         // Forward or Backward (<>)
-        } else if (move.includes(">") && move.includes("<") && y1 == y2) {
+        if (move.includes(">") && move.includes("<") && y1 == y2)
             return false;
         // Orthogonally Sideways (=)
-        } else if (!move.includes(">") && !move.includes("<") && move.includes("=") && y1 != y2) {
+        if (!move.includes(">") && !move.includes("<") && move.includes("=") && y1 != y2)
             return false;
         // Right (r, R) (Relative to Direction 1)
-        } else if (move.includes("r") &&
-            ((move.includes(">") || move.includes("<")) ? x1 * direction > x2 : x1 * direction >= x2)) {
+        if (move.includes("r") &&
+            ((move.includes(">") || move.includes("<")) ? x1 * direction > x2 : x1 * direction >= x2))
             return false;
         // Left (l, L) (Relative to Direction 1)
-        } else if (move.includes("l") &&
-            ((move.includes(">") || move.includes("<")) ? x1 * direction < x2 : x1 * direction <= x2)) {
+        if (move.includes("l") &&
+            ((move.includes(">") || move.includes("<")) ? x1 * direction < x2 : x1 * direction <= x2))
             return false;
         // Distance (1, 1-2, 2, 1-3, 2-3, 3, ..., n)
-        } else if (!match2 &&
+        if (!match2 &&
             match1 != null &&
             (match1[0].includes("-") ?
                 !((range(parseInt(match1[0].match(/[0-9n]+/g)[0]),
@@ -286,10 +269,10 @@ class Piece {
                         parseInt(match1[0].match(/[0-9n]+/g)[1]) + 1
                     ).includes(Math.abs(y1 - y2)) && (Math.abs(y1 - y2) == Math.abs(x1 - x2) || x1 == x2))) :
                 (match1[0] != "n" && parseInt(match1[0]) != Math.abs(x1 - x2) &&
-                    parseInt(match1[0]) != Math.abs(y1 - y2)))) {
+                    parseInt(match1[0]) != Math.abs(y1 - y2))))
             return false;
         // Two Orthogonal Moves (1/1, 1/1-2, 1/2, 1-2/1, 2/1, 1/1-2s, 1/2s, 1-2/1s, 2/1s, ..., n/n)
-        } else if (match2 != null &&
+        if (match2 != null &&
             !(((match3[0].includes("-") ?
                         range(parseInt(match3[0].match(/[0-9n]+/g)[0]),
                             parseInt(match3[0].match(/[0-9n]+/g)[1]) + 1
@@ -310,30 +293,25 @@ class Piece {
                                 parseInt(match3[1].match(/[0-9n]+/g)[1]) + 1
                             ).includes(Math.abs(x1 - x2)) :
                             (match3[1] != "n" && parseInt(match3[1]) == Math.abs(x1 - x2)))) &&
-                    !move.includes("s")))) {
+                    !move.includes("s"))))
             return false;
-        } else {
-            return true;
-        }
+        return true;
     }
 
     // x1: int, y1: int, x2: int, y2: int -> array[array[int, int], ...]
     static path(x1, y1, x2, y2, c = 1) {
         let coords = [];
-        for (let t = 1; t <= Math.max(Math.abs(x2 - x1), Math.abs(y2 - y1)); t += c) {
+        for (let t = 1; t <= Math.max(Math.abs(x2 - x1), Math.abs(y2 - y1)); t += c)
             coords.push([x1 + (isNaN((x2 - x1) / Math.abs(x2 - x1)) ? 0 :
                 ((x2 - x1) / Math.abs(x2 - x1))) * t, y1 + (isNaN((y2 - y1) / Math.abs(y2 - y1)) ? 0 : ((y2 - y1) / Math.abs(y2 - y1))) * t]);
-        }
         return coords;
     }
 
     // x: int, y: int, other: array[Piece, ...] = [] -> Piece
     static getPiece(x, y, others = []) {
-        for (let i = 0; i < others.length; i++) {
-            if (others[i].x == x && others[i].y == y) {
+        for (let i = 0; i < others.length; i++)
+            if (others[i].x == x && others[i].y == y)
                 return others[i];
-            }
-        }
         return null;
     }
 
@@ -346,48 +324,41 @@ class Piece {
         for (let i = 0; i < moves.length; i++) {
             // Leaper (~)
             if (!moves[i].includes("~") && !moves[i].includes("^") && Piece.path(x1, y1, x2, y2).slice(0, -1).filter(
-                    value => Piece.getPiece(value[0], value[1], others) != null).length != 0) {
+                    value => Piece.getPiece(value[0], value[1], others) != null).length != 0)
                 continue;
-            }
             // Locust (^)
             if (moves[i].includes("^") && Piece.path(x1, y1, x2, y2, 2).some(
                 function(arr) {
                     let other = Piece.getPiece(...arr, others);
                     return (other == null || other.direction == direction || other.moves.toLowerCase().includes("d"));
                 }
-            )) {
+            ))
                 continue;
-            }
             if (moves[i].includes("(") || moves[i].includes(".")) {
                 var step;
-                if (moves[i].includes("(") && moves[i].includes(".")) {
+                if (moves[i].includes("(") && moves[i].includes("."))
                     for (let t = 0; t < moves[i].length; t++) {
                         if (moves[i][t] == "." && moves[i].slice(0, t).count("(") == moves[i].slice(0, t).count(")")) {
                             step = Piece.#then(moves[i].replaceAll("^", "~"), x1, y1, x2, y2, direction, turns, xLim, yLim, lxLim, lyLim);
                             break;
-                        } else if (t == moves[i].length - 1) {
+                        } else if (t == moves[i].length - 1)
                             step = Piece.#rider(moves[i].replaceAll("^", "~"), x1, y1, x2, y2, direction, turns, xLim, yLim, lxLim, lyLim);
-                        }
                     }
-                } else if (moves[i].includes("(")) {
+                else if (moves[i].includes("("))
                     step = Piece.#rider(moves[i].replaceAll("^", "~"), x1, y1, x2, y2, direction, turns, xLim, yLim, lxLim, lyLim);
-                } else if (moves[i].includes(".")) {
+                else if (moves[i].includes("."))
                     step = Piece.#then(moves[i].replaceAll("^", "~"), x1, y1, x2, y2, direction, turns, xLim, yLim, lxLim, lyLim);
-                }
                 if (!step || (moves[i].includes("^") ? step : step.slice(0, -1)).filter(
-                        value => Piece.getPiece(value[0], value[1], others) != null).length != 0) {
+                        value => Piece.getPiece(value[0], value[1], others) != null).length != 0)
                     continue;
-                }
             // Base Move
-            } else if (!Piece.#move(moves[i].replaceAll("^", "~"), x1, y1, x2, y2, direction, turns, xLim, yLim, lxLim, lyLim)) {
+            } else if (!Piece.#move(moves[i].replaceAll("^", "~"), x1, y1, x2, y2, direction, turns, xLim, yLim, lxLim, lyLim))
                 continue;
-            }
             // Locust (^)
             if (moves[i].includes("^")) {
                 // Non-Capture Only (o/O)
-                if (moves[i].includes("o")) {
+                if (moves[i].includes("o"))
                     continue;
-                }
                 let pieces = Piece.path(x1, y1, x2, y2, 2);
                 for (let i = 0; i < pieces.length; i++) {
                     pieces[i] = Piece.getPiece(...pieces[i], others);
@@ -412,33 +383,26 @@ class Piece {
     // moves: str, x1: int, y1: int, direction: int = 1, turns: int = 0, xLim: int = 8, yLim: int = 8, lxLim: int = 0, lyLim: int = 0, others: array[Piece, ...] = [] -> array[array[int, int, bool], ...]
     static getMoves(moves, x1, y1, direction = 1, turns = 0, xLim = 8, yLim = 8, lxLim = 0, lyLim = 0, others = []) {
         let arr = [];
-        for (let x2 = lxLim; x2 < xLim; x2++) {
+        for (let x2 = lxLim; x2 < xLim; x2++)
             for (let y2 = lyLim; y2 < yLim; y2++) {
                 let move = Piece.move(moves, x1, y1, x2, y2, direction, turns, xLim, yLim, lxLim, lyLim, others);
                 // attack = true; move = false
                 if (move[0])
-                    if (move[1].length > 0)
-                        arr.push([x2, y2, true]);
-                    else
-                        arr.push([x2, y2, false]);
+                    arr.push([x2, y2, (move[1].length > 0)]);
                 
             }
-        }
         return arr;
     }
 
     // moves: str = "" -> null
     static validate(moves = "") {
-        if (moves.count("(") != moves.count(")")) {
-            if (moves.count("(") > moves.count(")")) {
+        if (moves.count("(") != moves.count(")"))
+            if (moves.count("(") > moves.count(")"))
                 console.warn("The moves have more Opening Parenthases ('(') than Closing Parenthases (')'), but we may be able to work around that");
-            } else {
+            else
                 console.warn("The moves have more Closing Parenthases (')') than Opening Parenthases ('('), but we may be able to work around that");
-            }
-        }
-        if (moves.includes('&')) {
+        if (moves.includes('&'))
             throw Error("The Repeated Movement ('&') Operator has been deprecated, please use the Grouping ('()') Operator instead");
-        }
         return null;
     }
 
@@ -472,9 +436,8 @@ class Piece {
             }
             this.test();
             return true;
-        } else {
+        } else
             return false;
-        }
     }
 
     // others: array[Piece, ...] = [] -> array[array[int, int, bool], ...]
@@ -504,9 +467,8 @@ class Piece {
 
     // canvas: canvas, xSquares: int = 8, ySquares: int = 8 -> null
     plot(canvas, xSquares = 8, ySquares = 8) {
-        if (this.x == -1 && this.y == -1) {
+        if (this.x == -1 && this.y == -1)
             return null;
-        }
         let ctx = canvas.getContext("2d");
         ctx.fillStyle = this.color;
         ctx.fillRect(this.x*canvas.width/xSquares, this.y*canvas.height/ySquares, canvas.width/xSquares, canvas.height/ySquares);
@@ -528,9 +490,8 @@ class Checker extends Piece {
 
     // canvas: canvas, xSquares: int = 8, ySquares: int = 8 -> null
     plotBase (canvas, xSquares = 8, ySquares = 8) {
-        if (this.x == -1 && this.y == -1) {
+        if (this.x == -1 && this.y == -1)
             return null;
-        }
         let ctx = canvas.getContext("2d");
         ctx.fillStyle = this.color;
         ctx.beginPath();
