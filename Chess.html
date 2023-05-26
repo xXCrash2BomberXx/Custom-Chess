@@ -19,7 +19,7 @@
 				pieces[i].plot(canvas);
 		}
 
-		function draw(canvas, moves, checks, attack="rgba(255, 0, 0, 0.5)", move="rgba(0, 255, 0, 0.5)", check="rgba(255, 128, 0, 0.5)") {
+		function draw(canvas, moves, checks, attack="rgba(255, 0, 0, 0.5)", move="rgba(0, 255, 0, 0.5)", check="rgba(255, 255, 0, 0.5)") {
 			var ctx = canvas.getContext("2d");
 			for (let i = 0; i < moves.length; i++) {
 				if (moves[i][2])

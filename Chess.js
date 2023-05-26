@@ -312,7 +312,6 @@ class Piece {
         for (let i = 0; i < others.length; i++)
             if (others[i].x == x && others[i].y == y)
                 return others[i];
-        return null;
     }
 
     // moves: str, x1: int, y1: int, x2: int, y2: int, direction: int = 1, turns: int = 0, xLim: int = 8, yLim: int = 8, lxLim: int = 0, lyLim: int = 0, others: array[Piece, ...] = [] -> array[bool, array[Piece, ...]]
@@ -403,7 +402,6 @@ class Piece {
                 console.warn("The moves have more Closing Parenthases (')') than Opening Parenthases ('('), but we may be able to work around that");
         if (moves.includes('&'))
             throw Error("The Repeated Movement ('&') Operator has been deprecated, please use the Grouping ('()') Operator instead");
-        return null;
     }
 
     // x: int, y: int, moves: str = "", direction: int = 1, turns: int = 0, xLim: int = 8, yLim: int = 8, lxLim: int = 0, lyLim: int = 0 -> null
@@ -420,13 +418,13 @@ class Piece {
         this.yLim = yLim;
         this.lxLim = lxLim;
         this.lyLim = lyLim;
-        return null;
     }
 
     // x: int, y: int, others: array[Piece, ...] = [] -> bool
     move(x, y, others = []) {
         let test = Piece.move(this.moves, this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
         if (test[0]) {
+			this.preTest();
             this.x = x;
             this.y = y;
             this.turns++;
@@ -434,7 +432,7 @@ class Piece {
                 test[1][i].x = -1;
                 test[1][i].y = -1;
             }
-            this.test();
+            this.postTest();
             return true;
         } else
             return false;
@@ -445,48 +443,54 @@ class Piece {
         return Piece.getMoves(this.moves, this.x, this.y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
     }
 
+	static getChecks(x, y, direction = 1, others = []) {
+		let checks = [];
+		for (let i = 0; i < others.length; i++)
+            if (JSON.stringify(others[i].direction != direction && others[i].getMoves(others)).includes(JSON.stringify([x, y, true])))
+            	checks.push(others[i]);
+		return checks;
+	}
+
     getChecks(others = []) {
-        let checks = [];
-        for (let i = 0; i < others.length; i++)
-            if (JSON.stringify(others[i].direction != direction && others[i].getMoves(others)).includes(JSON.stringify([this.x, this.y, true])))
-            checks.push(others[i]);
-        return checks;
+        return Piece.getChecks(this.x, this.y, this.direction, others);
     }
 
     // x: int, y: int -> bool[true]
     forceMove(x, y) {
+		this.preTest();
         this.x = x;
         this.y = y;
         this.turns++;
-        this.test();
+        this.postTest();
         return true;
     }
 
     // other: Piece -> bool[true]
     forceAttack(other) {
+		this.preTest();
         this.x = other.x;
         this.y = other.y;
         other.x = -1;
         other.y = -1;
         this.turns++;
-        this.test();
+        this.postTest();
         return true;
     }
 
     // canvas: canvas, xSquares: int = 8, ySquares: int = 8 -> null
     plot(canvas, xSquares = 8, ySquares = 8) {
         if (this.x == -1 && this.y == -1)
-            return null;
+            return;
         let ctx = canvas.getContext("2d");
         ctx.fillStyle = this.color;
         ctx.fillRect(this.x*canvas.width/xSquares, this.y*canvas.height/ySquares, canvas.width/xSquares, canvas.height/ySquares);
-        return null;
     }
 
-    // null -> bool[false]
-    test () {
-        return false;
-    }
+    // null -> null
+    preTest () {}
+
+    // null -> null
+    postTest () {}
 }
 
 
@@ -499,13 +503,12 @@ class Checker extends Piece {
     // canvas: canvas, xSquares: int = 8, ySquares: int = 8 -> null
     plotBase (canvas, xSquares = 8, ySquares = 8) {
         if (this.x == -1 && this.y == -1)
-            return null;
+            return;
         let ctx = canvas.getContext("2d");
         ctx.fillStyle = this.color;
         ctx.beginPath();
         ctx.arc((this.x+0.5)*canvas.width/xSquares, (this.y+0.5)*canvas.height/ySquares, Math.min(canvas.width/xSquares, canvas.height/ySquares)/2, 0, 2*Math.PI, false);
         ctx.fill();
-        return null;
     }
 
     // canvas: canvas, xSquares: int = 8, ySquares: int = 8 -> null
@@ -513,7 +516,7 @@ class Checker extends Piece {
         return this.plotBase(canvas, xSquares, ySquares);
     }
 
-    // null -> bool
+    // null -> null
     test () {
         if (this.y == (this.direction == 1 ? this.yLim-1 : 0)) {
             this.moves = "n(^2x), o1x";
@@ -524,11 +527,8 @@ class Checker extends Piece {
                 ctx.textAlign = "center";
                 ctx.font = String(Math.min(canvas.width/this.xLim, canvas.height/this.yLim))+"px sans-serif";
                 ctx.fillText("\u{2654}", canvas.width/this.xLim*(this.x+0.5), canvas.height/this.yLim*(this.y+0.875));
-                return null;
             }
-            return true;
         }
-        return false;
     }
 }
 
@@ -627,8 +627,8 @@ class Pawn extends Piece {
         ctx.fillText((this.direction == 1?"\u{2659}":"\u{265F}"), canvas.width/this.xLim*(this.x+0.5), canvas.height/this.yLim*(this.y+0.875));
     }
 
-    // null -> bool
-    test () {
+    // null -> null
+    postTest () {
         if (this.y == ((this.direction==-1)?0:((this.direction == 1)?this.yLim-1: false))) {
             var choices = ["Queen",
                             "Bishop",
