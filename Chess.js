@@ -272,27 +272,28 @@ class Piece {
                     parseInt(match1[0]) != Math.abs(y1 - y2))))
             return false;
         // Two Orthogonal Moves (1/1, 1/1-2, 1/2, 1-2/1, 2/1, 1/1-2s, 1/2s, 1-2/1s, 2/1s, ..., n/n)
-        if (match2 != null &&
+        console.log(match2)
+		if (match2 != null &&
             !(((match3[0].includes("-") ?
                         range(parseInt(match3[0].match(/[0-9n]+/g)[0]),
                             parseInt(match3[0].match(/[0-9n]+/g)[1]) + 1
                         ).includes(Math.abs(x1 - x2)) :
-                        (match3[0] != "n" && parseInt(match3[0]) == Math.abs(x1 - x2))) &&
+                        ((match3[0] != "n" && parseInt(match3[0]) == Math.abs(x1 - x2)) || match3[0] == "n")) &&
                     (match3[1].includes("-") ?
                         range(parseInt(match3[1].match(/[0-9n]+/g)[0]),
                             parseInt(match3[1].match(/[0-9n]+/g)[1]) + 1
                         ).includes(Math.abs(y1 - y2)) :
-                        (match3[1] != "n" && parseInt(match3[1]) == Math.abs(y1 - y2)))) ||
+                        ((match3[1] != "n" && parseInt(match3[1]) == Math.abs(y1 - y2)) || match3[1] == "n"))) ||
                 (((match3[0].includes("-") ?
                             range(parseInt(match3[0].match(/[0-9n]+/g)[0]),
                                 parseInt(match3[0].match(/[0-9n]+/g)[1]) + 1
                             ).includes(Math.abs(y1 - y2)) :
-                            (match3[0] != "n" && parseInt(match3[0]) == Math.abs(y1 - y2))) &&
+                            ((match3[0] != "n" && parseInt(match3[0]) == Math.abs(y1 - y2)) || match3[0] == "n")) &&
                         (match3[1].includes("-") ?
                             range(parseInt(match3[1].match(/[0-9n]+/g)[0]),
                                 parseInt(match3[1].match(/[0-9n]+/g)[1]) + 1
                             ).includes(Math.abs(x1 - x2)) :
-                            (match3[1] != "n" && parseInt(match3[1]) == Math.abs(x1 - x2)))) &&
+                            ((match3[1] != "n" && parseInt(match3[1]) == Math.abs(x1 - x2)) || match3[1] == "n"))) &&
                     !move.includes("s"))))
             return false;
         return true;
