@@ -45,7 +45,7 @@ String.prototype.count = function(char=" ") {
  * * 'X/Ys'/'X/YS' = Strict Distance of X Horizontally and then Y Vertically in Different Orthogonal Directions
  * * 'W-X/Y-Zs'/'W-X/Y-ZS' = Strict Distance in Inclusive Range from W to X Horizontally and then Y to Z Vertically in Different Orthogonal Directions
  * * 'i'/'I' = Only Use on First Movement of Piece
- * * 'c'/'C' = Only Use on Capturing Piece
+ * * 'c'/'C' = Only Use on Capturing Piece (Only applies to final square being landed on)
  * * 'o'/'O' = Only Use on Not Capturing Piece
  * * ',' = Add Different Movements to a Piece
  * * '-' = Inclusive Range Operator
@@ -54,7 +54,7 @@ String.prototype.count = function(char=" ") {
  * * 'd'/'D' = Cannot be Killed nor Moved
  * * '()' = Grouping Operator (Nightriders) (Use 'n()' instead of the deprecated '&' operator)
  * * '.' = Then Operator (Aanca)
- * * '^' = Locust Operator (Checkers)
+ * * '^' = Locust Operator (Checkers) (Must capture between each jump)
  * 
  * Missing:
  * * En Passant
@@ -434,8 +434,8 @@ class Piece {
             }
             this.postTest();
             return true;
-        } else
-            return false;
+        }
+        return false;
     }
 
     // others: array[Piece, ...] = [] -> array[array[int, int, bool], ...]
