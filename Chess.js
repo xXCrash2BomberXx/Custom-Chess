@@ -518,7 +518,7 @@ class Checker extends Piece {
     }
 
     // null -> null
-    test () {
+    postTest () {
         if (this.y == (this.direction == 1 ? this.yLim-1 : 0)) {
             this.moves = "n(^2x), o1x";
             this.plot = function (canvas, xSquares = 8, ySquares = 8) {
