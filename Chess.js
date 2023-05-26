@@ -60,7 +60,6 @@ String.prototype.count = function(char=" ") {
  * Missing:
  * * En Passant
  * * Castling
- * * Check/Win Alerts
  */
 
 class Piece {
