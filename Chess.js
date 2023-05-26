@@ -315,7 +315,7 @@ class Piece {
     }
 
     // moves: str, x1: int, y1: int, x2: int, y2: int, direction: int = 1, turns: int = 0, xLim: int = 8, yLim: int = 8, lxLim: int = 0, lyLim: int = 0, others: array[Piece, ...] = [] -> array[bool, array[Piece, ...]]
-    static move(moves, x1, y1, x2, y2, direction = 1, turns = 0, xLim = 8, yLim = 8, lxLim = 0, lyLim = 0, others = []) {  // -> Array[Bool, Array[Piece]]
+    static move(moves, x1, y1, x2, y2, direction = 1, turns = 0, xLim = 8, yLim = 8, lxLim = 0, lyLim = 0, others = []) {  // -> Array[Bool, Array[Piece, ...]]
         let other = Piece.getPiece(x2, y2, others);
         if (other != null && (direction == other.direction || other.moves.toLowerCase().includes("d")))
             return [false];
@@ -350,8 +350,9 @@ class Piece {
                 if (!step || (moves[i].includes("^") ? step : step.slice(0, -1)).filter(
                         value => Piece.getPiece(value[0], value[1], others) != null).length != 0)
                     continue;
+            }
             // Base Move
-            } else if (!Piece.#move(moves[i].replaceAll("^", "~"), x1, y1, x2, y2, direction, turns, xLim, yLim, lxLim, lyLim))
+            if (!Piece.#move(moves[i].replaceAll("^", "~"), x1, y1, x2, y2, direction, turns, xLim, yLim, lxLim, lyLim))
                 continue;
             // Locust (^)
             if (moves[i].includes("^")) {
@@ -359,9 +360,8 @@ class Piece {
                 if (moves[i].includes("o"))
                     continue;
                 let pieces = Piece.path(x1, y1, x2, y2, 2);
-                for (let i = 0; i < pieces.length; i++) {
+                for (let i = 0; i < pieces.length; i++)
                     pieces[i] = Piece.getPiece(...pieces[i], others);
-                }
                 if (pieces.length == 0)
                     continue;
                 if (moves[i].includes("c") && other == null)
@@ -369,12 +369,12 @@ class Piece {
                 else if (other != null)
                     pieces.push(other);
                 return [true, pieces];
+            }
             // Return success
-            } else
-                if (other == null && !moves[i].includes("c"))
-                    return [true, []];
-                else if (other != null && !moves[i].includes("o"))
-                    return [true, [other]];
+            if (other == null && !moves[i].includes("c"))
+                return [true, []];
+            else if (other != null && !moves[i].includes("o"))
+                return [true, [other]];
         }
         return [false];
     }
