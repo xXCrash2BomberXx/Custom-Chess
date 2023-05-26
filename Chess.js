@@ -1,7 +1,7 @@
 "use strict";
 
 // start: int, end: int = NaN, step: int = 1 -> array[int, ...]
-function range(start, end = NaN, step = 1) {
+function range (start, end = NaN, step = 1) {
     if (isNaN(end)) {
         end = start;
         start = 0;
@@ -55,6 +55,7 @@ String.prototype.count = function(char=" ") {
  * * '()' = Grouping Operator (Nightriders) (Use 'n()' instead of the deprecated '&' operator)
  * * '.' = Then Operator (Aanca)
  * * '^' = Locust Operator (Checkers) (Must capture between each jump)
+ * * 'k'/'K' = King flag that enables notifications when placed into check by another piece
  * 
  * Missing:
  * * En Passant
@@ -272,7 +273,6 @@ class Piece {
                     parseInt(match1[0]) != Math.abs(y1 - y2))))
             return false;
         // Two Orthogonal Moves (1/1, 1/1-2, 1/2, 1-2/1, 2/1, 1/1-2s, 1/2s, 1-2/1s, 2/1s, ..., n/n)
-        console.log(match2)
 		if (match2 != null &&
             !(((match3[0].includes("-") ?
                         range(parseInt(match3[0].match(/[0-9n]+/g)[0]),
@@ -394,6 +394,27 @@ class Piece {
         return arr;
     }
 
+    // x: int, y: int, direction: int = 1, others: array[Piece, ...] = [] -> array[Piece, ...]
+	static getChecks(x, y, direction = 1, others = []) {
+		let checks = [];
+		for (let i = 0; i < others.length; i++)
+            if (others[i].direction != direction && JSON.stringify(others[i].getMoves(others)).includes(JSON.stringify([x, y, true])))
+            	checks.push(others[i]);
+		return checks;
+	}
+
+    // name: str, moves: str, x: int, y: int, direction: int = 1, others: array[Piece, ...] = [] -> alert
+    static showAlerts(name, moves, x, y, direction = 1, others = []) {
+        if (moves.toLowerCase().includes("k"))
+            if (Piece.getChecks(x, y, direction, others).length > 0)
+                alert(name+" is in check");
+    }
+
+    // moves: str, x: int, y: int
+    static hasLost(moves, x, y) {
+        return (moves.toLowerCase().includes("k") && x == -1 && y == -1);
+    }
+
     // moves: str = "" -> null
     static validate(moves = "") {
         if (moves.count("(") != moves.count(")"))
@@ -444,16 +465,19 @@ class Piece {
         return Piece.getMoves(this.moves, this.x, this.y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
     }
 
-	static getChecks(x, y, direction = 1, others = []) {
-		let checks = [];
-		for (let i = 0; i < others.length; i++)
-            if (JSON.stringify(others[i].direction != direction && others[i].getMoves(others)).includes(JSON.stringify([x, y, true])))
-            	checks.push(others[i]);
-		return checks;
-	}
-
+    // others: array[Piece, ...] = [] -> array[Piece, ...]
     getChecks(others = []) {
         return Piece.getChecks(this.x, this.y, this.direction, others);
+    }
+
+    // others: array[Piece, ...] -> alert
+    showAlerts(others = []) {
+        Piece.showAlerts(this.name, this.moves, this.x, this.y, this.direction, others);
+    }
+
+    // null -> bool
+    hasLost() {
+        return Piece.hasLost(this.moves, this.x, this.y);
     }
 
     // x: int, y: int -> bool[true]
@@ -536,7 +560,7 @@ class Checker extends Piece {
 class King extends Piece {
     // x: int, y: int, direction: int = 1, turns: int = 0, xLim: int = 8, yLim: int = 8, lxLim: int = 0, lyLim: int = 0 -> null
     constructor (x, y, direction = 1, turns = 0, xLim = 8, yLim = 8, lxLim = 0, lyLim = 0, colors = ["#FF00FF", "#00FFFF"]) {
-        return super(x, y, "1*", direction, turns, xLim, yLim, lxLim, lyLim, colors);
+        return super(x, y, "k1*", direction, turns, xLim, yLim, lxLim, lyLim, colors);
     }
 
     // canvas: canvas, xSquares: int = 8, ySquares: int = 8 -> null

@@ -19,7 +19,7 @@
 				pieces[i].plot(canvas);
 		}
 
-		function draw(canvas, moves, checks, attack="rgba(255, 0, 0, 0.5)", move="rgba(0, 255, 0, 0.5)", check="rgba(255, 255, 0, 0.5)") {
+		function draw (canvas, moves, checks, attack="rgba(255, 0, 0, 0.5)", move="rgba(0, 255, 0, 0.5)", check="rgba(255, 255, 0, 0.5)") {
 			var ctx = canvas.getContext("2d");
 			for (let i = 0; i < moves.length; i++) {
 				if (moves[i][2])
@@ -31,6 +31,26 @@
 			ctx.fillStyle = check;
 			for (let i = 0; i < checks.length; i++)
 				ctx.fillRect(checks[i].x*canvas.width/8, checks[i].y*canvas.height/8, canvas.width/8, canvas.height/8)
+		}
+
+		function showAlerts (pieces, others = []) {
+			for (let i = 0; i < pieces.length; i++) {
+				pieces[i].showAlerts(others);
+			}
+		}
+
+		function win (p1, p2) {
+			for (let i = 0; i < p1.length; i++)
+				if (p1[i].hasLost()) {
+					alert("Player 2 has won the game");
+					return true;
+				}
+			for(let i = 0; i < p2.length; i++)
+				if (p2[i].hasLost()) {
+					alert("Player 1 has won the game");
+					return true;
+				}
+			return false;
 		}
 	</script>
 </head>
@@ -81,6 +101,8 @@
 			var direction = 1;
 
 			canvas.addEventListener("click", function (event) {
+				if (win(p1, p2))
+					return;
 				global.push(Math.floor((event.clientX-event.target.getBoundingClientRect().left)/canvas.width*8));
 				global.push(Math.floor((event.clientY-event.target.getBoundingClientRect().top)/canvas.height*8));
 				drawBoard(canvas, [...p1, ...p2]);
@@ -94,6 +116,7 @@
 					if (p != null && p.direction == direction && p.move(global[0], global[1], [...p1, ...p2])) {
 						drawBoard(canvas, [...p1, ...p2]);
 						direction *= -1;
+						showAlerts(direction == 1 ? p1 : p2, [...p1, ...p2]);
 					// new selection
 					} else {
 						p = Piece.getPiece(global[0], global[1], [...p1, ...p2]);
