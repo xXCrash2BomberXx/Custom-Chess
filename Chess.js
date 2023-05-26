@@ -404,29 +404,3 @@ class Pawn extends Piece {
         }
     }
 }
-
-/*
-var p0 = new Piece(0, 0, "1>+, 2i>+, 1c>x"); // Test Move Coordinates
-console.log(p0.move(0, 2));
-
-var p1 = new Piece(0, 0, "nx", 1); // Test Attack Piece Coordinates
-console.log(p1.attack(3, 3, [new Piece(3, 3, "", -1)]));
-
-var p2 = new Piece(0, 0, "n*, n(~1/2)", 1); // Test Rider
-console.log(p2.move(3, 6));
-
-var p3 = new Piece(0, 0, "1x.n+", 1); // Test Then
-console.log(p3.move(1, 3));
-
-var p4 = new Piece(0, 0, "n(1x.2+)", 1); // Test Then in Rider
-console.log(p4.move(2, 6));
-
-var p5 = new Piece(0, 0, "n(~1/2).1*", 1); // Test Rider in Then
-console.log(p5.move(3, 7));
-
-var p6 = new Piece(0, 0, "n(1x.2+).n(~2*)", -1); // Test Then in Rider in Then
-console.log(p6.move(6, 6));
-
-var p7 = new Piece(3, 3, "cn(^2x), o1x", 1); // Test Hopper
-console.log(p7.attack(5, 5, [new Piece(4, 4, "", -1), new Piece(6, 6, "", -1)]));
-*/
