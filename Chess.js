@@ -510,11 +510,17 @@ class Piece {
         ctx.fillRect(this.x*canvas.width/xSquares, this.y*canvas.height/ySquares, canvas.width/xSquares, canvas.height/ySquares);
     }
 
+    // Runs before the piece is moved to a new location
     // null -> null
     preTest () {}
 
+    // Runs after the piece is moved to a new location
     // null -> null
     postTest () {}
+
+    // Runs at the beginning of each player's turn
+    // null -> null
+    turnTest () {}
 }
 
 
@@ -670,6 +676,23 @@ class Pawn extends Piece {
             this.x = -1;
             this.y = -1;
         }
+    }
+}
+
+class PowerUp extends Piece {
+    constructor (x, y, direction = 1, turns = 0, xLim = 8, yLim = 8, lxLim = 0, lyLim = 0, colors = ["#FF00FF", "#00FFFF"]) {
+        super(x, y, "", direction, turns, xLim, yLim, lxLim, lyLim, colors);
+        this.movesList = ["o1>+, c1X>, oi2>+", "1*", "~1/2", "nx", "n+", "n*"];
+        this.moveIndex = 0;
+        this.moves = this.movesList[this.moveIndex];
+    }
+
+    move(x, y, others = []) {
+        if (super.move(x, y, others)) {
+            this.moves = this.movesList[(++this.moveIndex)%this.movesList.length];
+            return true;
+        }
+        return false;
     }
 }
 
