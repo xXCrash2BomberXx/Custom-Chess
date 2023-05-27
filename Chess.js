@@ -350,6 +350,12 @@ class Piece {
                 if (!step || (moves[i].includes("^") ? step : step.slice(0, -1)).filter(
                         value => Piece.getPiece(value[0], value[1], others) != null).length != 0)
                     continue;
+				else
+					// Return success
+					if (other == null && !moves[i].includes("c"))
+						return [true, []];
+					else if (other != null && !moves[i].includes("o"))
+						return [true, [other]];
             }
             // Base Move
             if (!Piece.#move(moves[i].replaceAll("^", "~"), x1, y1, x2, y2, direction, turns, xLim, yLim, lxLim, lyLim))
