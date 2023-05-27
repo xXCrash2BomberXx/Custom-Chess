@@ -99,8 +99,14 @@ class Piece {
             return false;
         // Two Orthogonal Moves (1/1, 1/2, 2/1, ..., n/n)
 		if (match2 != null &&
-            !(((match3[0] != "n" && parseInt(match3[0]) == Math.abs(x1 - x2)) || match3[0] == "n") &&
-                    ((match3[1] != "n" && parseInt(match3[1]) == Math.abs(y1 - y2)) || match3[1] == "n")))
+			!(
+				(((match3[0] != "n" && parseInt(match3[0]) == Math.abs(x1 - x2)) || match3[0] == "n") &&
+				(((match3[1] != "n" && parseInt(match3[1]) == Math.abs(y1 - y2)) || match3[1] == "n")) ||
+			(
+				(((match3[0] != "n" && parseInt(match3[0]) == Math.abs(y1 - y2)) || match3[0] == "n") &&
+				((match3[1] != "n" && parseInt(match3[1]) == Math.abs(x1 - x2)) || match3[1] == "n"))))))
+            /*!(((match3[0] != "n" && parseInt(match3[0]) == Math.abs(x1 - x2)) || match3[0] == "n") &&
+                    ((match3[1] != "n" && parseInt(match3[1]) == Math.abs(y1 - y2)) || match3[1] == "n")))*/
             return false;
         return true;
     }
