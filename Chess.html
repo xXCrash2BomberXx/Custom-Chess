@@ -2,6 +2,53 @@
 <html>
 <head>
 	<script type="text/javascript" src="Chess.js"></script>
+	<script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+	<script type="text/javascript">
+		var player_direction = 0;
+		var peer = new Peer();
+		var conn_id;
+		var connected = false;
+		peer.on('connection', function (conn) {
+			conn.on('data', function (data) {
+				if (!connected) {
+					conn_id = data;
+					player_direction = 1;
+					connected = true;
+				} else {
+					console.log(data);
+					global = JSON.parse(data);
+					let p = Piece.getPiece(global[0], global[1], [...p1, ...p2]);
+					p.move(global[2], global[3], [...p1, ...p2]);
+					direction *= -1;
+					for (let i = 0; i < p1.length; i++)
+						p1[i].turnTest();
+					for (let i = 0; i < p2.length; i++)
+						p2[i].turnTest();
+					showAlerts(direction == 1 ? p1 : p2, [...p1, ...p2]);
+					drawBoard(canvas, [...p1, ...p2]);
+					global = [];
+				}
+			});
+		});
+
+		function connect() {
+			let element = document.getElementById('textbox');
+			if (element.value == "")
+				alert(peer._id);
+			else {
+				conn_id = element.value;
+				let conn = peer.connect(conn_id);
+				conn.on('open', function () {
+					conn.send(peer._id);
+				});
+				player_direction = -1;
+				connected = true;
+			}
+			element.remove();
+			document.getElementById('connect').remove();
+		}
+	</script>
+	
 	<script type="text/javascript">
 		function drawBoard (canvas, pieces=[]) {
 			var ctx = canvas.getContext("2d");
@@ -34,6 +81,8 @@
 		}
 
 		function showAlerts (pieces, others = []) {
+			if (pieces[0].direction != player_direction)
+				return;
 			for (let i = 0; i < pieces.length; i++) {
 				pieces[i].showAlerts(others);
 			}
@@ -55,6 +104,8 @@
 	</script>
 </head>
 <body>
+	<input type="text" name="textbox" id="textbox">
+	<input type="submit" name = "connect" id="connect" value="Connect" onclick="connect()">
 	<div>
 		<canvas id="canvas"></canvas>
 		<script type="text/javascript">
@@ -112,8 +163,14 @@
 				}
 				if (global.length == 4) {
 					global = global.slice(2);
+					if (p != null)
+						var moved = [p.x, p.y, global[0], global[1]];
 					// move/attack
-					if (p != null && p.direction == direction && p.move(global[0], global[1], [...p1, ...p2])) {
+					if (p != null && p.direction == direction && direction == player_direction && p.move(global[0], global[1], [...p1, ...p2])) {
+						let conn = peer.connect(conn_id);
+						conn.on('open', function () {
+							conn.send(JSON.stringify(moved));
+						});
 						direction *= -1;
 						for (let i = 0; i < p1.length; i++)
 							p1[i].turnTest();

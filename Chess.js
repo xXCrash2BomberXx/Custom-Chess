@@ -660,17 +660,7 @@ class Pawn extends Piece {
     // null -> null
     postTest () {
         if (this.y == ((this.direction==-1)?0:((this.direction == 1)?this.yLim-1: false))) {
-            var choices = ["Queen",
-                            "Bishop",
-                            "Rook",
-                            "Pawn",
-                            "Knight"];
-            var str = "";
-            while (!choices.includes(str)) {
-                str = prompt(JSON.stringify(choices), "queen").trim();
-                str = str[0].toUpperCase()+str.slice(1).toLowerCase();
-            }
-            let p = eval("new "+str+"("+this.x+", "+this.y+", "+this.direction+", "+this.turns+", "+this.xLim+", "+this.yLim+", "+this.lxLim+", "+this.lyLim+")");
+            let p = new Queen(this.x, this.y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim);
             p.color = this.color;
             (direction==p1[0].direction?p1:p2).push(p);
             this.x = -1;
