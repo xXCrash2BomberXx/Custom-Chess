@@ -15,18 +15,19 @@
 					player_direction = 1;
 					connected = true;
 				} else {
-					console.log(data);
 					global = JSON.parse(data);
 					let p = Piece.getPiece(global[0], global[1], [...p1, ...p2]);
-					p.move(global[2], global[3], [...p1, ...p2]);
-					direction *= -1;
-					for (let i = 0; i < p1.length; i++)
-						p1[i].turnTest();
-					for (let i = 0; i < p2.length; i++)
-						p2[i].turnTest();
-					showAlerts(direction == 1 ? p1 : p2, [...p1, ...p2]);
-					drawBoard(canvas, [...p1, ...p2]);
-					global = [];
+					if (p.move(global[2], global[3], [...p1, ...p2])) {
+						direction *= -1;
+						for (let i = 0; i < p1.length; i++)
+							p1[i].turnTest();
+						for (let i = 0; i < p2.length; i++)
+							p2[i].turnTest();
+						showAlerts(direction == 1 ? p1 : p2, [...p1, ...p2]);
+						drawBoard(canvas, [...p1, ...p2]);
+						global = [];
+					} else
+						alert("OpponentOutOfSync: Non-Symmetric Piece Modifications may have occurred.");
 				}
 			});
 		});
