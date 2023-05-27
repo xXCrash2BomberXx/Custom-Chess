@@ -17,19 +17,31 @@
 					alert("Opponent Connected");
 					init();
 				} else {
-					global = JSON.parse(data);
-					let p = Piece.getPiece(global[0], global[1], [...p1, ...p2]);
-					if (p.move(global[2], global[3], [...p1, ...p2])) {
-						direction *= -1;
-						for (let i = 0; i < p1.length; i++)
-							p1[i].turnTest();
-						for (let i = 0; i < p2.length; i++)
-							p2[i].turnTest();
-						showAlerts(direction == 1 ? p1 : p2, [...p1, ...p2]);
-						drawBoard(canvas, [...p1, ...p2]);
-						global = [];
-					} else
-						alert("OpponentOutOfSyncError: Non-Symmetric Piece Modifications may have occurred.");
+					var temp;
+					try {
+						temp = JSON.parse(data);
+					} catch {
+						return;  // new player tried to join
+					}
+					if (temp.length == 4) {
+						global = temp;
+						let p = Piece.getPiece(global[0], global[1], [...p1, ...p2]);
+						if (p.move(global[2], global[3], [...p1, ...p2])) {
+							direction *= -1;
+							for (let i = 0; i < p1.length; i++)
+								p1[i].turnTest();
+							for (let i = 0; i < p2.length; i++)
+								p2[i].turnTest();
+							showAlerts(direction == 1 ? p1 : p2, [...p1, ...p2]);
+							drawBoard(canvas, [...p1, ...p2]);
+							global = [];
+						} else
+							alert("OpponentOutOfSyncError: Non-Symmetric Piece Modifications may have occurred.");
+					} else if (temp.length == 3) {
+						console.log(temp);
+						change(...temp);
+						alert("Piece ("+temp[0]+", "+temp[1]+") Updated");
+					}
 				}
 			});
 		});
@@ -223,18 +235,27 @@
 														"\nColor: null";
 		}
 
-		function change (px, py) {
-			nl = document.getElementById('guide').value.indexOf("\n");
-			piece = document.getElementById('guide').value.slice(document.getElementById('guide').value.indexOf("Piece: ")+"Piece: ".length, nl).trim();
-			nl = document.getElementById('guide').value.indexOf("\n", nl+1);
-			movement = document.getElementById('guide').value.slice(document.getElementById('guide').value.indexOf("Movement: ")+"Movement: ".length, nl).trim();
-			nl = document.getElementById('guide').value.indexOf("\n", nl+1);
-			loc = document.getElementById('guide').value.slice(document.getElementById('guide').value.indexOf("Location: ")+"Location: ".length, nl).trim();
-			nl = document.getElementById('guide').value.indexOf("\n", nl+1);
-			dir = parseInt(document.getElementById('guide').value.slice(document.getElementById('guide').value.indexOf("Direction: ")+"Direction: ".length, nl));
-			nl = document.getElementById('guide').value.indexOf("\n", nl+1);
-			moves = parseInt(document.getElementById('guide').value.slice(document.getElementById('guide').value.indexOf("Moves: ")+"Moves: ".length, nl));
-			color = document.getElementById('guide').value.slice(document.getElementById('guide').value.indexOf("Color: ")+"Color: ".length);
+		function change (px, py, guideInfo = null) {
+			if (guideInfo == null) {
+				guideInfo = document.getElementById('guide').value;
+				if (connected) {
+					let conn = peer.connect(conn_id);
+					conn.on('open', function () {
+						conn.send(JSON.stringify([px, py, guideInfo]));
+					});
+				}
+			}
+			nl = guideInfo.indexOf("\n");
+			piece = guideInfo.slice(guideInfo.indexOf("Piece: ")+"Piece: ".length, nl).trim();
+			nl = guideInfo.indexOf("\n", nl+1);
+			movement = guideInfo.slice(guideInfo.indexOf("Movement: ")+"Movement: ".length, nl).trim();
+			nl = guideInfo.indexOf("\n", nl+1);
+			loc = guideInfo.slice(guideInfo.indexOf("Location: ")+"Location: ".length, nl).trim();
+			nl = guideInfo.indexOf("\n", nl+1);
+			dir = parseInt(guideInfo.slice(guideInfo.indexOf("Direction: ")+"Direction: ".length, nl));
+			nl = guideInfo.indexOf("\n", nl+1);
+			moves = parseInt(guideInfo.slice(guideInfo.indexOf("Moves: ")+"Moves: ".length, nl));
+			color = guideInfo.slice(guideInfo.indexOf("Color: ")+"Color: ".length);
 			p = Piece.getPiece(px, py, [...p1, ...p2]);
 			if (isNaN(dir))
 				dir = 1;
