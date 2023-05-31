@@ -14,6 +14,7 @@
 					conn_id = data;
 					player_direction = 1;
 					connected = true;
+					document.getElementById('textbox').remove();
 					alert("Opponent Connected");
 					init();
 				} else {
@@ -49,7 +50,8 @@
 		function connect() {
 			let element = document.getElementById('textbox');
 			if (element.value == "") {
-				alert(peer._id);
+				element.readOnly = true;
+				element.value = peer._id;
 				alert("Until notified an opponent has joined the game, local play will be used");
 			} else {
 				conn_id = element.value;
@@ -59,9 +61,12 @@
 				});
 				player_direction = -1;
 				connected = true;
+				element.remove();
+				document.getElementById('connect').remove();
+				init();
+				alert("Opponent Connected");
 			}
-			element.remove();
-			document.getElementById('connect').remove();
+			document.getElementById('connect').disabled = true;
 		}
 	</script>
 	
@@ -310,6 +315,8 @@
 													'() - Grouping Operator (Nightriders)\n\n'+
 													'. - Then Operator (Aanca)\n\n'+
 													'^ - Locust Operator (Checkers)';
+			document.getElementById("textbox").style.width = document.getElementById("canvas").width/2-5+"px";
+			document.getElementById("connect").style.width = document.getElementById("canvas").width/2-5+"px";
 		</script>
 	</div>
 </body>
