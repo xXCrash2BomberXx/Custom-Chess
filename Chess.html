@@ -177,17 +177,11 @@
 	</script>
 </head>
 <body>
-	<input style="border-width: medium; border-radius: 5px; border-style: solid; border-color: #BFBFBF;" type="text" name="textbox" id="textbox">
-	<input style="border-width: medium; border-radius: 10px; border-style: solid; border-color: #BFBFBF;" type="submit" name = "connect" id="connect" value="Connect" onclick="connect()">
+	<input style="border-width: medium; border-radius: 5px; border-style: solid;" type="text" name="textbox" id="textbox">
+	<input style="border-width: medium; border-radius: 10px; border-style: solid;" type="submit" name = "connect" id="connect" value="Connect" onclick="connect()">
 	<div>
-		<canvas style="border-width: medium; border-radius: 5px; border-style: solid; border-color: #BFBFBF;" id="canvas"></canvas>
+		<canvas style="border-width: medium; border-radius: 5px; border-style: solid;" id="canvas"></canvas>
 		<script type="text/javascript">
-			if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-				document.body.style = "background-color: #000000;";
-				document.getElementById("canvas").style = "border-width: medium; border-radius: 5px; border-style: solid; border-color: #404040;";
-				document.getElementById("textbox").style = "border-width: medium; border-radius: 5px; border-style: solid; border-color: #404040; color: #FFFFFF; background-color: #000000;";
-				document.getElementById("connect").style = "border-width: medium; border-radius: 10px; border-style: solid; border-color: #404040; color: #FFFFFF; background-color: #000000;";
-			}
 			var canvas = document.getElementById("canvas");
 			canvas.height = Math.min(window.innerWidth-50, window.innerHeight-100);
 			canvas.width = canvas.height;
@@ -305,15 +299,11 @@
 			drawBoard(canvas, [...p1, ...p2]);
 		}
 		</script>
-		<textarea style="border-width: medium; border-radius: 5px; border-style: solid; border-color: #BFBFBF; color: #000000; background-color: #FFFFFF;" spellcheck=false id="guide" onchange="change(global[global.length-2], global[global.length-1]);"></textarea>
-		<textarea style="border-width: medium; border-radius: 5px; border-style: solid; border-color: #BFBFBF; color: #000000; background-color: #FFFFFF;" spellcheck=false id="info" onchange="change(global[global.length-2], global[global.length-1]);" readonly></textarea>
+		<textarea style="border-width: medium; border-radius: 5px; border-style: solid;" spellcheck=false id="guide" onchange="change(global[global.length-2], global[global.length-1]);"></textarea>
+		<textarea style="border-width: medium; border-radius: 5px; border-style: solid;" spellcheck=false id="info" onchange="change(global[global.length-2], global[global.length-1]);" readonly></textarea>
 		<script type="text/javascript">
 			let guide = document.getElementById("guide");
 			let info = document.getElementById("info");
-			if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-				guide.style = "border-width: medium; border-radius: 5px; border-style: solid; border-color: #404040; color: #FFFFFF; background-color: #000000;";
-				info.style = "border-width: medium; border-radius: 5px; border-style: solid; border-color: #404040; color: #FFFFFF; background-color: #000000;";
-			}
 			guide.style.height =  document.getElementById("canvas").height+"px";
 			guide.style.width = (window.innerWidth-50-document.getElementById("canvas").width)/2-50+"px";
 			info.style.height =  guide.style.height;
@@ -341,6 +331,24 @@
 													'^ - Locust Operator (Checkers)';
 			document.getElementById("textbox").style.width = document.getElementById("canvas").width/2-5+"px";
 			document.getElementById("connect").style.width = document.getElementById("canvas").width/2-5+"px";
+
+			function themeChange(isDark) {
+				[
+					document.body, 
+					canvas, 
+					document.getElementById("textbox"), 
+					document.getElementById("connect"), 
+					document.getElementById("guide"), 
+					document.getElementById("info")
+				].forEach(element => {
+					element.style.color = isDark?"#FFFFFF":"#000000";
+					element.style.borderColor = isDark?"#404040":"#BFBFBF";
+					element.style.backgroundColor = isDark?"#000000":"#FFFFFF";
+				});
+				drawBoard(canvas, [...p1, ...p2]);
+			}
+			window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',({matches}) => themeChange(matches));
+			themeChange(window.matchMedia('(prefers-color-scheme: dark)').matches)
 		</script>
 	</div>
 </body>
