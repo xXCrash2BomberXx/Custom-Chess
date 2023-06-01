@@ -79,16 +79,15 @@
 	<script type="text/javascript">
 		function drawBoard (canvas, pieces=[]) {
 			var ctx = canvas.getContext("2d");
+			ctx.fillStyle = "#7F7F7F";
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			for (var y = 0; y < 8; y++)
 				for (var x = 0; x < 8; x++)
-					if ((x%2 == 0 && y%2 !== 0) || (x%2 !== 0 && y%2 == 0)) {
-						ctx.fillStyle = "#7F7F7F";
+					if ((x%2 == 0 && y%2 !== 0) || (x%2 !== 0 && y%2 == 0))
 						ctx.fillRect(x*canvas.width/8,
 							y*canvas.height/8,
 							canvas.width/8,
 							canvas.height/8);
-					}
 			for (let i = 0; i < pieces.length; i++)
 				pieces[i].plot(canvas);
 		}
