@@ -88,12 +88,6 @@
 							y*canvas.height/8,
 							canvas.width/8,
 							canvas.height/8);
-					} else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-						ctx.fillStyle = "#000000";
-						ctx.fillRect(x*canvas.width/8,
-							y*canvas.height/8,
-							canvas.width/8,
-							canvas.height/8);
 					}
 			for (let i = 0; i < pieces.length; i++)
 				pieces[i].plot(canvas);
@@ -345,7 +339,6 @@
 					element.style.borderColor = isDark?"#404040":"#BFBFBF";
 					element.style.backgroundColor = isDark?"#000000":"#FFFFFF";
 				});
-				drawBoard(canvas, [...p1, ...p2]);
 			}
 			window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',({matches}) => themeChange(matches));
 			themeChange(window.matchMedia('(prefers-color-scheme: dark)').matches)
