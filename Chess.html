@@ -77,10 +77,16 @@
 		function drawBoard (canvas, pieces=[]) {
 			var ctx = canvas.getContext("2d");
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
-			ctx.fillStyle = "#7F7F7F";
 			for (var y = 0; y < 8; y++)
 				for (var x = 0; x < 8; x++)
 					if ((x%2 == 0 && y%2 !== 0) || (x%2 !== 0 && y%2 == 0)) {
+						ctx.fillStyle = "#7F7F7F";
+						ctx.fillRect(x*canvas.width/8,
+							y*canvas.height/8,
+							canvas.width/8,
+							canvas.height/8);
+					} else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+						ctx.fillStyle = "#000000";
 						ctx.fillRect(x*canvas.width/8,
 							y*canvas.height/8,
 							canvas.width/8,
@@ -168,11 +174,17 @@
 	</script>
 </head>
 <body>
-	<input type="text" name="textbox" id="textbox">
-	<input type="submit" name = "connect" id="connect" value="Connect" onclick="connect()">
+	<input style="border-width: medium; border-radius: 5px; border-style: solid; border-color: #BFBFBF;" type="text" name="textbox" id="textbox">
+	<input style="border-width: medium; border-radius: 10px; border-style: solid; border-color: #BFBFBF;" type="submit" name = "connect" id="connect" value="Connect" onclick="connect()">
 	<div>
-		<canvas id="canvas"></canvas>
+		<canvas style="border-width: medium; border-radius: 5px; border-style: solid; border-color: #BFBFBF;" id="canvas"></canvas>
 		<script type="text/javascript">
+			if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+				document.body.style = "background-color: #000000;";
+				document.getElementById("canvas").style = "border-width: medium; border-radius: 5px; border-style: solid; border-color: #404040;";
+				document.getElementById("textbox").style = "border-width: medium; border-radius: 5px; border-style: solid; border-color: #404040; color: #FFFFFF; background-color: #000000;";
+				document.getElementById("connect").style = "border-width: medium; border-radius: 10px; border-style: solid; border-color: #404040; color: #FFFFFF; background-color: #000000;";
+			}
 			var canvas = document.getElementById("canvas");
 			canvas.height = Math.min(window.innerWidth-50, window.innerHeight-100);
 			canvas.width = canvas.height;
@@ -190,7 +202,7 @@
 				global.push(Math.floor((event.clientY-event.target.getBoundingClientRect().top)/canvas.height*8));
 				drawBoard(canvas, [...p1, ...p2]);
 				p = Piece.getPiece(global[0], global[1], [...p1, ...p2]);
-				if (p != null && p.direction == direction) {
+				if (p != null && p.direction == direction && (connected?direction == player_direction:true)) {
 					draw(canvas, p.getMoves([...p1, ...p2]), p.getChecks([...p1, ...p2]));
 				}
 				if (global.length == 4) {
@@ -215,7 +227,7 @@
 					// new selection
 					} else {
 						p = Piece.getPiece(global[0], global[1], [...p1, ...p2]);
-						if (p != null && p.direction == direction) {
+						if (p != null && p.direction == direction && (connected?direction == player_direction:true)) {
 							drawBoard(canvas, [...p1, ...p2]);
 							draw(canvas, p.getMoves([...p1, ...p2]), p.getChecks([...p1, ...p2]));
 						} else
@@ -290,14 +302,20 @@
 			drawBoard(canvas, [...p1, ...p2]);
 		}
 		</script>
-		<textarea spellcheck=false id="guide" onchange="change(global[global.length-2], global[global.length-1]);"></textarea>
-		<textarea spellcheck=false id="info" onchange="change(global[global.length-2], global[global.length-1]);" disabled></textarea>
+		<textarea style="border-width: medium; border-radius: 5px; border-style: solid; border-color: #BFBFBF; color: #000000; background-color: #FFFFFF;" spellcheck=false id="guide" onchange="change(global[global.length-2], global[global.length-1]);"></textarea>
+		<textarea style="border-width: medium; border-radius: 5px; border-style: solid; border-color: #BFBFBF; color: #000000; background-color: #FFFFFF;" spellcheck=false id="info" onchange="change(global[global.length-2], global[global.length-1]);" readonly></textarea>
 		<script type="text/javascript">
-			document.getElementById("guide").style.height =  document.getElementById("canvas").height+"px";
-			document.getElementById("guide").style.width = (window.innerWidth-50-document.getElementById("canvas").width)/2-50+"px";
-			document.getElementById("info").style.height =  document.getElementById("guide").style.height;
-			document.getElementById("info").style.width = document.getElementById("guide").style.width;
-			document.getElementById("info").value = '1, 2, ..., n - Distance of n\n\n'+
+			let guide = document.getElementById("guide");
+			let info = document.getElementById("info");
+			if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+				guide.style = "border-width: medium; border-radius: 5px; border-style: solid; border-color: #404040; color: #FFFFFF; background-color: #000000;";
+				info.style = "border-width: medium; border-radius: 5px; border-style: solid; border-color: #404040; color: #FFFFFF; background-color: #000000;";
+			}
+			guide.style.height =  document.getElementById("canvas").height+"px";
+			guide.style.width = (window.innerWidth-50-document.getElementById("canvas").width)/2-50+"px";
+			info.style.height =  guide.style.height;
+			info.style.width = guide.style.width;
+			info.value = '1, 2, ..., n - Distance of n\n\n'+
 													'x-y - Distance in Inclusive Range from X to Y\n\n'+
 													'* - Orthogonal of Diagonal Movement\n\n'+
 													'+ - Orthogonal Movement\n\n'+
