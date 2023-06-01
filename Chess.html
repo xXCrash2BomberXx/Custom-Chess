@@ -69,7 +69,10 @@
 				init();
 				alert("Opponent Connected");
 			}
-			document.getElementById('connect').disabled = true;
+			let temp = document.getElementById('connect');
+			temp.disabled = true;
+			if (window.matchMedia("(prefers-color-scheme: dark)").matches)
+				temp.style.color = "#7F7F7F"
 		}
 	</script>
 	
