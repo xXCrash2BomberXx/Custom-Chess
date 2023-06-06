@@ -209,18 +209,10 @@
 				global.push(Math.floor((event.clientY-event.target.getBoundingClientRect().top)/canvas.height*8));
 				if (global[0] == global[2] && global[1] == global[3] || global.length == 4)
 					global = global.slice(0, 2);
-				/*drawBoard(canvas, [...p1, ...p2]);
-				p = Piece.getPiece(global[0], global[1], [...p1, ...p2]);
-				if (p != null && p.direction == direction && (connected?direction == player_direction:true)) {
-					draw(canvas, p.getMoves([...p1, ...p2]), p.getChecks([...p1, ...p2]));
-				}
-				*/
 				fillInfo(global[global.length-2], global[global.length-1]);
-				console.log(global);
 			});
 			
 			canvas.addEventListener("mouseup", event => {
-				console.log(global);
 				holding = false;
 				if (win(p1, p2))
 					return;
