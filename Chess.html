@@ -207,8 +207,21 @@
 				holding = true;
 				global.push(Math.floor((event.clientX-event.target.getBoundingClientRect().left)/canvas.width*8));
 				global.push(Math.floor((event.clientY-event.target.getBoundingClientRect().top)/canvas.height*8));
-				if (global[0] == global[2] && global[1] == global[3] || global.length == 4)
-					global = global.slice(0, 2);
+				if (global[0] == global[2] && global[1] == global[3])
+					global = global.slice(2);
+				else if (global.length == 4)
+					// move to empty square by click
+					if (Piece.getPiece(global[2], global[3], [...p1, ...p2]) == null)
+						global = global.slice(0, 2);
+					else {
+						const moves = JSON.stringify(Piece.getPiece(global[0], global[1], [...p1, ...p2]).getMoves([...p1, ...p2]));
+						// move to filled square by click
+						if (moves.includes(JSON.stringify([global[2], global[3], true])))
+							global = global.slice(0, 2);
+						else {
+							global = global.slice(2);
+						}
+					}
 				fillInfo(global[global.length-2], global[global.length-1]);
 			});
 			
