@@ -179,13 +179,49 @@
 			canvas.height = Math.min(window.innerWidth-50, window.innerHeight-100);
 			canvas.width = canvas.height;
 
+			var holding = false;
 			var global;
 			var p1;
 			var p2;
 			var direction;
 			init();
 
-			canvas.addEventListener("click", function (event) {
+			canvas.addEventListener("mousemove", event => {
+				if (holding) {
+					let p = Piece.getPiece(global[global.length-2], global[global.length-1], [...p1, ...p2]);
+					if (p != null) {
+						var curr = [p.x, p.y];
+						p.x = Math.floor((event.clientX-event.target.getBoundingClientRect().left)/canvas.width*8);
+						p.y = Math.floor((event.clientY-event.target.getBoundingClientRect().top)/canvas.height*8);
+						drawBoard(canvas, [...p1, ...p2]);
+						p.x = curr[0];
+						p.y = curr[1];
+						if (p != null && p.direction == direction && (connected?direction == player_direction:true)) {
+							draw(canvas, p.getMoves([...p1, ...p2]), p.getChecks([...p1, ...p2]));
+						}
+					}
+				}
+			});
+
+			canvas.addEventListener("mousedown", event => {
+				holding = true;
+				global.push(Math.floor((event.clientX-event.target.getBoundingClientRect().left)/canvas.width*8));
+				global.push(Math.floor((event.clientY-event.target.getBoundingClientRect().top)/canvas.height*8));
+				if (global[0] == global[2] && global[1] == global[3] || global.length == 4)
+					global = global.slice(0, 2);
+				/*drawBoard(canvas, [...p1, ...p2]);
+				p = Piece.getPiece(global[0], global[1], [...p1, ...p2]);
+				if (p != null && p.direction == direction && (connected?direction == player_direction:true)) {
+					draw(canvas, p.getMoves([...p1, ...p2]), p.getChecks([...p1, ...p2]));
+				}
+				*/
+				fillInfo(global[global.length-2], global[global.length-1]);
+				console.log(global);
+			});
+			
+			canvas.addEventListener("mouseup", event => {
+				console.log(global);
+				holding = false;
 				if (win(p1, p2))
 					return;
 				global.push(Math.floor((event.clientX-event.target.getBoundingClientRect().left)/canvas.width*8));
@@ -214,6 +250,7 @@
 							p2[i].turnTest();
 						showAlerts(direction == 1 ? p1 : p2, [...p1, ...p2]);
 						drawBoard(canvas, [...p1, ...p2]);
+						global = global.slice(2);
 					// new selection
 					} else {
 						p = Piece.getPiece(global[0], global[1], [...p1, ...p2]);
@@ -224,7 +261,7 @@
 							drawBoard(canvas, [...p1, ...p2]);
 					}
 				}
-				fillInfo(global[0], global[1]);
+				fillInfo(global[global.length-2], global[global.length-1]);
 			});
 
 		function fillInfo (px, py) {
@@ -293,7 +330,7 @@
 		}
 		</script>
 		<textarea style="border-width: medium; border-radius: 5px; border-style: solid;" spellcheck=false id="guide" onchange="change(global[global.length-2], global[global.length-1]);"></textarea>
-		<textarea style="border-width: medium; border-radius: 5px; border-style: solid;" spellcheck=false id="info" onchange="change(global[global.length-2], global[global.length-1]);" readonly></textarea>
+		<textarea style="border-width: medium; border-radius: 5px; border-style: solid;" spellcheck=false id="info" readonly></textarea>
 		<script type="text/javascript">
 			let guide = document.getElementById("guide");
 			let info = document.getElementById("info");
