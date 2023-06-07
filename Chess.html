@@ -196,13 +196,20 @@
 			var direction;
 			init();
 
-			canvas.addEventListener("mousemove", event => {
+			function globalUpdate(event) {
 				if (holding) {
-					let p = Piece.getPiece(global[global.length-2], global[global.length-1], [...p1, ...p2]);
+					let 	p = Piece.getPiece(global[global.length-2], global[global.length-1], [...p1, ...p2]);
 					if (p != null && p.direction == direction && (connected?direction == player_direction:true)) {
 						var curr = [p.x, p.y];
-						p.x = Math.floor((event.clientX-event.target.getBoundingClientRect().left)/canvas.width*8);
-						p.y = Math.floor((event.clientY-event.target.getBoundingClientRect().top)/canvas.height*8);
+						// Touch
+						if (event.constructor.prototype == TouchEvent.prototype) {
+							p.x = Math.floor((event.targetTouches[0].clientX-event.target.getBoundingClientRect().left)/canvas.width*8);
+							p.y = Math.floor((event.targetTouches[0].clientY-event.target.getBoundingClientRect().top)/canvas.height*8);
+						// Mouse
+						} else {
+							p.x = Math.floor((event.clientX-event.target.getBoundingClientRect().left)/canvas.width*8);
+							p.y = Math.floor((event.clientY-event.target.getBoundingClientRect().top)/canvas.height*8);
+						}
 						drawBoard(canvas, [...p1, ...p2]);
 						p.x = curr[0];
 						p.y = curr[1];
@@ -211,12 +218,21 @@
 						}
 					}
 				}
-			});
+			}
+			canvas.addEventListener("mousemove", globalUpdate);
+			canvas.addEventListener("touchmove", globalUpdate);
 
-			canvas.addEventListener("mousedown", event => {
+			function globalStart(event) {
 				holding = true;
-				global.push(Math.floor((event.clientX-event.target.getBoundingClientRect().left)/canvas.width*8));
-				global.push(Math.floor((event.clientY-event.target.getBoundingClientRect().top)/canvas.height*8));
+				// Touch
+				if (event.constructor.prototype == TouchEvent.prototype) {
+					global.push(Math.floor((event.targetTouches[0].clientX-event.target.getBoundingClientRect().left)/canvas.width*8));
+					global.push(Math.floor((event.targetTouches[0].clientY-event.target.getBoundingClientRect().top)/canvas.height*8));
+				// Mouse
+				} else {
+					global.push(Math.floor((event.clientX-event.target.getBoundingClientRect().left)/canvas.width*8));
+					global.push(Math.floor((event.clientY-event.target.getBoundingClientRect().top)/canvas.height*8));
+				}
 				global = global.slice(global.length-4);
 				if (global[0] == global[2] && global[1] == global[3])
 					global = global.slice(2);
@@ -233,14 +249,23 @@
 							global = global.slice(2);
 					}
 				fillInfo(global[global.length-2], global[global.length-1]);
-			});
+			}
+			canvas.addEventListener("mousedown", globalStart);
+			canvas.addEventListener("touchstart", globalStart);
 			
-			canvas.addEventListener("mouseup", event => {
+			function globalEnd(event) {
 				holding = false;
 				if (win(p1, p2))
 					return;
-				global.push(Math.floor((event.clientX-event.target.getBoundingClientRect().left)/canvas.width*8));
-				global.push(Math.floor((event.clientY-event.target.getBoundingClientRect().top)/canvas.height*8));
+				// Touch
+				if (event.constructor.prototype == TouchEvent.prototype) {
+					global.push(Math.floor((event.changedTouches[0].clientX-event.target.getBoundingClientRect().left)/canvas.width*8));
+					global.push(Math.floor((event.changedTouches[0].clientY-event.target.getBoundingClientRect().top)/canvas.height*8));
+				// Mouse
+				} else {
+					global.push(Math.floor((event.clientX-event.target.getBoundingClientRect().left)/canvas.width*8));
+					global.push(Math.floor((event.clientY-event.target.getBoundingClientRect().top)/canvas.height*8));
+				}
 				global = global.slice(global.length-4);
 				drawBoard(canvas, [...p1, ...p2]);
 				p = Piece.getPiece(global[0], global[1], [...p1, ...p2]);
@@ -278,7 +303,9 @@
 					}
 				}
 				fillInfo(global[global.length-2], global[global.length-1]);
-			});
+			}
+			canvas.addEventListener("mouseup", globalEnd);
+			canvas.addEventListener("touchend", globalEnd);
 
 		function fillInfo (px, py) {
 			p = Piece.getPiece(px, py, [...p1, ...p2]);
