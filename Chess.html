@@ -190,7 +190,7 @@
 			canvas.addEventListener("mousemove", event => {
 				if (holding) {
 					let p = Piece.getPiece(global[global.length-2], global[global.length-1], [...p1, ...p2]);
-					if (p != null) {
+					if (p != null && p.direction == direction && (connected?direction == player_direction:true)) {
 						var curr = [p.x, p.y];
 						p.x = Math.floor((event.clientX-event.target.getBoundingClientRect().left)/canvas.width*8);
 						p.y = Math.floor((event.clientY-event.target.getBoundingClientRect().top)/canvas.height*8);
@@ -216,13 +216,12 @@
 					if (Piece.getPiece(global[2], global[3], [...p1, ...p2]) == null)
 						global = global.slice(0, 2);
 					else {
-						const moves = JSON.stringify(Piece.getPiece(global[0], global[1], [...p1, ...p2]).getMoves([...p1, ...p2]));
 						// move to filled square by click
-						if (moves.includes(JSON.stringify([global[2], global[3], true])))
+						const p = Piece.getPiece(global[0], global[1], [...p1, ...p2]);
+						if (p != null && p.direction == direction && (connected?direction == player_direction:true) && p.getMove(global[2], global[2], [...p1, ...p2])[0])
 							global = global.slice(0, 2);
-						else {
+						else
 							global = global.slice(2);
-						}
 					}
 				fillInfo(global[global.length-2], global[global.length-1]);
 			});

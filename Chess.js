@@ -465,6 +465,11 @@ class Piece {
         return false;
     }
 
+    // x: int, y: int, other: array[Piece, ...] = [] -> array[bool, array[Piece, ...]]
+    getMove(x, y, others = []) {
+        return Piece.move(this.moves, this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
+    }
+
     // others: array[Piece, ...] = [] -> array[array[int, int, bool], ...]
     getMoves(others = []) {
         return Piece.getMoves(this.moves, this.x, this.y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
