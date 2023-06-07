@@ -16,11 +16,15 @@
     font-family: Verdana;
 }
 
-#connect, #fontDiv {
+#connect, #fontDiv, #fontStyle {
     float: left;
     text-align: center;
     border-width: medium;
     border-radius: 10px;
     border-style: solid;
     font-family: Verdana;
+}
+
+#fontDiv {
+    border-radius: 5px;
 }

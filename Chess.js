@@ -446,7 +446,7 @@ class Piece {
         this.yLim = yLim;
         this.lxLim = lxLim;
         this.lyLim = lyLim;
-        this.fontFamily = "serif-sans";
+        this.fontFamily = "Verdana";
     }
 
     // x: int, y: int, others: array[Piece, ...] = [] -> bool
