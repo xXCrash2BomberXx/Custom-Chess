@@ -106,6 +106,12 @@
 				ctx.fillRect(checks[i].x*canvas.width/8, checks[i].y*canvas.height/8, canvas.width/8, canvas.height/8)
 		}
 
+		function reFont(pieces = [], font = "MS Gothic") {
+			for (let i = 0; i < pieces.length; i++)
+				pieces[i].fontFamily = font;
+			drawBoard(canvas, pieces);
+		}
+
 		function showAlerts (pieces, others = []) {
 			if (connected && pieces[0].direction != player_direction)
 				return;
@@ -170,13 +176,15 @@
 	</script>
 </head>
 <body>
-	<input style="border-width: medium; border-radius: 5px; border-style: solid;" type="text" name="textbox" id="textbox">
-	<input style="border-width: medium; border-radius: 10px; border-style: solid;" type="submit" name = "connect" id="connect" value="Connect" onclick="connect()">
-	<div>
-		<canvas style="border-width: medium; border-radius: 5px; border-style: solid;" id="canvas"></canvas>
+	<div style="float: left; width: 50%;" id="main">
+		<div>
+			<input style="float: left; border-width: medium; border-radius: 5px; border-style: solid; font-family: Verdana;" type="text" name="textbox" id="textbox">
+			<input style="float: left; border-width: medium; border-radius: 10px; border-style: solid; font-family: Verdana;" type="submit" name = "connect" id="connect" value="Connect" onclick="connect()">
+		</div>
+		<canvas style="float: left; border-width: medium; border-radius: 5px; border-style: solid;" id="canvas"></canvas>
 		<script type="text/javascript">
 			var canvas = document.getElementById("canvas");
-			canvas.height = Math.min(window.innerWidth-50, window.innerHeight-100);
+			canvas.height = Math.min(window.innerWidth/2-50, window.innerHeight-100);
 			canvas.width = canvas.height;
 
 			var holding = false;
@@ -257,7 +265,7 @@
 							p2[i].turnTest();
 						showAlerts(direction == 1 ? p1 : p2, [...p1, ...p2]);
 						drawBoard(canvas, [...p1, ...p2]);
-						global = global.slice(2);
+						//global = global.slice(2);
 					// new selection
 					} else {
 						p = Piece.getPiece(global[0], global[1], [...p1, ...p2]);
@@ -336,15 +344,27 @@
 			drawBoard(canvas, [...p1, ...p2]);
 		}
 		</script>
-		<textarea style="border-width: medium; border-radius: 5px; border-style: solid;" spellcheck=false id="guide" onchange="change(global[global.length-2], global[global.length-1]);"></textarea>
-		<textarea style="border-width: medium; border-radius: 5px; border-style: solid;" spellcheck=false id="info" readonly></textarea>
+	</div>
+	<div style="float: right; width: 50%;" id="extras">
+		<div style="text-align: center; border-width: medium; border-radius: 10px; border-style: solid; font-family: Verdana;" id="fontDiv" value="Use">
+			Use MS Gothic
+			<input type="checkbox" name = "font" id="font" onclick="reFont([...p1, ...p2], ['sans-serif', 'MS Gothic'][document.querySelector('#font').checked?1:0])">
+		</div>
+		<textarea style="float: left; border-width: medium; border-radius: 5px; border-style: solid; font-family: Verdana;" spellcheck=false id="guide" onchange="change(global[global.length-2], global[global.length-1]);"></textarea>
+		<textarea style="float: left; border-width: medium; border-radius: 5px; border-style: solid; font-family: Verdana;" spellcheck=false id="info" readonly></textarea>
 		<script type="text/javascript">
 			let guide = document.getElementById("guide");
 			let info = document.getElementById("info");
+			let fontDiv = document.getElementById("fontDiv");
 			guide.style.height =  document.getElementById("canvas").height+"px";
-			guide.style.width = (window.innerWidth-50-document.getElementById("canvas").width)/2-50+"px";
+			guide.style.width = document.getElementById("canvas").width/2+"px";
 			info.style.height =  guide.style.height;
 			info.style.width = guide.style.width;
+			document.getElementById("textbox").style.width = document.getElementById("canvas").width/2+"px";
+			document.getElementById("connect").style.width = document.getElementById("canvas").width/2+"px";
+			fontDiv.style.width = document.getElementById("canvas").width+15+"px";
+			fontDiv.style.lineHeight = window.getComputedStyle(document.getElementById("connect"), null).getPropertyValue('line-height');
+			fontDiv.style.fontSize = window.getComputedStyle(document.getElementById("connect"), null).getPropertyValue('font-size');
 			info.value = '1, 2, ..., n - Distance of n\n\n'+
 													'x-y - Distance in Inclusive Range from X to Y\n\n'+
 													'* - Orthogonal of Diagonal Movement\n\n'+
@@ -366,8 +386,6 @@
 													'() - Grouping Operator (Nightriders)\n\n'+
 													'. - Then Operator (Aanca)\n\n'+
 													'^ - Locust Operator (Checkers)';
-			document.getElementById("textbox").style.width = document.getElementById("canvas").width/2-5+"px";
-			document.getElementById("connect").style.width = document.getElementById("canvas").width/2-5+"px";
 
 			function themeChange(isDark) {
 				[
@@ -376,7 +394,8 @@
 					document.getElementById("textbox"), 
 					document.getElementById("connect"), 
 					document.getElementById("guide"), 
-					document.getElementById("info")
+					document.getElementById("info"),
+					document.getElementById("fontDiv")
 				].forEach(element => {
 					element.style.color = isDark?"#FFFFFF":"#000000";
 					element.style.borderColor = isDark?"#404040":"#BFBFBF";
@@ -384,7 +403,7 @@
 				});
 			}
 			window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',({matches}) => themeChange(matches));
-			themeChange(window.matchMedia('(prefers-color-scheme: dark)').matches)
+			themeChange(window.matchMedia('(prefers-color-scheme: dark)').matches);
 		</script>
 	</div>
 </body>

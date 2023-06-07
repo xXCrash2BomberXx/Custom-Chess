@@ -445,6 +445,7 @@ class Piece {
         this.yLim = yLim;
         this.lxLim = lxLim;
         this.lyLim = lyLim;
+        this.fontFamily = "serif-sans";
     }
 
     // x: int, y: int, others: array[Piece, ...] = [] -> bool
@@ -566,7 +567,7 @@ class Checker extends Piece {
                 let ctx = canvas.getContext("2d");
                 ctx.fillStyle = "#000000";
                 ctx.textAlign = "center";
-                ctx.font = String(Math.min(canvas.width/this.xLim, canvas.height/this.yLim))+"px sans-serif";
+                ctx.font = String(Math.min(canvas.width/this.xLim, canvas.height/this.yLim))+"px "+this.fontFamily;
                 ctx.fillText("\u{2654}", canvas.width/this.xLim*(this.x+0.5), canvas.height/this.yLim*(this.y+0.875));
             }
         }
@@ -584,7 +585,7 @@ class King extends Piece {
         let ctx = canvas.getContext("2d");
         ctx.textAlign = "center";
         ctx.fillStyle = this.color;
-        ctx.font = String(Math.min(canvas.width/this.xLim, canvas.height/this.yLim))+"px sans-serif";
+        ctx.font = String(Math.min(canvas.width/this.xLim, canvas.height/this.yLim))+"px "+this.fontFamily;
         ctx.fillText((this.direction == 1?"\u{2654}":"\u{265A}"), canvas.width/this.xLim*(this.x+0.5), canvas.height/this.yLim*(this.y+0.875));
     }
 }
@@ -600,7 +601,7 @@ class Queen extends Piece {
         let ctx = canvas.getContext("2d");
         ctx.textAlign = "center";
         ctx.fillStyle = this.color;
-        ctx.font = String(Math.min(canvas.width/this.xLim, canvas.height/this.yLim))+"px sans-serif";
+        ctx.font = String(Math.min(canvas.width/this.xLim, canvas.height/this.yLim))+"px "+this.fontFamily;
         ctx.fillText((this.direction == 1?"\u{2655}":"\u{265B}"), canvas.width/this.xLim*(this.x+0.5), canvas.height/this.yLim*(this.y+0.875));
     }
 }
@@ -616,7 +617,7 @@ class Rook extends Piece {
         let ctx = canvas.getContext("2d");
         ctx.textAlign = "center";
         ctx.fillStyle = this.color;
-        ctx.font = String(Math.min(canvas.width/this.xLim, canvas.height/this.yLim))+"px sans-serif";
+        ctx.font = String(Math.min(canvas.width/this.xLim, canvas.height/this.yLim))+"px "+this.fontFamily;
         ctx.fillText((this.direction == 1?"\u{2656}":"\u{265C}"), canvas.width/this.xLim*(this.x+0.5), canvas.height/this.yLim*(this.y+0.875));
     }
 }
@@ -632,7 +633,7 @@ class Bishop extends Piece {
         let ctx = canvas.getContext("2d");
         ctx.textAlign = "center";
         ctx.fillStyle = this.color;
-        ctx.font = String(Math.min(canvas.width/this.xLim, canvas.height/this.yLim))+"px sans-serif";
+        ctx.font = String(Math.min(canvas.width/this.xLim, canvas.height/this.yLim))+"px "+this.fontFamily;
         ctx.fillText((this.direction == 1?"\u{2657}":"\u{265D}"), canvas.width/this.xLim*(this.x+0.5), canvas.height/this.yLim*(this.y+0.875));
     }
 }
@@ -648,7 +649,7 @@ class Knight extends Piece {
         let ctx = canvas.getContext("2d");
         ctx.textAlign = "center";
         ctx.fillStyle = this.color;
-        ctx.font = String(Math.min(canvas.width/this.xLim, canvas.height/this.yLim))+"px sans-serif";
+        ctx.font = String(Math.min(canvas.width/this.xLim, canvas.height/this.yLim))+"px "+this.fontFamily;
         ctx.fillText((this.direction == 1?"\u{2658}":"\u{265E}"), canvas.width/this.xLim*(this.x+0.5), canvas.height/this.yLim*(this.y+0.875));
     }
 }
@@ -664,7 +665,7 @@ class Pawn extends Piece {
         let ctx = canvas.getContext("2d");
         ctx.textAlign = "center";
         ctx.fillStyle = this.color;
-        ctx.font = String(Math.min(canvas.width/this.xLim, canvas.height/this.yLim))+"px sans-serif";
+        ctx.font = String(Math.min(canvas.width/this.xLim, canvas.height/this.yLim))+"px "+this.fontFamily;
         ctx.fillText((this.direction == 1?"\u{2659}":"\u{265F}"), canvas.width/this.xLim*(this.x+0.5), canvas.height/this.yLim*(this.y+0.875));
     }
 
