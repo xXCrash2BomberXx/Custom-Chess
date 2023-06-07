@@ -376,17 +376,18 @@
 													'< - Backwards Movement\n\n'+
 													'x/y - Distance of X and Y in Different Orthogonal Directions\n\n'+
 													'x/ys - Strict Distance of X Horizontally and then Y Vertically in Different Orthogonal Directions\n\n'+
+													'~ - Jumping Operator (Knights)\n\n'+
 													'i - Only Use on First Movement of Piece\n\n'+
 													'c - Only Use on Capturing Piece\n\n'+
 													'o - Only Use on Not Capturing Piece\n\n'+
 													'k - King Flag to Declare a Loss-Detection Piece\n\n'+
-													', - Separate Movements of a Piece\n\n'+
-													'r - Right (Relative to Direction 1)\n\n'+
-													'l - Left (Relative to Direction 1)\n\n'+
-													'd - Cannot be Killed nor Moved\n\n'+
-													'() - Grouping Operator (Nightriders)\n\n'+
-													'. - Then Operator (Aanca)\n\n'+
-													'^ - Locust Operator (Checkers)';
+													'r - Right Movement (Relative to Direction 1)\n\n'+
+													'l - Left Movement (Relative to Direction 1)\n\n'+
+													'd - Cannot be Killed nor Moved (Dummy)\n\n'+
+													'() - Grouping Operator (Repeated Movement) (Nightriders)\n\n'+
+													'. - Then Operator (Sequential Movement) (Aanca)\n\n'+
+													'^ - Locust Operator (Capture on Jump Over) (Checkers)\n\n'+
+													', - Separate Movements of a Piece';
 
 			function themeChange(isDark) {
 				[

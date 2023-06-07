@@ -44,7 +44,8 @@ String.prototype.count = function(char=" ") {
  * * 'W-X/Y-Z' = Distance in Inclusive Range from W to X and Y to Z in Different Orthogonal Directions
  * * 'X/Ys'/'X/YS' = Strict Distance of X Horizontally and then Y Vertically in Different Orthogonal Directions
  * * 'W-X/Y-Zs'/'W-X/Y-ZS' = Strict Distance in Inclusive Range from W to X Horizontally and then Y to Z Vertically in Different Orthogonal Directions
- * * 'i'/'I' = Only Use on First Movement of Piece
+ * * '~' = Jumping Operator (Knights)
+* * 'i'/'I' = Only Use on First Movement of Piece
  * * 'c'/'C' = Only Use on Capturing Piece (Only applies to final square being landed on)
  * * 'o'/'O' = Only Use on Not Capturing Piece
  * * ',' = Add Different Movements to a Piece
