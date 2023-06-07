@@ -190,13 +190,15 @@
 
 			var holding = false;
 			var global;
-			var globalTemp;
+			var globalTemp = false;
 			var p1;
 			var p2;
 			var direction;
 			init();
 
 			function globalUpdate(event) {
+				if (globalTemp)
+					return;
 				if (holding) {
 					let 	p = Piece.getPiece(global[global.length-2], global[global.length-1], [...p1, ...p2]);
 					if (p != null && p.direction == direction && (connected?direction == player_direction:true)) {
@@ -223,6 +225,8 @@
 			canvas.addEventListener("touchmove", globalUpdate);
 
 			function globalStart(event) {
+				if (globalTemp)
+					return;
 				holding = true;
 				// Touch
 				if (event.constructor.prototype == TouchEvent.prototype) {
@@ -243,7 +247,7 @@
 					else {
 						// move to filled square by click
 						const p = Piece.getPiece(global[0], global[1], [...p1, ...p2]);
-						if (p != null && p.direction == direction && (connected?direction == player_direction:true) && p.getMove(global[2], global[2], [...p1, ...p2])[0])
+						if (p != null && p.direction == direction && (connected?direction == player_direction:true) && p.getMove(global[2], global[3], [...p1, ...p2])[0])
 							global = global.slice(0, 2);
 						else
 							global = global.slice(2);
@@ -254,6 +258,8 @@
 			canvas.addEventListener("touchstart", globalStart);
 			
 			function globalEnd(event) {
+				if (globalTemp)
+					return;
 				holding = false;
 				if (win(p1, p2))
 					return;
@@ -291,7 +297,6 @@
 							p2[i].turnTest();
 						showAlerts(direction == 1 ? p1 : p2, [...p1, ...p2]);
 						drawBoard(canvas, [...p1, ...p2]);
-						//global = global.slice(2);
 					// new selection
 					} else {
 						p = Piece.getPiece(global[0], global[1], [...p1, ...p2]);
@@ -370,6 +375,7 @@
 			if (color != "null")
 				p.color = color;
 			drawBoard(canvas, [...p1, ...p2]);
+			globalTemp = false;
 		}
 		</script>
 	</div>
@@ -378,7 +384,7 @@
 			Use MS Gothic
 			<input type="checkbox" name = "font" id="font" onclick="reFont([...p1, ...p2], ['sans-serif', 'MS Gothic'][document.querySelector('#font').checked?1:0])">
 		</div>
-		<textarea spellcheck=false id="guide" onchange="change(global[global.length-2], global[global.length-1]);"></textarea>
+		<textarea spellcheck=false id="guide" onfocus="globalTemp=true;" onfocusout="change(global[global.length-2], global[global.length-1]);"></textarea>
 		<textarea spellcheck=false id="info" readonly></textarea>
 		<script type="text/javascript">
 			let guide = document.getElementById("guide");
