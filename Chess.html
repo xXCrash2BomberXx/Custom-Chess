@@ -401,15 +401,11 @@
 			].sort());
 
 			(async() => {
-			await document.fonts.ready;
-
-			const fontAvailable = new Set();
-
-			for (const font of fontCheck.values()) {
-				if (document.fonts.check(`12px "${font}"`)) {
-				fontAvailable.add(font);
-				}
-			}
+				await document.fonts.ready;
+				const fontAvailable = new Set();
+				for (const font of fontCheck.values())
+					if (document.fonts.check(`12px "${font}"`))
+						fontAvailable.add(font);
 			})();
 			fontCheck.forEach(font => {
 				let option = document.createElement('option');
