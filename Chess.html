@@ -5,6 +5,7 @@
 	<meta http-equiv="Pragma" content="no-cache" />
 	<meta http-equiv="Expires" content="0" />
 	<script type="text/javascript" src="Chess.js"></script>
+	<link rel="stylesheet" href="Chess.css"></script>
 	<script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
 	<script type="text/javascript">
 		var player_direction = 0;
@@ -176,10 +177,10 @@
 	</script>
 </head>
 <body>
-	<div style="float: left; width: 50%;" id="main">
+	<div id="main">
 		<div>
-			<input style="float: left; border-width: medium; border-radius: 5px; border-style: solid; font-family: Verdana;" type="text" name="textbox" id="textbox">
-			<input style="float: left; border-width: medium; border-radius: 10px; border-style: solid; font-family: Verdana;" type="submit" name = "connect" id="connect" value="Connect" onclick="connect()">
+			<input type="text" name="textbox" id="textbox">
+			<input type="submit" name = "connect" id="connect" value="Connect" onclick="connect()">
 		</div>
 		<canvas style="float: left; border-width: medium; border-radius: 5px; border-style: solid;" id="canvas"></canvas>
 		<script type="text/javascript">
@@ -345,13 +346,13 @@
 		}
 		</script>
 	</div>
-	<div style="float: right; width: 50%;" id="extras">
-		<div style="text-align: center; border-width: medium; border-radius: 10px; border-style: solid; font-family: Verdana;" id="fontDiv" value="Use">
+	<div id="extras">
+		<div id="fontDiv" value="Use">
 			Use MS Gothic
 			<input type="checkbox" name = "font" id="font" onclick="reFont([...p1, ...p2], ['sans-serif', 'MS Gothic'][document.querySelector('#font').checked?1:0])">
 		</div>
-		<textarea style="float: left; border-width: medium; border-radius: 5px; border-style: solid; font-family: Verdana;" spellcheck=false id="guide" onchange="change(global[global.length-2], global[global.length-1]);"></textarea>
-		<textarea style="float: left; border-width: medium; border-radius: 5px; border-style: solid; font-family: Verdana;" spellcheck=false id="info" readonly></textarea>
+		<textarea spellcheck=false id="guide" onchange="change(global[global.length-2], global[global.length-1]);"></textarea>
+		<textarea spellcheck=false id="info" readonly></textarea>
 		<script type="text/javascript">
 			let guide = document.getElementById("guide");
 			let info = document.getElementById("info");
