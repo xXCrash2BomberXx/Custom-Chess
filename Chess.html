@@ -225,7 +225,7 @@
 			canvas.addEventListener("touchmove", globalUpdate);
 
 			function globalStart(event) {
-				if (globalTemp)
+				if (globalTemp || win(p1, p2))
 					return;
 				holding = true;
 				// Touch
@@ -261,8 +261,6 @@
 				if (globalTemp)
 					return;
 				holding = false;
-				if (win(p1, p2))
-					return;
 				// Touch
 				if (event.constructor.prototype == TouchEvent.prototype) {
 					global.push(Math.floor((event.changedTouches[0].clientX-event.target.getBoundingClientRect().left)/canvas.width*8));
