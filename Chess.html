@@ -15,7 +15,7 @@
 		peer.on('connection', conn => {
 			conn.on('data', data => {
 				if (!connected) {
-					conn_id = peer.connect(data);
+					conn_id = peer.connect(conn.peer);
 					player_direction = 1;
 					connected = true;
 					document.getElementById('textbox').remove();
@@ -72,7 +72,7 @@
 				element.remove();
 				document.getElementById('connect').remove();
 				conn_id.on('open', function () {
-					conn_id.send(peer._id);
+					conn_id.send(true);
 					player_direction = -1;
 					connected = true;
 					alert("Opponent Connected");
