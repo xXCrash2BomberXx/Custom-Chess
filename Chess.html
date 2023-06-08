@@ -12,43 +12,54 @@
 		var peer = new Peer();
 		var conn_id;
 		var connected = false;
-		peer.on('connection', function (conn) {
-			conn.on('data', function (data) {
+		peer.on('connection', conn => {
+			conn.on('data', data => {
 				if (!connected) {
-					conn_id = data;
+					conn_id = peer.connect(data);
 					player_direction = 1;
 					connected = true;
 					document.getElementById('textbox').remove();
 					document.getElementById('connect').remove();
 					alert("Opponent Connected");
 					init();
-				} else {
-					var temp;
-					try {
-						temp = JSON.parse(data);
-					} catch {
-						return;  // new player tried to join
-					}
-					if (temp.length == 4) {
-						global = temp;
-						let p = Piece.getPiece(global[0], global[1], [...p1, ...p2]);
-						if (p.move(global[2], global[3], [...p1, ...p2])) {
-							direction *= -1;
-							for (let i = 0; i < p1.length; i++)
-								p1[i].turnTest();
-							for (let i = 0; i < p2.length; i++)
-								p2[i].turnTest();
-							showAlerts(direction == 1 ? p1 : p2, [...p1, ...p2]);
-							drawBoard(canvas, [...p1, ...p2]);
-							global = [];
-						} else
-							alert("OpponentOutOfSyncError: Non-Symmetric Piece Modifications may have occurred.");
-					} else if (temp.length == 3) {
-						change(...temp);
-						alert("Piece ("+temp[0]+", "+temp[1]+") Updated");
-					}
+					return;
+				}
+				var temp;
+				try {
+					temp = JSON.parse(data);
+				} catch {
+					return;  // new player tried to join
+				}
+				if (temp.length == 4) {
+					global = temp;
+					let p = Piece.getPiece(global[0], global[1], [...p1, ...p2]);
+					if (p.move(global[2], global[3], [...p1, ...p2])) {
+						direction *= -1;
+						for (let i = 0; i < p1.length; i++)
+							p1[i].turnTest();
+						for (let i = 0; i < p2.length; i++)
+							p2[i].turnTest();
+						showAlerts(direction == 1 ? p1 : p2, [...p1, ...p2]);
+						drawBoard(canvas, [...p1, ...p2]);
+						global = [];
+					} else
+						alert("OpponentOutOfSyncError: Non-Symmetric Piece Modifications may have occurred.");
+				} else if (temp.length == 3) {
+					change(...temp);
+					alert("Piece ("+temp[0]+", "+temp[1]+") Updated");
 				}
 			});
+		});
+
+		peer.on('close', () => {
+			connected = false;
+			peer.destroy();
+			alert('PeerClosedError: Peer has been destroyed.');
+		});
+
+		peer.on('disconnected', () => {
+			peer.reconnect();
+			alert('OpponentDisconnectedError: Opponent has Disconnected from the Server.');
 		});
 
 		function connect() {
@@ -58,22 +69,17 @@
 				element.value = peer._id;
 				alert("Until notified an opponent has joined the game, local play will be used");
 			} else {
-				conn_id = element.value;
-				let conn = peer.connect(conn_id);
-				conn.on('open', function () {
-					conn.send(peer._id);
-				});
-				player_direction = -1;
-				connected = true;
+				conn_id = peer.connect(element.value);
 				element.remove();
 				document.getElementById('connect').remove();
-				init();
-				alert("Opponent Connected");
+				conn_id.on('open', function () {
+					conn_id.send(peer._id);
+					player_direction = -1;
+					connected = true;
+					alert("Opponent Connected");
+					init();
+				});
 			}
-			let temp = document.getElementById('connect');
-			temp.disabled = true;
-			if (window.matchMedia("(prefers-color-scheme: dark)").matches)
-				temp.style.color = "#7F7F7F"
 		}
 	</script>
 	
@@ -287,12 +293,8 @@
 						var moved = [p.x, p.y, global[0], global[1]];
 					// move/attack
 					if (p != null && p.direction == direction && (connected?direction == player_direction:true) && p.move(global[0], global[1], [...p1, ...p2])) {
-						if (connected) {
-							let conn = peer.connect(conn_id);
-							conn.on('open', function () {
-								conn.send(JSON.stringify(moved));
-							});
-						}
+						if (connected)
+							conn_id.send(JSON.stringify(moved));
 						direction *= -1;
 						for (let i = 0; i < p1.length; i++)
 							p1[i].turnTest();
@@ -336,12 +338,8 @@
 		function change (px, py, guideInfo = null) {
 			if (guideInfo == null) {
 				guideInfo = document.getElementById('guide').value;
-				if (connected) {
-					let conn = peer.connect(conn_id);
-					conn.on('open', function () {
-						conn.send(JSON.stringify([px, py, guideInfo]));
-					});
-				}
+				if (connected)
+					conn_id.send(JSON.stringify([px, py, guideInfo]));
 			}
 			nl = guideInfo.indexOf("\n");
 			piece = guideInfo.slice(guideInfo.indexOf("Piece: ")+"Piece: ".length, nl).trim();
