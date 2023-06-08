@@ -9,12 +9,11 @@
 	<script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
 	<script type="text/javascript">
 		var player_direction = 0;
-		var peer;
 		var conn_id;
 		var connected = false;
 
 		function connect() {
-			peer = new Peer();
+			let peer = new Peer();
 
 			peer.on('open', id => {
 				let element = document.getElementById('textbox');
