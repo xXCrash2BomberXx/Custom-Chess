@@ -1,5 +1,5 @@
 // p1: array[Piece, ...], p2: array[Piece, ...], steps: int = 5, top: boolean = true -> [int, int, int, int]
-async function Minimax(p1, p2, steps = 3, top = true) {  // 129^steps
+async function Minimax(p1, p2, steps = 3, top = true) {  // 130^steps
     let scores = [];
     let score;
     for (let i = 0; i < p1.length; i++)
