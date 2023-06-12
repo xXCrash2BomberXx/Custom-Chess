@@ -401,10 +401,9 @@ class Pawn extends Piece {
                 str = str[0].toUpperCase()+str.slice(1).toLowerCase();
             }
             let p = eval("new "+str+"("+this.x+", "+this.y+", "+this.direction+", "+this.turns+", "+this.xLim+", "+this.yLim+", "+this.lxLim+", "+this.lyLim+")");
-            p.color = this.color;
-            (direction==p1[0].direction?p1:p2).push(p);
-            this.x = -1;
-            this.y = -1;
+            Object.assign(this, p);
+            this.plot = p.plot;
+            this.postTest = p.postTest;
         }
     }
 }
