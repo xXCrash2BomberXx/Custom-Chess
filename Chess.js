@@ -682,10 +682,8 @@ class Pawn extends Piece {
     postTest () {
         if (this.y == ((this.direction==-1)?0:((this.direction == 1)?this.yLim-1: false))) {
             let p = new Queen(this.x, this.y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim);
-            p.color = this.color;
-            (direction==p1[0].direction?p1:p2).push(p);
-            this.x = -1;
-            this.y = -1;
+            Object.assign(this, p);
+            this.plot = p.plot;
         }
     }
 }
