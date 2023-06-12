@@ -4,9 +4,11 @@
 	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 	<meta http-equiv="Pragma" content="no-cache" />
 	<meta http-equiv="Expires" content="0" />
+	<script type="text/javascript" src="Minimax.js"></script>
 	<script type="text/javascript" src="Chess.js"></script>
 	<link rel="stylesheet" href="Chess.css"></script>
 	<script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
 	<script type="text/javascript">
 		var player_direction = 0;
 		var conn_id;
@@ -209,11 +211,24 @@
 			var direction;
 			init();
 
+			async function aiMove(steps = 3) {
+				let best = await Minimax(direction==1?p1:p2, direction==-1?p1:p2, steps);
+				let p = Piece.getPiece(best[0], best[1], [...p1, ...p2]);
+				p.move(best[2], best[3], [...p1, ...p2]);
+				direction *= -1;
+				for (let i = 0; i < p1.length; i++)
+					p1[i].turnTest();
+				for (let i = 0; i < p2.length; i++)
+					p2[i].turnTest();
+				showAlerts(direction == 1 ? p1 : p2, [...p1, ...p2]);
+				drawBoard(canvas, [...p1, ...p2]);
+			}
+
 			function globalUpdate(event) {
 				if (globalTemp)
 					return;
 				if (holding) {
-					let 	p = Piece.getPiece(global[global.length-2], global[global.length-1], [...p1, ...p2]);
+					let p = Piece.getPiece(global[global.length-2], global[global.length-1], [...p1, ...p2]);
 					if (p != null && p.direction == direction && (connected?direction == player_direction:true)) {
 						var curr = [p.x, p.y];
 						// Touch
@@ -286,9 +301,8 @@
 				global = global.slice(global.length-4);
 				drawBoard(canvas, [...p1, ...p2]);
 				p = Piece.getPiece(global[0], global[1], [...p1, ...p2]);
-				if (p != null && p.direction == direction && (connected?direction == player_direction:true)) {
+				if (p != null && p.direction == direction && (connected?direction == player_direction:true))
 					draw(canvas, p.getMoves([...p1, ...p2]), p.getChecks([...p1, ...p2]));
-				}
 				if (global.length == 4) {
 					global = global.slice(2);
 					if (p != null)
@@ -326,6 +340,7 @@
 					"\nMovement: "+p.moves+
 					"\nLocation: "+"abcdefgh"[p.x]+(8-p.y)+
 					"\nDirection: "+p.direction+
+					"\nValue: "+p.value+
 					"\nMoves: "+p.turns+
 					"\nColor: "+p.color;
 			else
@@ -333,6 +348,7 @@
 														"\nMovement: null"+
 														"\nLocation: "+"abcdefgh"[px]+(8-py)+
 														"\nDirection: null"+
+														"\nValue: null"+
 														"\nMoves: null"+
 														"\nColor: null";
 		}
@@ -351,6 +367,8 @@
 			loc = guideInfo.slice(guideInfo.indexOf("Location: ")+"Location: ".length, nl).trim();
 			nl = guideInfo.indexOf("\n", nl+1);
 			dir = parseInt(guideInfo.slice(guideInfo.indexOf("Direction: ")+"Direction: ".length, nl));
+			nl = guideInfo.indexOf("\n", nl+1);
+			val = parseInt(guideInfo.slice(guideInfo.indexOf("Value: ")+"Value: ".length, nl));
 			nl = guideInfo.indexOf("\n", nl+1);
 			moves = parseInt(guideInfo.slice(guideInfo.indexOf("Moves: ")+"Moves: ".length, nl));
 			color = guideInfo.slice(guideInfo.indexOf("Color: ")+"Color: ".length);
@@ -373,6 +391,8 @@
 				p.y = 8-parseInt(loc[1]);
 			}
 			p.direction = dir;
+			if (!isNaN(val))
+				p.value = val;
 			if (!isNaN(moves))
 				p.turns = moves;
 			if (color != "null")

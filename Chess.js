@@ -447,6 +447,7 @@ class Piece {
         this.lxLim = lxLim;
         this.lyLim = lyLim;
         this.fontFamily = "Verdana";
+        this.value = 1;
     }
 
     // x: int, y: int, others: array[Piece, ...] = [] -> bool
@@ -540,7 +541,8 @@ class Piece {
 class Checker extends Piece {
     // x: int, y: int, direction: int = 1, turns: int = 0, xLim: int = 8, yLim: int = 8, lxLim: int = 0, lyLim: int = 0 -> null
     constructor (x, y, direction = 1, turns = 0, xLim = 8, yLim = 8, lxLim = 0, lyLim = 0, colors = ["#FF00FF", "#00FFFF"]) {
-        return super(x, y, "n(^2x>), o1x>", direction, turns, xLim, yLim, lxLim, lyLim, colors);
+        super(x, y, "n(^2x>), o1x>", direction, turns, xLim, yLim, lxLim, lyLim, colors);
+        this.value = 1;
     }
 
     // canvas: canvas, xSquares: int = 8, ySquares: int = 8 -> null
@@ -578,7 +580,8 @@ class Checker extends Piece {
 class King extends Piece {
     // x: int, y: int, direction: int = 1, turns: int = 0, xLim: int = 8, yLim: int = 8, lxLim: int = 0, lyLim: int = 0 -> null
     constructor (x, y, direction = 1, turns = 0, xLim = 8, yLim = 8, lxLim = 0, lyLim = 0, colors = ["#FF00FF", "#00FFFF"]) {
-        return super(x, y, "k1*", direction, turns, xLim, yLim, lxLim, lyLim, colors);
+        super(x, y, "k1*", direction, turns, xLim, yLim, lxLim, lyLim, colors);
+        this.value = Infinity;
     }
 
     // canvas: canvas, xSquares: int = 8, ySquares: int = 8 -> null
@@ -594,7 +597,8 @@ class King extends Piece {
 class Queen extends Piece {
     // x: int, y: int, direction: int = 1, turns: int = 0, xLim: int = 8, yLim: int = 8, lxLim: int = 0, lyLim: int = 0 -> null
     constructor (x, y, direction = 1, turns = 0, xLim = 8, yLim = 8, lxLim = 0, lyLim = 0, colors = ["#FF00FF", "#00FFFF"]) {
-        return super(x, y, "n*", direction, turns, xLim, yLim, lxLim, lyLim, colors);
+        super(x, y, "n*", direction, turns, xLim, yLim, lxLim, lyLim, colors);
+        this.value = 9;
     }
 
     // canvas: canvas, xSquares: int = 8, ySquares: int = 8 -> null
@@ -610,7 +614,8 @@ class Queen extends Piece {
 class Rook extends Piece {
     // x: int, y: int, direction: int = 1, turns: int = 0, xLim: int = 8, yLim: int = 8, lxLim: int = 0, lyLim: int = 0 -> null
     constructor (x, y, direction = 1, turns = 0, xLim = 8, yLim = 8, lxLim = 0, lyLim = 0, colors = ["#FF00FF", "#00FFFF"]) {
-        return super(x, y, "n+", direction, turns, xLim, yLim, lxLim, lyLim, colors);
+        super(x, y, "n+", direction, turns, xLim, yLim, lxLim, lyLim, colors);
+        this.value = 5;
     }
 
     // canvas: canvas, xSquares: int = 8, ySquares: int = 8 -> null
@@ -626,7 +631,8 @@ class Rook extends Piece {
 class Bishop extends Piece {
     // x: int, y: int, direction: int = 1, turns: int = 0, xLim: int = 8, yLim: int = 8, lxLim: int = 0, lyLim: int = 0 -> null
     constructor (x, y, direction = 1, turns = 0, xLim = 8, yLim = 8, lxLim = 0, lyLim = 0, colors = ["#FF00FF", "#00FFFF"]) {
-        return super(x, y, "nx", direction, turns, xLim, yLim, lxLim, lyLim, colors);
+        super(x, y, "nx", direction, turns, xLim, yLim, lxLim, lyLim, colors);
+        this.value = 3;
     }
 
     // canvas: canvas, xSquares: int = 8, ySquares: int = 8 -> null
@@ -642,7 +648,8 @@ class Bishop extends Piece {
 class Knight extends Piece {
     // x: int, y: int, direction: int = 1, turns: int = 0, xLim: int = 8, yLim: int = 8, lxLim: int = 0, lyLim: int = 0 -> null
     constructor (x, y, direction = 1, turns = 0, xLim = 8, yLim = 8, lxLim = 0, lyLim = 0, colors = ["#FF00FF", "#00FFFF"]) {
-        return super(x, y, "~1/2", direction, turns, xLim, yLim, lxLim, lyLim, colors);
+        super(x, y, "~1/2", direction, turns, xLim, yLim, lxLim, lyLim, colors);
+        this.value = 3;
     }
 
     // canvas: canvas, xSquares: int = 8, ySquares: int = 8 -> null
@@ -658,7 +665,8 @@ class Knight extends Piece {
 class Pawn extends Piece {
     // x: int, y: int, direction: int = 1, turns: int = 0, xLim: int = 8, yLim: int = 8, lxLim: int = 0, lyLim: int = 0 -> null
     constructor (x, y, direction = 1, turns = 0, xLim = 8, yLim = 8, lxLim = 0, lyLim = 0, colors = ["#FF00FF", "#00FFFF"]) {
-        return super(x, y, "o1>+, c1X>, oi2>+", direction, turns, xLim, yLim, lxLim, lyLim, colors);
+        super(x, y, "o1>+, c1X>, oi2>+", direction, turns, xLim, yLim, lxLim, lyLim, colors);
+        this.value = 1;
     }
 
     // canvas: canvas, xSquares: int = 8, ySquares: int = 8 -> null
