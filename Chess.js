@@ -581,7 +581,7 @@ class King extends Piece {
     // x: int, y: int, direction: int = 1, turns: int = 0, xLim: int = 8, yLim: int = 8, lxLim: int = 0, lyLim: int = 0 -> null
     constructor (x, y, direction = 1, turns = 0, xLim = 8, yLim = 8, lxLim = 0, lyLim = 0, colors = ["#FF00FF", "#00FFFF"]) {
         super(x, y, "k1*", direction, turns, xLim, yLim, lxLim, lyLim, colors);
-        this.value = Infinity;
+        this.value = 99;
     }
 
     // canvas: canvas, xSquares: int = 8, ySquares: int = 8 -> null
