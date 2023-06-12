@@ -684,6 +684,7 @@ class Pawn extends Piece {
             let p = new Queen(this.x, this.y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim);
             Object.assign(this, p);
             this.plot = p.plot;
+            this.postTest = p.postTest;
         }
     }
 }
