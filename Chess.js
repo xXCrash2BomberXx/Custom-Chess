@@ -668,7 +668,6 @@ class Pawn extends Piece {
     constructor (x, y, direction = 1, turns = 0, xLim = 8, yLim = 8, lxLim = 0, lyLim = 0, colors = ["#FF00FF", "#00FFFF"]) {
         super(x, y, "o1>+, c1X>, oi2>+", direction, turns, xLim, yLim, lxLim, lyLim, colors);
         this.value = 1;
-        this.enPassant = false;
     }
 
     // x: int, y: int, others: array[Piece, ...] = [] -> bool
