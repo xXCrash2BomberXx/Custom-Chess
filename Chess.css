@@ -8,7 +8,7 @@
     width: 50%;
 }
 
-#textbox, #guide, #info {
+input, textarea {
     float: left;
     border-width: medium;
     border-radius: 5px;
@@ -16,7 +16,7 @@
     font-family: Verdana;
 }
 
-#connect, #fontDiv, #fontStyle {
+select, #connect {
     float: left;
     text-align: center;
     border-width: medium;
@@ -25,6 +25,16 @@
     font-family: Verdana;
 }
 
-#fontDiv {
-    border-radius: 5px;
+body, canvas, input, textarea, select {
+    color: #000000;
+    border-color: #BFBFBF;
+    background-color: #FFFFFF;
+}
+
+@media (prefers-color-scheme: dark) {
+    body, canvas, input, textarea, select {
+        color: #FFFFFF;
+        border-color: #404040;
+        background-color: #000000;
+    }
 }

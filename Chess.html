@@ -489,24 +489,6 @@
 													'. - Then Operator (Sequential Movement) (Aanca)\n\n'+
 													'^ - Locust Operator (Capture on Jump Over) (Checkers)\n\n'+
 													', - Separate Movements of a Piece';
-
-			function themeChange(isDark) {
-				[
-					document.body, 
-					canvas, 
-					document.getElementById("textbox"), 
-					document.getElementById("connect"), 
-					document.getElementById("guide"), 
-					document.getElementById("info"), 
-					document.getElementById("fontStyle")
-				].forEach(element => {
-					element.style.color = isDark?"#FFFFFF":"#000000";
-					element.style.borderColor = isDark?"#404040":"#BFBFBF";
-					element.style.backgroundColor = isDark?"#000000":"#FFFFFF";
-				});
-			}
-			window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',({matches}) => themeChange(matches));
-			themeChange(window.matchMedia('(prefers-color-scheme: dark)').matches);
 		</script>
 	</div>
 </body>
