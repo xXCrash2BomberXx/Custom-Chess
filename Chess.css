@@ -1,11 +1,14 @@
 #main {
     float: left;
-    width: 50%;
 }
 
 #extras {
     float: right;
-    width: 50%;
+}
+
+#connections {
+    display: flex;
+    clear: both;
 }
 
 input, textarea {
@@ -36,5 +39,11 @@ body, canvas, input, textarea, select {
         color: #FFFFFF;
         border-color: #404040;
         background-color: #000000;
+    }
+}
+
+@media (orientation: landscape) {
+    #main, #extras {
+        width: 50%;
     }
 }

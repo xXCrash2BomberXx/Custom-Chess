@@ -206,14 +206,17 @@
 </head>
 <body>
 	<div id="main">
-		<div>
+		<div id="connections">
 			<input type="text" name="textbox" id="textbox">
 			<input type="submit" name = "connect" id="connect" value="Connect" onclick="connect()">
 		</div>
 		<canvas style="float: left; border-width: medium; border-radius: 5px; border-style: solid;" id="canvas"></canvas>
 		<script type="text/javascript">
 			var canvas = document.getElementById("canvas");
-			canvas.height = Math.min(window.innerWidth/2-50, window.innerHeight-100);
+			if (window.innerWidth > window.innerHeight)
+				canvas.height = window.innerWidth/2-50;
+			else
+				canvas.height = window.innerHeight/2-50;
 			canvas.width = canvas.height;
 
 			var holding = false;
