@@ -1,18 +1,13 @@
-#main {
-    float: left;
+html {
+    height: -webkit-fill-available;
+} 
+
+body {
+	width: 100%;
+	height: 100%;
 }
 
-#extras {
-    float: right;
-}
-
-#connections {
-    display: flex;
-    clear: both;
-}
-
-input, textarea {
-    float: left;
+canvas, input, textarea {
     border-width: medium;
     border-radius: 5px;
     border-style: solid;
@@ -20,7 +15,6 @@ input, textarea {
 }
 
 select, #connect {
-    float: left;
     text-align: center;
     border-width: medium;
     border-radius: 10px;
@@ -28,10 +22,67 @@ select, #connect {
     font-family: Verdana;
 }
 
-body, canvas, input, textarea, select {
-    color: #000000;
-    border-color: #BFBFBF;
-    background-color: #FFFFFF;
+#textareas {
+	width: 100%;
+}
+
+#main, #extras, textarea {
+	height: 100%;
+}
+
+#textareas {
+	height: 90%;
+}
+
+@media (orientation: landscape) {
+	body, #connections {
+		display: flex;
+	}
+
+    #main, #extras {
+		display: table;
+    }
+
+	select {
+		width: 97%;
+	}
+	
+	#main, #extras, input {
+		width: 50%;
+	}
+
+	textarea {
+		width: 46%;
+	}
+}
+
+@media (orientation: portrait) {
+    #main, #extras {
+		width: 100%;
+		height: 50%;
+		display: table;
+		margin: 0 auto;
+	}
+
+	select {
+		width: 99%;
+	}
+
+	input {
+		width: 49%;
+	}
+
+	textarea {
+		width: 48%;
+	}
+}
+
+@media (prefers-color-scheme: light) {
+	body, canvas, input, textarea, select {
+		color: #000000;
+		border-color: #BFBFBF;
+		background-color: #FFFFFF;
+	}
 }
 
 @media (prefers-color-scheme: dark) {
@@ -39,11 +90,5 @@ body, canvas, input, textarea, select {
         color: #FFFFFF;
         border-color: #404040;
         background-color: #000000;
-    }
-}
-
-@media (orientation: landscape) {
-    #main, #extras {
-        width: 50%;
     }
 }

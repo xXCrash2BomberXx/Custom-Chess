@@ -210,13 +210,13 @@
 			<input type="text" name="textbox" id="textbox">
 			<input type="submit" name = "connect" id="connect" value="Connect" onclick="connect()">
 		</div>
-		<canvas style="float: left; border-width: medium; border-radius: 5px; border-style: solid;" id="canvas"></canvas>
+		<canvas id="canvas"></canvas>
 		<script type="text/javascript">
 			var canvas = document.getElementById("canvas");
 			if (window.innerWidth > window.innerHeight)
-				canvas.height = window.innerWidth/2-50;
+				canvas.height = Math.min(window.innerWidth/2-50, window.innerHeight-100);
 			else
-				canvas.height = window.innerHeight/2-50;
+				canvas.height = Math.min(window.innerHeight/2-50, window.innerWidth-100);
 			canvas.width = canvas.height;
 
 			var holding = false;
@@ -433,8 +433,10 @@
 				<option value="Add Font">Add Font</option>
 			</optgroup>
 		</select>
-		<textarea spellcheck=false id="guide" onfocus="globalTemp=true;" onfocusout="change(global[global.length-2], global[global.length-1]);"></textarea>
-		<textarea spellcheck=false id="info" readonly></textarea>
+		<div id="textareas">
+			<textarea spellcheck=false id="guide" onfocus="globalTemp=true;" onfocusout="change(global[global.length-2], global[global.length-1]);"></textarea>
+			<textarea spellcheck=false id="info" readonly></textarea>
+		</div>
 		<script type="text/javascript">
 			const fontCheck = new Set([
 			// Windows 10
@@ -461,15 +463,12 @@
 			let guide = document.getElementById("guide");
 			let info = document.getElementById("info");
 			let fontStyle = document.getElementById("fontStyle");
-			guide.style.height =  document.getElementById("canvas").height+"px";
-			guide.style.width = document.getElementById("canvas").width/2+"px";
-			info.style.height =  guide.style.height;
-			info.style.width = guide.style.width;
-			document.getElementById("textbox").style.width = document.getElementById("canvas").width/2+"px";
-			document.getElementById("connect").style.width = document.getElementById("canvas").width/2+"px";
-			fontStyle.style.width = document.getElementById("canvas").width+15+"px";
-			fontStyle.style.fontSize = window.getComputedStyle(document.getElementById("connect"), null).getPropertyValue('font-size');
-			fontStyle.style.height = window.getComputedStyle(document.getElementById("connect"), null).getPropertyValue('height');
+			let textareas = document.getElementById("textareas");
+			let canvas_width = window.getComputedStyle(document.getElementById("canvas"), null).getPropertyValue('width');
+			document.getElementById("main").style.width = canvas_width;
+			document.getElementById("extras").style.width = canvas_width;
+			textareas.style.width = canvas_width;
+			textareas.style.height = window.getComputedStyle(document.getElementById("canvas"), null).getPropertyValue('height');
 			info.value = '1, 2, ..., n - Distance of n\n\n'+
 													'x-y - Distance in Inclusive Range from X to Y\n\n'+
 													'* - Orthogonal of Diagonal Movement\n\n'+
