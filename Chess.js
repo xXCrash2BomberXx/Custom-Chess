@@ -672,6 +672,7 @@ class Pawn extends Piece {
 
     // x: int, y: int, others: array[Piece, ...] = [] -> bool
     move(x, y, others = []) {
+		console.log(this.x, this.y, x, y);
         let test = Piece.move(this.moves, this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
         if (test[0]) {
 			this.preTest();
@@ -686,21 +687,9 @@ class Pawn extends Piece {
             this.postTest();
             return true;
         }
-        let temp = Piece.getPiece(this.x-1, this.y, others);
+        let temp = Piece.getPiece(x, this.y, others);
         if (temp != null && temp.constructor.name == "Pawn" && temp.turns == 1 && temp.enPassant && 
-            Piece.move("o1Xl>", this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0]) {
-            this.preTest();
-            this.x = x;
-            this.y = y;
-            this.turns++;
-            temp.x = -1;
-            temp.y = -1;
-            this.postTest();
-            return true;
-        }
-        temp = Piece.getPiece(this.x+1, this.y, others);
-        if (temp != null && temp.constructor.name == "Pawn" && temp.turns == 1 && temp.enPassant && 
-            Piece.move("o1Xr>", this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0]) {
+            Piece.move("o1X>", this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0]) {
             this.preTest();
             this.x = x;
             this.y = y;
@@ -718,33 +707,28 @@ class Pawn extends Piece {
         let m = Piece.move(this.moves, this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
         if (m[0])
             return m;
-        let temp = Piece.getPiece(this.x-1, this.y, others);
+        let temp = Piece.getPiece(x, this.y, others);
         if (temp != null && temp.constructor.name == "Pawn" && temp.turns == 1 && temp.enPassant) {
-            m = Piece.move("o1Xl>", this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
-            if (m[0])
+            m = Piece.move("o1X>", this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
+            if (m[0]) {
+				m[1].push(temp);
                 return m;
+			}
         }
-        temp = Piece.getPiece(this.x+1, this.y, others);
-        if (temp != null && temp.constructor.name == "Pawn" && temp.turns == 1 && temp.enPassant) {
-            m = Piece.move("o1Xr>", this.x, this.y, this.x+1, this.y+this.direction, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
-            if (m[0])
-                return m;
-        }
-        return m;
     }
 
     // others: array[Piece, ...] = [] -> array[array[int, int, bool], ...]
     getMoves(others = []) {
         let m = Piece.getMoves(this.moves, this.x, this.y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
-        let temp = Piece.getPiece(this.x-1, this.y, others);
+        let temp = Piece.getPiece(this.x-this.direction, this.y, others);
         if (temp != null && temp.constructor.name == "Pawn" && temp.turns == 1 && temp.enPassant && 
-            Piece.move("o1Xl>", this.x, this.y, this.x-1, this.y+this.direction, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0]) {
-            m.push([this.x-1, this.y+this.direction, true]);
+            Piece.move("o1Xl>", this.x, this.y, this.x-this.direction, this.y+this.direction, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0]) {
+            m.push([this.x-this.direction, this.y+this.direction, true]);
         }
-        temp = Piece.getPiece(this.x+1, this.y, others);
+        temp = Piece.getPiece(this.x+this.direction, this.y, others);
         if (temp != null && temp.constructor.name == "Pawn" && temp.turns == 1 && temp.enPassant && 
-            Piece.move("o1Xr>", this.x, this.y, this.x+1, this.y+this.direction, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0]) {
-            m.push([this.x+1, this.y+this.direction, true]);
+            Piece.move("o1Xr>", this.x, this.y, this.x+this.direction, this.y+this.direction, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0]) {
+            m.push([this.x+this.direction, this.y+this.direction, true]);
         }
         return m;
     }
