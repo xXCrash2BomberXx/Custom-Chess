@@ -1,38 +1,44 @@
 html {
 	width: -webkit-fill-available;
-    height: -webkit-fill-available;
-} 
+	height: -webkit-fill-available;
+}
 
 body {
 	width: 100%;
 	height: 100%;
 }
 
-html, body {
+html,
+body {
 	margin: 0;
 	overflow: hidden;
 }
 
-canvas, input, textarea {
-    border-width: medium;
-    border-radius: 5px;
-    border-style: solid;
-    font-family: Verdana;
+canvas,
+input,
+textarea {
+	border-width: medium;
+	border-radius: 5px;
+	border-style: solid;
+	font-family: Verdana;
 }
 
-select, #connect {
-    text-align: center;
-    border-width: medium;
-    border-radius: 10px;
-    border-style: solid;
-    font-family: Verdana;
+select,
+#connect {
+	text-align: center;
+	border-width: medium;
+	border-radius: 10px;
+	border-style: solid;
+	font-family: Verdana;
 }
 
 #textareas {
 	width: 100%;
 }
 
-#main, #extras, textarea {
+#main,
+#extras,
+textarea {
 	height: 100%;
 }
 
@@ -41,19 +47,24 @@ select, #connect {
 }
 
 @media (orientation: landscape) {
-	body, #connections {
+
+	body,
+	#connections {
 		display: flex;
 	}
 
-    #main, #extras {
+	#main,
+	#extras {
 		display: table;
-    }
+	}
 
 	select {
 		width: 97%;
 	}
-	
-	#main, #extras, input {
+
+	#main,
+	#extras,
+	input {
 		width: 50%;
 	}
 
@@ -63,7 +74,9 @@ select, #connect {
 }
 
 @media (orientation: portrait) {
-    #main, #extras {
+
+	#main,
+	#extras {
 		width: 100%;
 		height: 50%;
 		display: table;
@@ -84,17 +97,27 @@ select, #connect {
 }
 
 @media (prefers-color-scheme: light) {
-	body, canvas, input, textarea, select {
+
+	body,
+	canvas,
+	input,
+	textarea,
+	select {
 		color: #000000;
-		border-color: #BFBFBF;
-		background-color: #FFFFFF;
+		border-color: #bfbfbf;
+		background-color: #ffffff;
 	}
 }
 
 @media (prefers-color-scheme: dark) {
-    body, canvas, input, textarea, select {
-        color: #FFFFFF;
-        border-color: #404040;
-        background-color: #000000;
-    }
+
+	body,
+	canvas,
+	input,
+	textarea,
+	select {
+		color: #ffffff;
+		border-color: #404040;
+		background-color: #000000;
+	}
 }

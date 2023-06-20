@@ -11,7 +11,7 @@ async function Minimax(p1, p2, steps = 3, top = true) {  // 130^steps
                 let cloned_p2 = _.cloneDeep(p2);
                 cloned_p1[i].move(j[0], j[1], [...cloned_p1, ...cloned_p2])
                 if (steps > 1)
-                    score = Minimax(cloned_p2, cloned_p1, steps-1, false);
+                    score = Minimax(cloned_p2, cloned_p1, steps - 1, false);
                 else {
                     score = 0;
                     for (const k of cloned_p1)
