@@ -204,7 +204,7 @@ class Piece {
         Piece.validate(moves);
         this.direction = direction / Math.abs(direction);
         this.color = colors[this.direction==1?0:1];
-        this.turns = 0;
+        this.turns = turns;
         this.xLim = xLim;
         this.yLim = yLim;
         this.lxLim = lxLim;
