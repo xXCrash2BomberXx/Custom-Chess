@@ -45,7 +45,6 @@ String.prototype.count = function(char=" ") {
  * * 'k'/'K' = King flag that enables notifications when placed into check by another piece
  * 
  * Missing:
- * * En Passant
  * * Castling
  */
 
