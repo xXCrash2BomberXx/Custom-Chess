@@ -1,7 +1,6 @@
-// p1: array[Piece, ...], p2: array[Piece, ...], steps: int = 5, top: boolean = true -> [int, int, int, int]
-async function Minimax(p1, p2, steps = 3, top = true) {  // 130^steps
-    let scores = [];
-    let score;
+async function Minimax(p1: Array<Piece>, p2: Array<Piece>, steps: number = 3, top: boolean = true): Promise<Array<number> | number> {  // 130^steps
+    let scores: Array<Array<number>> = [];
+    let score: Promise<Array<number>> | number;
     for (let i = 0; i < p1.length; i++)
         if (p1[i].x == -1 && p1[i].y == -1)
             continue;
@@ -11,7 +10,7 @@ async function Minimax(p1, p2, steps = 3, top = true) {  // 130^steps
                 let cloned_p2 = _.cloneDeep(p2);
                 cloned_p1[i].move(j[0], j[1], [...cloned_p1, ...cloned_p2])
                 if (steps > 1)
-                    score = Minimax(cloned_p2, cloned_p1, steps - 1, false);
+                    score = Minimax(cloned_p2, cloned_p1, steps - 1, false) as Promise<Array<number>>;
                 else {
                     score = 0;
                     for (const k of cloned_p1)
@@ -21,7 +20,7 @@ async function Minimax(p1, p2, steps = 3, top = true) {  // 130^steps
                         if (k.x == -1 && k.y == -1)
                             score += k.value;
                 }
-                scores.push([score, i, j[0], j[1]]);
+                scores.push([score as number, i, j[0] as number, j[1] as number]);
             }
     let best = 0;
     for await (const score of scores)

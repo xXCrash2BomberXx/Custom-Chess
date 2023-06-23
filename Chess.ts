@@ -475,7 +475,7 @@ class Piece {
 		return Piece.move(this.moves, this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
 	}
 
-	getMoves(others: Array<Piece> = []): Array<Array<number | boolean>> {
+	getMoves(others: Array<Piece> | undefined = []): Array<Array<number | boolean>> {
 		return Piece.getMoves(this.moves, this.x, this.y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
 	}
 
