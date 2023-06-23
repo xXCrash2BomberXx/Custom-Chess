@@ -17,7 +17,7 @@ function range(start: number, end: number | undefined = NaN, step: number = 1): 
  * https://en.m.wikipedia.org/wiki/Fairy_chess_piece#0%E2%80%939
  * 
  * Recommended Order:
- * * <conditions> <move type> <distance> <direction> <other>
+ * * \<conditions> \<move type> \<distance> \<direction> \<other>
  * 
  * Move Commands:
  * * '1', '2', '3', ..., 'n'/'N' = Distance of N
