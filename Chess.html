@@ -70,8 +70,15 @@
 						} else
 							alert("OpponentOutOfSyncError: Non-Symmetric Piece Modifications may have occurred.");
 					} else if (temp.length == 3) {
-						change(...temp);
-						alert(`Piece (${temp[0]}, ${temp[1]}) Updated`);
+						if (confirm(`Allow coordinate (${temp[0]}, ${temp[1]}) to be modified?`)) {
+							change(...temp);
+							alert(`Piece (${temp[0]}, ${temp[1]}) Updated`);
+						} else {
+							let currCoords = [global[global.length-2], global[global.length-1]];
+							fillInfo(temp[0], temp[1]);
+							change(temp[0], temp[1]);
+							fillInfo(...currCoords);
+						}
 					}
 				});
 			});
@@ -434,28 +441,33 @@
 				p = Piece.getPiece(px, py, [...p1, ...p2]);
 				if (isNaN(dir))
 					dir = 1;
-				if (p == null && piece != "null") {
-					try {
-						p = eval(`new ${piece[0].toUpperCase()}${piece.slice(1).toLowerCase()}(${px}, ${py}, ${dir})`);
-					} catch {
-						p = new Checker(px, py, dir);
+				if (piece != "null") {
+					if (p == null && piece != "null") {
+						try {
+							p = eval(`new ${piece[0].toUpperCase()}${piece.slice(1).toLowerCase()}(${px}, ${py}, ${dir})`);
+						} catch {
+							p = new Checker(px, py, dir);
+						}
+						(dir == p1[0].dir ? p1 : p2).push(p);
 					}
-					(dir == p1[0].dir ? p1 : p2).push(p);
+					p.name = piece;
+					if (movement != "null")
+						p.moves = movement;
+					if (loc != "null") {
+						p.x = "abcdefgh".indexOf(loc[0]);
+						p.y = 8 - parseInt(loc[1]);
+					}
+					p.direction = dir;
+					if (!isNaN(val))
+						p.value = val;
+					if (!isNaN(moves))
+						p.turns = moves;
+					if (color != "null")
+						p.color = color;
+				} else if (p != null) {
+					p.x = -1;
+					p.y = -1;
 				}
-				p.name = piece;
-				if (movement != "null")
-					p.moves = movement;
-				if (loc != "null") {
-					p.x = "abcdefgh".indexOf(loc[0]);
-					p.y = 8 - parseInt(loc[1]);
-				}
-				p.direction = dir;
-				if (!isNaN(val))
-					p.value = val;
-				if (!isNaN(moves))
-					p.turns = moves;
-				if (color != "null")
-					p.color = color;
 				drawBoard(canvas, [...p1, ...p2]);
 				globalTemp = false;
 			}
