@@ -360,7 +360,21 @@
 					let p = Piece.getPiece(global[global.length - 2], global[global.length - 1], [...p1, ...p2]);
 					event.clipboardData.setData("text/plain", JSON.stringify([p.__proto__.constructor.name, p]));
 					event.preventDefault();
-				} catch (error) { console.error(error); }
+				} catch (error) { if (error.name != "TypeError") console.error(error); }
+			});
+
+			document.addEventListener("cut", event => {
+				try {
+					let p = Piece.getPiece(global[global.length - 2], global[global.length - 1], [...p1, ...p2]);
+					event.clipboardData.setData("text/plain", JSON.stringify([p.__proto__.constructor.name, p]));
+					let coords = [p.x, p.y];
+					p.x = -1;
+					p.y = -1;
+					drawBoard(canvas, [...p1, ...p2]);
+					fillInfo(global[global.length - 2], global[global.length - 1]);
+					change(...coords);
+					event.preventDefault();
+				} catch (error) { if (error.name != "TypeError") console.error(error); }
 			});
 
 			document.addEventListener("paste", event => {
@@ -369,16 +383,13 @@
 					let p = eval(`new ${temp[0]}(${global[global.length - 2]}, ${global[global.length - 1]}, ${temp[1].direction}, ${temp[1].turns}, ${temp[1].xLim}, ${temp[1].yLim}, ${temp[1].lxLim}, ${temp[1].lyLim})`);
 					p.moves = temp[1].moves;
 					p.color = temp[1].color;
-					if (p.direction == 1)
-						p1.push(p);
-					else
-						p2.push(p);
-					change(p.x, p.y);
+					(p.direction == 1 ? p1 : p2).push(p);
 					if (p.direction == direction)
 						draw(canvas, p.getMoves([...p1, ...p2]), p.getChecks([...p1, ...p2]));
 					fillInfo(global[global.length - 2], global[global.length - 1]);
+					change(p.x, p.y);
 					event.preventDefault();
-				} catch (error) { console.error(error); }
+				} catch (error) { if (error.name != "TypeError") console.error(error); }
 			});
 
 			function fillInfo(px, py) {
@@ -425,7 +436,7 @@
 					dir = 1;
 				if (p == null && piece != "null") {
 					try {
-						p = eval("new " + piece[0].toUpperCase() + piece.slice(1).toLowerCase() + "(" + px + ", " + py + ", " + dir + ")");
+						p = eval(`new ${piece[0].toUpperCase()}${piece.slice(1).toLowerCase()}(${px}, ${py}, ${dir})`);
 					} catch {
 						p = new Checker(px, py, dir);
 					}
