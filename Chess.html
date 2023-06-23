@@ -355,6 +355,32 @@
 			canvas.addEventListener("mouseup", globalEnd);
 			canvas.addEventListener("touchend", globalEnd);
 
+			document.addEventListener("copy", event => {
+				try {
+					let p = Piece.getPiece(global[global.length - 2], global[global.length - 1], [...p1, ...p2]);
+					event.clipboardData.setData("text/plain", JSON.stringify([p.__proto__.constructor.name, p]));
+					event.preventDefault();
+				} catch (error) { console.error(error); }
+			});
+
+			document.addEventListener("paste", event => {
+				try {
+					let temp = JSON.parse(event.clipboardData.getData("text/plain"));
+					let p = eval(`new ${temp[0]}(${global[global.length - 2]}, ${global[global.length - 1]}, ${temp[1].direction}, ${temp[1].turns}, ${temp[1].xLim}, ${temp[1].yLim}, ${temp[1].lxLim}, ${temp[1].lyLim})`);
+					p.moves = temp[1].moves;
+					p.color = temp[1].color;
+					if (p.direction == 1)
+						p1.push(p);
+					else
+						p2.push(p);
+					change(p.x, p.y);
+					if (p.direction == direction)
+						draw(canvas, p.getMoves([...p1, ...p2]), p.getChecks([...p1, ...p2]));
+					fillInfo(global[global.length - 2], global[global.length - 1]);
+					event.preventDefault();
+				} catch (error) { console.error(error); }
+			});
+
 			function fillInfo(px, py) {
 				p = Piece.getPiece(px, py, [...p1, ...p2]);
 				if (p != null)

@@ -653,7 +653,6 @@ class Pawn extends Piece {
 	}
 
 	override move(x: number, y: number, others: Array<Piece> = []): boolean {
-		console.log(this.x, this.y, x, y);
 		let test = Piece.move(this.moves, this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
 		if (test[0]) {
 			this.preTest();
