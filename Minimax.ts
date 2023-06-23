@@ -6,7 +6,9 @@ async function Minimax(p1: Array<Piece>, p2: Array<Piece>, steps: number = 3, to
             continue;
         else
             for (const j of p1[i].getMoves([...p1, ...p2])) {
+                // @ts-expect-error
                 let cloned_p1 = _.cloneDeep(p1);
+                // @ts-expect-error
                 let cloned_p2 = _.cloneDeep(p2);
                 cloned_p1[i].move(j[0], j[1], [...cloned_p1, ...cloned_p2])
                 if (steps > 1)
