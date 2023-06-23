@@ -20,7 +20,7 @@ String.prototype.count = function(char=" ") {
 
 /**
  * Recommended Order:
- * * <conditions> <move type> <distance> <direction> <other>
+ * * \<conditions> \<move type> \<distance> \<direction> \<other>
  * 
  * Move Commands:
  * * '1', '2', '3', ..., 'n'/'N' = Distance of N
