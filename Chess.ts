@@ -54,7 +54,6 @@ function range(start: number, end: number | undefined = NaN, step: number = 1): 
  * * 'k'/'K' = King flag that enables notifications when placed into check by another piece
  * 
  * Missing:
- * * En Passant
  * * Castling
  */
 
