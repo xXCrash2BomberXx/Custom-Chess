@@ -178,7 +178,7 @@ class Piece {
                 alert(name+" is in check");
     }
 
-    // moves: str, x: int, y: int
+    // moves: str, x: int, y: int -> null
     static hasLost(moves, x, y) {
         return (moves.toLowerCase().includes("k") && x == -1 && y == -1);
     }
