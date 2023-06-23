@@ -1,6 +1,6 @@
-# Custom-Chess
+# P2P-Custom-Chess
 
-A custom chess program written in HTML and Typescript where pieces can be modified using [Parlett's Movement System](https://en.m.wikipedia.org/wiki/Fairy_chess_piece#0%E2%80%939)
+A p2p custom chess program written in HTML and Typescript where pieces can be modified using [Parlett's Movement System](https://en.m.wikipedia.org/wiki/Fairy_chess_piece#0%E2%80%939)
 
 <details>
 
@@ -46,5 +46,18 @@ A custom chess program written in HTML and Typescript where pieces can be modifi
 * '.' = Then Operator (Aanca)
 * '^' = Locust Operator (Checkers) (Must capture between each jump)
 * 'k'/'K' = King flag that enables notifications when placed into check by another piece
+
+</details>
+
+<details>
+
+<summary>How to Connect</summary>
+
+1. Have Player 1 Click the `Connect` button.
+2. Send the Game ID generated in the box to Player 2.
+3. Have Player 2 enter the Game ID into their box.
+4. Have Player 2 Click the `Connect` button.
+
+Upon connection, both players should get an alert that a player has connected. Any Piece changes will be reflected onto both sides with the person who is receiving the changes getting an alert describing the change made.
 
 </details>
