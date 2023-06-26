@@ -513,7 +513,7 @@ class Piece {
 	plot(canvas: HTMLCanvasElement, xSquares: number = 8, ySquares: number = 8): void {
 		if (this.x == -1 && this.y == -1)
 			return;
-		let ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+		let ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
 		ctx.fillStyle = this.color;
 		ctx.fillRect(this.x * canvas.width / xSquares, this.y * canvas.height / ySquares, canvas.width / xSquares, canvas.height / ySquares);
 	}
@@ -539,7 +539,7 @@ class Checker extends Piece {
 	plotBase(canvas: HTMLCanvasElement, xSquares: number = 8, ySquares: number = 8): void {
 		if (this.x == -1 && this.y == -1)
 			return;
-		let ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+		let ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
 		ctx.fillStyle = this.color;
 		ctx.beginPath();
 		ctx.arc((this.x + 0.5) * canvas.width / xSquares, (this.y + 0.5) * canvas.height / ySquares, Math.min(canvas.width / xSquares, canvas.height / ySquares) / 2, 0, 2 * Math.PI, false);
@@ -555,7 +555,7 @@ class Checker extends Piece {
 			this.moves = "n(^2x), o1x";
 			this.plot = function (canvas, xSquares: number = 8, ySquares: number = 8) {
 				this.plotBase(canvas, xSquares, ySquares);
-				let ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+				let ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
 				ctx.fillStyle = "#000000";
 				ctx.textAlign = "center";
 				ctx.font = String(Math.min(canvas.width / this.xLim, canvas.height / this.yLim)) + "px " + this.fontFamily;
@@ -573,7 +573,7 @@ class King extends Piece {
 	}
 
 	override plot(canvas: HTMLCanvasElement, xSquares: number = 8, ySquares: number = 8): void {
-		let ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+		let ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
 		ctx.textAlign = "center";
 		ctx.fillStyle = this.color;
 		ctx.font = String(Math.min(canvas.width / this.xLim, canvas.height / this.yLim)) + "px " + this.fontFamily;
@@ -589,7 +589,7 @@ class Queen extends Piece {
 	}
 
 	override plot(canvas: HTMLCanvasElement, xSquares: number = 8, ySquares: number = 8) {
-		let ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+		let ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
 		ctx.textAlign = "center";
 		ctx.fillStyle = this.color;
 		ctx.font = String(Math.min(canvas.width / this.xLim, canvas.height / this.yLim)) + "px " + this.fontFamily;
@@ -605,7 +605,7 @@ class Rook extends Piece {
 	}
 
 	override plot(canvas: HTMLCanvasElement, xSquares: number = 8, ySquares: number = 8) {
-		let ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+		let ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
 		ctx.textAlign = "center";
 		ctx.fillStyle = this.color;
 		ctx.font = String(Math.min(canvas.width / this.xLim, canvas.height / this.yLim)) + "px " + this.fontFamily;
@@ -621,7 +621,7 @@ class Bishop extends Piece {
 	}
 
 	override plot(canvas: HTMLCanvasElement, xSquares: number = 8, ySquares: number = 8) {
-		let ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+		let ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
 		ctx.textAlign = "center";
 		ctx.fillStyle = this.color;
 		ctx.font = String(Math.min(canvas.width / this.xLim, canvas.height / this.yLim)) + "px " + this.fontFamily;
@@ -637,7 +637,7 @@ class Knight extends Piece {
 	}
 
 	override plot(canvas: HTMLCanvasElement, xSquares: number = 8, ySquares: number = 8) {
-		let ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+		let ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
 		ctx.textAlign = "center";
 		ctx.fillStyle = this.color;
 		ctx.font = String(Math.min(canvas.width / this.xLim, canvas.height / this.yLim)) + "px " + this.fontFamily;
