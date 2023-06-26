@@ -1,6 +1,6 @@
 # P2P-Custom-Chess
 
-A p2p custom chess program written in HTML and Typescript where pieces can be modified using [Parlett's Movement System](https://en.m.wikipedia.org/wiki/Fairy_chess_piece#0%E2%80%939)
+A [P2P Custom Chess](https://chessplus.xxcrashbomberxx.freecluster.eu/) program written in HTML and Typescript where pieces can be modified using [Parlett's Movement System](https://en.m.wikipedia.org/wiki/Fairy_chess_piece#0%E2%80%939)
 
 <details>
 
