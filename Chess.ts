@@ -1,8 +1,8 @@
 "use strict";
 
 // start: int, end: int = NaN, step: int = 1 -> array[int, ...]
-function range(start: number, end: number | undefined = NaN, step: number = 1): Array<number> {
-	if (isNaN(end)) {
+function range(start: number, end: number | undefined = undefined, step: number = 1): Array<number> {
+	if (end === undefined) {
 		end = start;
 		start = 0;
 	}
@@ -337,7 +337,7 @@ class Piece {
 			// Locust (^)
 			if (moves[i].includes("^") && Piece.path(x1, y1, x2, y2, 2).some((arr: Array<number>) => {
 				other = Piece.getPiece(arr[0], arr[1], others);
-				return (other == null || other.direction == direction || other.moves.toLowerCase().includes("d"));
+				return (!other || other.direction == direction || other.moves.toLowerCase().includes("d"));
 			}))
 				continue;
 			if (moves[i].includes("(") || moves[i].includes(".")) {
@@ -359,7 +359,7 @@ class Piece {
 					continue;
 				else
 					// Return success
-					if (other == null && !moves[i].includes("c"))
+					if (!other && !moves[i].includes("c"))
 						return [true, []];
 					else if (other && !moves[i].includes("o"))
 						return [true, [other]];
@@ -377,14 +377,14 @@ class Piece {
 					pieces[i] = Piece.getPiece((pieces[i] as Array<number>)[0], (pieces[i] as Array<number>)[1], others) as Piece;
 				if (pieces.length == 0)
 					continue;
-				if (moves[i].includes("c") && other == null)
+				if (moves[i].includes("c") && !other)
 					continue;
 				else if (other)
 					pieces.push(other);
 				return [true, pieces as Array<Piece>];
 			}
 			// Return success
-			if (other == null && !moves[i].includes("c"))
+			if (!other && !moves[i].includes("c"))
 				return [true, []];
 			else if (other && !moves[i].includes("o"))
 				return [true, [other]];
@@ -394,7 +394,7 @@ class Piece {
 
 	static getMoves(moves: string, x1: number, y1: number, direction: number = 1, turns: number = 0,
 		xLim: number = 8, yLim: number = 8, lxLim: number = 0, lyLim: number = 0, others: Array<Piece> = []): Array<Array<number | boolean>> {
-		let arr = [];
+		let arr: Array<Array<number | boolean>> = [];
 		for (let x2 = lxLim; x2 < xLim; x2++)
 			for (let y2 = lyLim; y2 < yLim; y2++) {
 				let move: Array<boolean | Array<Piece>> = Piece.move(moves, x1, y1, x2, y2, direction, turns, xLim, yLim, lxLim, lyLim, others);
@@ -684,7 +684,7 @@ class Pawn extends Piece {
 
 	// x: int, y: int, other: array[Piece, ...] = [] -> array[bool, array[Piece, ...]]
 	override getMove(x: number, y: number, others: Array<Piece> = []): Array<boolean | Array<Piece>> {
-		let m = Piece.move(this.moves, this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
+		let m: Array<boolean | Array<Piece>> = Piece.move(this.moves, this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
 		if (m[0])
 			return m;
 		let temp: Piece | undefined = Piece.getPiece(x, this.y, others);
@@ -723,7 +723,7 @@ class Pawn extends Piece {
 
 	override postTest(): void {
 		if (this.y == ((this.direction == -1) ? 0 : ((this.direction == 1) ? this.yLim - 1 : false))) {
-			let p = new Queen(this.x, this.y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim);
+			let p: Queen = new Queen(this.x, this.y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim);
 			Object.assign(this, p);
 			this.plot = p.plot;
 			this.postTest = p.postTest;
