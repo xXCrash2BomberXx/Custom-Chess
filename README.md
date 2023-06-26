@@ -1,6 +1,6 @@
 # P2P-Basic-Chess
 
-A p2p basic chess program written in HTML and Typescript where pieces can be modified using [Parlett's Movement System](https://en.m.wikipedia.org/wiki/Fairy_chess_piece#0%E2%80%939)
+A [P2P Basic Chess program](https://chessplusstripped.xxcrashbomberxx.freecluster.eu/) written in HTML and Typescript where pieces can be modified using [Parlett's Movement System](https://en.m.wikipedia.org/wiki/Fairy_chess_piece#0%E2%80%939)
 
 <details>
 
