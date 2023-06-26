@@ -454,7 +454,7 @@ class Piece {
 	}
 
 	move(x: number, y: number, others: Array<Piece> = []): boolean {
-		let test: Array<boolean | Array<Piece>> = Piece.move(this.moves, this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
+		let test: Array<boolean | Array<Piece>> = this.getMove(x, y, others);
 		if (test[0]) {
 			this.preTest();
 			this.x = x;
