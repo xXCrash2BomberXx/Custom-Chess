@@ -291,14 +291,13 @@ class Piece {
 }
 
 class King extends Piece {
-	// x: int, y: int, direction: int = 1, turns: int = 0, xLim: int = 8, yLim: int = 8, lxLim: int = 0, lyLim: int = 0 -> null
-	constructor(x, y, direction = 1, turns = 0, xLim = 8, yLim = 8, lxLim = 0, lyLim = 0, colors = ["#FF00FF", "#00FFFF"]) {
-		return super(x, y, "k1*", direction, turns, xLim, yLim, lxLim, lyLim, colors);
+	constructor(x: number, y: number, direction: number = 1, turns: number = 0,
+		xLim: number = 8, yLim: number = 8, lxLim: number = 0, lyLim: number = 0, colors: Array<string> = ["#FF00FF", "#00FFFF"]) {
+		super(x, y, "k1*", direction, turns, xLim, yLim, lxLim, lyLim, colors);
 	}
 
-	// canvas: canvas, xSquares: int = 8, ySquares: int = 8 -> null
-	plot(canvas: HTMLCanvasElement, xSquares = 8, ySquares = 8) {
-		let ctx = canvas.getContext("2d");
+	override plot(canvas: HTMLCanvasElement, xSquares: number = 8, ySquares: number = 8): void {
+		let ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
 		ctx.textAlign = "center";
 		ctx.fillStyle = this.color;
 		ctx.font = String(Math.min(canvas.width / this.xLim, canvas.height / this.yLim)) + "px sans-serif";
@@ -307,14 +306,13 @@ class King extends Piece {
 }
 
 class Queen extends Piece {
-	// x: int, y: int, direction: int = 1, turns: int = 0, xLim: int = 8, yLim: int = 8, lxLim: int = 0, lyLim: int = 0 -> null
-	constructor(x, y, direction = 1, turns = 0, xLim = 8, yLim = 8, lxLim = 0, lyLim = 0, colors = ["#FF00FF", "#00FFFF"]) {
-		return super(x, y, "n*", direction, turns, xLim, yLim, lxLim, lyLim, colors);
+	constructor(x: number, y: number, direction: number = 1, turns: number = 0,
+		xLim: number = 8, yLim: number = 8, lxLim: number = 0, lyLim: number = 0, colors: Array<string> = ["#FF00FF", "#00FFFF"]) {
+		super(x, y, "n*", direction, turns, xLim, yLim, lxLim, lyLim, colors);
 	}
 
-	// canvas: canvas, xSquares: int = 8, ySquares: int = 8 -> null
-	plot(canvas: HTMLCanvasElement, xSquares = 8, ySquares = 8) {
-		let ctx = canvas.getContext("2d");
+	override plot(canvas: HTMLCanvasElement, xSquares: number = 8, ySquares: number = 8): void {
+		let ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
 		ctx.textAlign = "center";
 		ctx.fillStyle = this.color;
 		ctx.font = String(Math.min(canvas.width / this.xLim, canvas.height / this.yLim)) + "px sans-serif";
@@ -323,14 +321,13 @@ class Queen extends Piece {
 }
 
 class Rook extends Piece {
-	// x: int, y: int, direction: int = 1, turns: int = 0, xLim: int = 8, yLim: int = 8, lxLim: int = 0, lyLim: int = 0 -> null
-	constructor(x, y, direction = 1, turns = 0, xLim = 8, yLim = 8, lxLim = 0, lyLim = 0, colors = ["#FF00FF", "#00FFFF"]) {
-		return super(x, y, "n+", direction, turns, xLim, yLim, lxLim, lyLim, colors);
+	constructor(x: number, y: number, direction: number = 1, turns: number = 0,
+		xLim: number = 8, yLim: number = 8, lxLim: number = 0, lyLim: number = 0, colors: Array<string> = ["#FF00FF", "#00FFFF"]) {
+		super(x, y, "n+", direction, turns, xLim, yLim, lxLim, lyLim, colors);
 	}
 
-	// canvas: canvas, xSquares: int = 8, ySquares: int = 8 -> null
-	plot(canvas: HTMLCanvasElement, xSquares = 8, ySquares = 8) {
-		let ctx = canvas.getContext("2d");
+	override plot(canvas: HTMLCanvasElement, xSquares: number = 8, ySquares: number = 8): void {
+		let ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
 		ctx.textAlign = "center";
 		ctx.fillStyle = this.color;
 		ctx.font = String(Math.min(canvas.width / this.xLim, canvas.height / this.yLim)) + "px sans-serif";
@@ -339,14 +336,13 @@ class Rook extends Piece {
 }
 
 class Bishop extends Piece {
-	// x: int, y: int, direction: int = 1, turns: int = 0, xLim: int = 8, yLim: int = 8, lxLim: int = 0, lyLim: int = 0 -> null
-	constructor(x, y, direction = 1, turns = 0, xLim = 8, yLim = 8, lxLim = 0, lyLim = 0, colors = ["#FF00FF", "#00FFFF"]) {
-		return super(x, y, "nx", direction, turns, xLim, yLim, lxLim, lyLim, colors);
+	constructor(x: number, y: number, direction: number = 1, turns: number = 0,
+		xLim: number = 8, yLim: number = 8, lxLim: number = 0, lyLim: number = 0, colors: Array<string> = ["#FF00FF", "#00FFFF"]) {
+		super(x, y, "nx", direction, turns, xLim, yLim, lxLim, lyLim, colors);
 	}
 
-	// canvas: canvas, xSquares: int = 8, ySquares: int = 8 -> null
-	plot(canvas: HTMLCanvasElement, xSquares = 8, ySquares = 8) {
-		let ctx = canvas.getContext("2d");
+	override plot(canvas: HTMLCanvasElement, xSquares: number = 8, ySquares: number = 8): void {
+		let ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
 		ctx.textAlign = "center";
 		ctx.fillStyle = this.color;
 		ctx.font = String(Math.min(canvas.width / this.xLim, canvas.height / this.yLim)) + "px sans-serif";
@@ -355,14 +351,13 @@ class Bishop extends Piece {
 }
 
 class Knight extends Piece {
-	// x: int, y: int, direction: int = 1, turns: int = 0, xLim: int = 8, yLim: int = 8, lxLim: int = 0, lyLim: int = 0 -> null
-	constructor(x, y, direction = 1, turns = 0, xLim = 8, yLim = 8, lxLim = 0, lyLim = 0, colors = ["#FF00FF", "#00FFFF"]) {
-		return super(x, y, "~1/2", direction, turns, xLim, yLim, lxLim, lyLim, colors);
+	constructor(x: number, y: number, direction: number = 1, turns: number = 0,
+		xLim: number = 8, yLim: number = 8, lxLim: number = 0, lyLim: number = 0, colors: Array<string> = ["#FF00FF", "#00FFFF"]) {
+		super(x, y, "~1/2", direction, turns, xLim, yLim, lxLim, lyLim, colors);
 	}
 
-	// canvas: canvas, xSquares: int = 8, ySquares: int = 8 -> null
-	plot(canvas: HTMLCanvasElement, xSquares = 8, ySquares = 8) {
-		let ctx = canvas.getContext("2d");
+	override plot(canvas: HTMLCanvasElement, xSquares: number = 8, ySquares: number = 8): void {
+		let ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
 		ctx.textAlign = "center";
 		ctx.fillStyle = this.color;
 		ctx.font = String(Math.min(canvas.width / this.xLim, canvas.height / this.yLim)) + "px sans-serif";
@@ -371,13 +366,12 @@ class Knight extends Piece {
 }
 
 class Pawn extends Piece {
-	// x: int, y: int, direction: int = 1, turns: int = 0, xLim: int = 8, yLim: int = 8, lxLim: int = 0, lyLim: int = 0 -> null
-	constructor(x, y, direction = 1, turns = 0, xLim = 8, yLim = 8, lxLim = 0, lyLim = 0, colors = ["#FF00FF", "#00FFFF"]) {
-		return super(x, y, "o1>+, c1X>, oi2>+", direction, turns, xLim, yLim, lxLim, lyLim, colors);
+	constructor(x: number, y: number, direction: number = 1, turns: number = 0,
+		xLim: number = 8, yLim: number = 8, lxLim: number = 0, lyLim: number = 0, colors: Array<string> = ["#FF00FF", "#00FFFF"]) {
+		super(x, y, "o1>+, c1X>, oi2>+", direction, turns, xLim, yLim, lxLim, lyLim, colors);
 	}
 
-	// x: int, y: int, others: array[Piece, ...] = [] -> bool
-	move(x, y, others: Array<Piece> = []) {
+	override move(x: number, y: number, others: Array<Piece> = []): boolean {
 		let test = Piece.move(this.moves, this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
 		if (test[0]) {
 			this.preTest();
@@ -385,14 +379,14 @@ class Pawn extends Piece {
 			this.enPassant = (y - this.y) * this.direction === 2;
 			this.y = y;
 			this.turns++;
-			for (let i = 0; i < test[1].length; i++) {
-				test[1][i].x = -1;
-				test[1][i].y = -1;
+			for (let i = 0; i < (test[1] as Array<Piece>).length; i++) {
+				(test[1] as Array<Piece>)[i].x = -1;
+				(test[1] as Array<Piece>)[i].y = -1;
 			}
 			this.postTest();
 			return true;
 		}
-		let temp = Piece.getPiece(this.x - 1, this.y, others);
+		let temp: Piece | undefined = Piece.getPiece(this.x - 1, this.y, others);
 		if (temp != null && temp.constructor.name == "Pawn" && temp.turns == 1 && temp.enPassant &&
 			Piece.move("o1Xl>", this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0]) {
 			this.preTest();
@@ -405,7 +399,7 @@ class Pawn extends Piece {
 			return true;
 		}
 		temp = Piece.getPiece(this.x + 1, this.y, others);
-		if (temp != null && temp.constructor.name == "Pawn" && temp.turns == 1 && temp.enPassant &&
+		if (temp && temp.constructor.name == "Pawn" && temp.turns == 1 && temp.enPassant &&
 			Piece.move("o1Xr>", this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0]) {
 			this.preTest();
 			this.x = x;
@@ -419,65 +413,45 @@ class Pawn extends Piece {
 		return false;
 	}
 
-	// x: int, y: int, other: array[Piece, ...] = [] -> array[bool, array[Piece, ...]]
-	getMove(x, y, others: Array<Piece> = []) {
-		let m = Piece.move(this.moves, this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
-		if (m[0])
-			return m;
-		let temp = Piece.getPiece(this.x - 1, this.y, others);
-		if (temp != null && temp.constructor.name == "Pawn" && temp.turns == 1 && temp.enPassant) {
-			m = Piece.move("o1Xl>", this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
-			if (m[0])
-				return m;
-		}
-		temp = Piece.getPiece(this.x + 1, this.y, others);
-		if (temp != null && temp.constructor.name == "Pawn" && temp.turns == 1 && temp.enPassant) {
-			m = Piece.move("o1Xr>", this.x, this.y, this.x + 1, this.y + this.direction, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
-			if (m[0])
-				return m;
-		}
-		return m;
-	}
-
-	// others: array[Piece, ...] = [] -> array[array[int, int, bool], ...]
-	getMoves(others: Array<Piece> = []) {
-		let m = Piece.getMoves(this.moves, this.x, this.y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
-		let temp = Piece.getPiece(this.x - 1, this.y, others);
-		if (temp != null && temp.constructor.name == "Pawn" && temp.turns == 1 && temp.enPassant &&
+	override getMoves(others: Array<Piece> = []): Array<Array<number | boolean>> {
+		let m: Array<Array<number | boolean>> = Piece.getMoves(this.moves, this.x, this.y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
+		let temp: Piece | undefined = Piece.getPiece(this.x - 1, this.y, others);
+		if (temp && temp.constructor.name == "Pawn" && temp.turns == 1 && temp.enPassant &&
 			Piece.move("o1Xl>", this.x, this.y, this.x - 1, this.y + this.direction, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0]) {
 			m.push([this.x - 1, this.y + this.direction, true]);
 		}
 		temp = Piece.getPiece(this.x + 1, this.y, others);
-		if (temp != null && temp.constructor.name == "Pawn" && temp.turns == 1 && temp.enPassant &&
+		if (temp && temp.constructor.name == "Pawn" && temp.turns == 1 && temp.enPassant &&
 			Piece.move("o1Xr>", this.x, this.y, this.x + 1, this.y + this.direction, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0]) {
 			m.push([this.x + 1, this.y + this.direction, true]);
 		}
 		return m;
 	}
 
-	// canvas: canvas, xSquares: int = 8, ySquares: int = 8 -> null
-	plot(canvas: HTMLCanvasElement, xSquares = 8, ySquares = 8) {
-		let ctx = canvas.getContext("2d");
+	override plot(canvas: HTMLCanvasElement, xSquares: number = 8, ySquares: number = 8): void {
+		let ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
 		ctx.textAlign = "center";
 		ctx.fillStyle = this.color;
 		ctx.font = String(Math.min(canvas.width / this.xLim, canvas.height / this.yLim)) + "px sans-serif";
 		ctx.fillText((this.direction == 1 ? "\u{2659}" : "\u{265F}"), canvas.width / this.xLim * (this.x + 0.5), canvas.height / this.yLim * (this.y + 0.875));
 	}
 
-	// null -> null
-	postTest() {
+	override postTest(): void {
 		if (this.y == ((this.direction == -1) ? 0 : ((this.direction == 1) ? this.yLim - 1 : false))) {
-			var choices = ["Queen",
+			let choices: Array<string> = ["Queen",
 				"Bishop",
 				"Rook",
 				"Pawn",
 				"Knight"];
-			var str = "";
-			while (!choices.includes(str)) {
-				str = prompt(JSON.stringify(choices), "queen").trim();
-				str = str[0].toUpperCase() + str.slice(1).toLowerCase();
+			let str: string | null = null;
+			while (!str || !choices.includes(str)) {
+				str = prompt(JSON.stringify(choices), "queen")
+				if (str) {
+					str = str.trim();
+					str = str[0].toUpperCase() + str.slice(1).toLowerCase();
+				}
 			}
-			let p = eval("new " + str + "(" + this.x + ", " + this.y + ", " + this.direction + ", " + this.turns + ", " + this.xLim + ", " + this.yLim + ", " + this.lxLim + ", " + this.lyLim + ")");
+			let p: Piece = eval(`new ${str}(${this.x}, ${this.y}, ${this.direction}, ${this.turns}, ${this.xLim}, ${this.yLim}, ${this.lxLim}, ${this.lyLim})`);
 			Object.assign(this, p);
 			this.plot = p.plot;
 			this.postTest = p.postTest;
