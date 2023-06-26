@@ -21,7 +21,6 @@ function range(start: number, end: number | undefined = undefined, step: number 
  *
  * Move Commands:
  * * '1', '2', '3', ..., 'n'/'N' = Distance of N
- * * 'X-Y' = Distance in Inclusive Range from X to Y
  * * '*' = Orthogonal of Diagonal Movement
  * * '+' = Orthogonal Movement
  * * '>' = Forwards Movement
