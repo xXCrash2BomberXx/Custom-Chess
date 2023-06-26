@@ -205,8 +205,6 @@
 			new Bishop(5, 7, -1),
 			new Knight(6, 7, -1),
 			new Rook(7, 7, -1)];
-			//p1 = [new Checker(5, 3, 1)];
-			//p2 = [new Pawn(0, 6, -1), new Pawn(4, 4, -1), new Pawn(4, 6, -1)];
 			drawBoard(canvas, [...p1, ...p2]);
 			direction = 1;
 		}
@@ -446,7 +444,7 @@
 						try {
 							p = eval(`new ${piece[0].toUpperCase()}${piece.slice(1).toLowerCase()}(${px}, ${py}, ${dir})`);
 						} catch {
-							p = new Checker(px, py, dir);
+							p = new Pawn(px, py, dir);
 						}
 						(dir == p1[0].dir ? p1 : p2).push(p);
 					}
