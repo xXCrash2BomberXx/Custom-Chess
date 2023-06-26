@@ -1,5 +1,9 @@
 "use strict";
 
+interface ExtraData {
+	PawnPromotion?: string
+}
+
 // start: int, end: int = NaN, step: int = 1 -> array[int, ...]
 function range(start: number, end: number | undefined = undefined, step: number = 1): Array<number> {
 	if (end === undefined) {
@@ -96,7 +100,7 @@ class Piece {
 			return false;
 		// Backward (<, <=)
 		if (move.includes("<") && !move.includes(">") &&
-			(move.includes("=")? y1 * direction < y2 * direction : y1 * direction <= y2 * direction))
+			(move.includes("=") ? y1 * direction < y2 * direction : y1 * direction <= y2 * direction))
 			return false;
 		// Forward or Backward (<>)
 		if (move.includes(">") && move.includes("<") && y1 == y2)
@@ -299,7 +303,7 @@ class Piece {
 	postTest(): void { }
 
 	// Runs at the beginning of each player's turn
-	turnTest(): void { }
+	turnTest(extraData: ExtraData = {}): ExtraData { return extraData; }
 }
 
 class King extends Piece {
@@ -458,16 +462,37 @@ class Pawn extends Piece {
 		ctx.fillText((this.direction == 1 ? "\u{2659}" : "\u{265F}"), canvas.width / this.xLim * (this.x + 0.5), canvas.height / this.yLim * (this.y + 0.875));
 	}
 
-	override postTest(): void {
+	override turnTest(extraData: ExtraData = {}): ExtraData {
 		if (this.y == ((this.direction == -1) ? 0 : ((this.direction == 1) ? this.yLim - 1 : false))) {
-			let p: Queen = new Queen(this.x, this.y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim);
+			const choices: Array<string> = ["Queen",
+				"Bishop",
+				"Rook",
+				"Pawn",
+				"Knight"];
+			let str: string | null = null;
+			if (extraData.PawnPromotion !== undefined && choices.includes(extraData.PawnPromotion))
+				str = extraData.PawnPromotion;
+			else {
+				while (!str || !choices.includes(str)) {
+					str = prompt(JSON.stringify(choices), "queen")
+					if (str) {
+						str = str.trim();
+						str = str[0].toUpperCase() + str.slice(1).toLowerCase();
+					}
+				}
+			}
+
+			let p: Piece = eval(`new ${str}(${this.x}, ${this.y}, ${this.direction}, ${this.turns}, ${this.xLim}, ${this.yLim}, ${this.lxLim}, ${this.lyLim})`);
 			Object.assign(this, p);
 			this.move = p.move;
 			this.getMove = p.getMove;
 			this.getMoves = p.getMoves;
 			this.plot = p.plot;
-			this.postTest = p.postTest;
+			this.turnTest = p.turnTest;
+
+			return { PawnPromotion: str };
 		}
+		return {};
 	}
 }
 
