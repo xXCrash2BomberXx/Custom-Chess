@@ -74,7 +74,7 @@
 							change(...temp);
 							alert(`Piece (${temp[0]}, ${temp[1]}) Updated`);
 						} else {
-							let currCoords = [global[global.length-2], global[global.length-1]];
+							let currCoords = [global[global.length - 2], global[global.length - 1]];
 							fillInfo(temp[0], temp[1]);
 							change(temp[0], temp[1]);
 							fillInfo(...currCoords);
@@ -339,9 +339,9 @@
 						let extraData = {};
 						direction *= -1;
 						for (let i = 0; i < p1.length; i++)
-							extraData = {...extraData, ...p1[i].turnTest()};
+							extraData = { ...extraData, ...p1[i].turnTest() };
 						for (let i = 0; i < p2.length; i++)
-							extraData = {...extraData, ...p2[i].turnTest()};
+							extraData = { ...extraData, ...p2[i].turnTest() };
 						moved.push(extraData);
 						if (connected)
 							conn_id.send(JSON.stringify(moved));
