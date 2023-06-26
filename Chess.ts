@@ -156,7 +156,6 @@ class Piece {
 		return [false];
 	}
 
-	// moves: str, x1: int, y1: int, direction: int = 1, turns: int = 0, xLim: int = 8, yLim: int = 8, lxLim: int = 0, lyLim: int = 0, others: array[Piece, ...] = [] -> array[array[int, int, bool], ...]
 	static getMoves(moves: string, x1: number, y1: number, direction: number = 1, turns: number = 0,
 		xLim: number = 8, yLim: number = 8, lxLim: number = 0, lyLim: number = 0, others: Array<Piece> = []): Array<Array<number | boolean>> {
 		let arr: Array<Array<number | boolean>> = [];
