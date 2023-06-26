@@ -588,7 +588,7 @@ class Queen extends Piece {
 		this.value = 9;
 	}
 
-	override plot(canvas: HTMLCanvasElement, xSquares: number = 8, ySquares: number = 8) {
+	override plot(canvas: HTMLCanvasElement, xSquares: number = 8, ySquares: number = 8): void {
 		let ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
 		ctx.textAlign = "center";
 		ctx.fillStyle = this.color;
@@ -604,7 +604,7 @@ class Rook extends Piece {
 		this.value = 5;
 	}
 
-	override plot(canvas: HTMLCanvasElement, xSquares: number = 8, ySquares: number = 8) {
+	override plot(canvas: HTMLCanvasElement, xSquares: number = 8, ySquares: number = 8): void {
 		let ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
 		ctx.textAlign = "center";
 		ctx.fillStyle = this.color;
@@ -620,7 +620,7 @@ class Bishop extends Piece {
 		this.value = 3;
 	}
 
-	override plot(canvas: HTMLCanvasElement, xSquares: number = 8, ySquares: number = 8) {
+	override plot(canvas: HTMLCanvasElement, xSquares: number = 8, ySquares: number = 8): void {
 		let ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
 		ctx.textAlign = "center";
 		ctx.fillStyle = this.color;
@@ -636,7 +636,7 @@ class Knight extends Piece {
 		this.value = 3;
 	}
 
-	override plot(canvas: HTMLCanvasElement, xSquares: number = 8, ySquares: number = 8) {
+	override plot(canvas: HTMLCanvasElement, xSquares: number = 8, ySquares: number = 8): void {
 		let ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
 		ctx.textAlign = "center";
 		ctx.fillStyle = this.color;
