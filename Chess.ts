@@ -14,11 +14,14 @@ function range(start: number, end: number | undefined = undefined, step: number 
 
 
 /**
+ * https://en.m.wikipedia.org/wiki/Fairy_chess_piece#0%E2%80%939
+ *
  * Recommended Order:
  * * \<conditions> \<move type> \<distance> \<direction> \<other>
  *
  * Move Commands:
  * * '1', '2', '3', ..., 'n'/'N' = Distance of N
+ * * 'X-Y' = Distance in Inclusive Range from X to Y
  * * '*' = Orthogonal of Diagonal Movement
  * * '+' = Orthogonal Movement
  * * '>' = Forwards Movement
@@ -33,10 +36,11 @@ function range(start: number, end: number | undefined = undefined, step: number 
  * * '+>' = Orthogonally Forward Movement
  * * '+<' = Orthogonally Backward Movement
  * * 'X/Y' = Distance of X and Y in Different Orthogonal Directions
- * * 'i'/'I' = Only Use on First Movement of Piece
+ * * '~' = Jumping Operator (Knights)
+* * 'i'/'I' = Only Use on First Movement of Piece
  * * 'c'/'C' = Only Use on Capturing Piece (Only applies to final square being landed on)
  * * 'o'/'O' = Only Use on Not Capturing Piece
- * * ',' = Add Different Movements to a Piece
+ * * '^' = Locust Operator (Checkers) (Must capture between each jump)
  * * 'k'/'K' = King flag that enables notifications when placed into check by another piece
  *
  * Missing:
@@ -56,6 +60,8 @@ class Piece {
 	yLim: number;
 	lxLim: number;
 	lyLim: number;
+	fontFamily: string;
+	value: number;
 
 	// General Move Function
 	static #move(move: string, x1: number, y1: number, x2: number, y2: number, direction: number = 1, turns: number = 0,
@@ -63,9 +69,8 @@ class Piece {
 		let match1: RegExpMatchArray = move.match(/[0-9nN]+(-[0-9nN]+)?/g) as RegExpMatchArray; //.match(/[0-9n]+/g);
 		let match2: RegExpMatchArray = move.match(/[0-9nN]+(-[0-9nN]+)?\/[0-9nN]+(-[0-9nN]+)?/g) as RegExpMatchArray; //.match(/[0-9n]+\/[0-9n]+/g);
 		let match3: RegExpMatchArray | undefined;
-		if (match2) {
+		if (match2)
 			match3 = match2[0].match(/[0-9nN]+(-[0-9nN]+)?/g) as RegExpMatchArray; //.match(/[0-9n]+/g);
-		}
 		// In X-Range
 		if (x2 >= xLim || x2 < lxLim)
 			return false;
@@ -86,13 +91,13 @@ class Piece {
 		// Orthogonally or Diagonally (*)
 		if ((move.includes("*") || (!move.includes("+") && !move.includes("x") && !move.includes("/"))) && !(((x1 != x2 && y1 == y2) || (y1 != y2 && x1 == x2)) || Math.abs(x1 - x2) == Math.abs(y1 - y2)))
 			return false;
-		// Forward (>, >=, >r, >l)
+		// Forward (>, >=)
 		if (move.includes(">") && !move.includes("<") &&
-			((move.includes("=") || move.includes("r") || move.includes("l")) ? y1 * direction > y2 * direction : y1 * direction >= y2 * direction))
+			(move.includes("=") ? y1 * direction > y2 * direction : y1 * direction >= y2 * direction))
 			return false;
-		// Backward (<, <=, <r, <l)
+		// Backward (<, <=)
 		if (move.includes("<") && !move.includes(">") &&
-			((move.includes("=") || move.includes("r") || move.includes("l")) ? y1 * direction < y2 * direction : y1 * direction <= y2 * direction))
+			(move.includes("=")? y1 * direction < y2 * direction : y1 * direction <= y2 * direction))
 			return false;
 		// Forward or Backward (<>)
 		if (move.includes(">") && move.includes("<") && y1 == y2)
@@ -100,10 +105,18 @@ class Piece {
 		// Orthogonally Sideways (=)
 		if (!move.includes(">") && !move.includes("<") && move.includes("=") && y1 != y2)
 			return false;
-		// Distance (1, 2, 3, ..., n)
-		if (!match2 && match1 &&
-			(match1[0] != "n" && parseInt(match1[0]) != Math.abs(x1 - x2) &&
-				parseInt(match1[0]) != Math.abs(y1 - y2)))
+		// Distance (1, 1-2, 2, 1-3, 2-3, 3, ..., n)
+		if (!match2 &&
+			match1 &&
+			(match1[0].includes("-") ?
+				!((range(parseInt((match1[0].match(/[0-9n]+/g) as RegExpMatchArray)[0]),
+					parseInt((match1[0].match(/[0-9n]+/g) as RegExpMatchArray)[1]) + 1
+				).includes(Math.abs(x1 - x2)) && (Math.abs(x1 - x2) == Math.abs(y1 - y2) || y1 == y2)) ||
+					(range(parseInt((match1[0].match(/[0-9n]+/g) as RegExpMatchArray)[0]),
+						parseInt((match1[0].match(/[0-9n]+/g) as RegExpMatchArray)[1]) + 1
+					).includes(Math.abs(y1 - y2)) && (Math.abs(y1 - y2) == Math.abs(x1 - x2) || x1 == x2))) :
+				(match1[0] != "n" && parseInt(match1[0]) != Math.abs(x1 - x2) &&
+					parseInt(match1[0]) != Math.abs(y1 - y2))))
 			return false;
 		// Two Orthogonal Moves (1/1, 1/2, 2/1, ..., n/n)
 		if (match2 && match3 &&
@@ -137,12 +150,12 @@ class Piece {
 		let other: Piece | undefined = Piece.getPiece(x2, y2, others);
 		if (other && (direction == other.direction || other.moves.toLowerCase().includes("d")))
 			return [false];
-		if (typeof moves === 'string')
+		if (typeof (moves) === 'string')
 			moves = moves.toLowerCase().replaceAll(" ", "").split(",");
 		for (let i = 0; i < moves.length; i++) {
 			// Leaper (~)
 			if (!moves[i].includes("~") && !moves[i].includes("^") && Piece.path(x1, y1, x2, y2).slice(0, -1).filter(
-				value => Piece.getPiece(value[0], value[1], others)).length != 0)
+				(value: Array<number>) => Piece.getPiece(value[0], value[1], others)).length != 0)
 				continue;
 			// Base Move
 			if (!Piece.#move(moves[i].replaceAll("^", "~"), x1, y1, x2, y2, direction, turns, xLim, yLim, lxLim, lyLim))
@@ -194,8 +207,6 @@ class Piece {
 				console.warn("The moves have more Opening Parenthases ('(') than Closing Parenthases (')'), but we may be able to work around that");
 			else
 				console.warn("The moves have more Closing Parenthases (')') than Opening Parenthases ('('), but we may be able to work around that");
-		if (moves.includes('&'))
-			throw Error("The Repeated Movement ('&') Operator has been deprecated, please use the Grouping ('()') Operator instead");
 	}
 
 	constructor(x: number, y: number, moves: string = "", direction: number = 1, turns: number = 0,
@@ -213,10 +224,12 @@ class Piece {
 		this.yLim = yLim;
 		this.lxLim = lxLim;
 		this.lyLim = lyLim;
+		this.fontFamily = "Verdana";
+		this.value = 1;
 	}
 
 	move(x: number, y: number, others: Array<Piece> = []): boolean {
-		let test = Piece.move(this.moves, this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
+		let test: Array<boolean | Array<Piece>> = this.getMove(x, y, others);
 		if (test[0]) {
 			this.preTest();
 			this.x = x;
@@ -232,15 +245,19 @@ class Piece {
 		return false;
 	}
 
-	getMoves(others: Array<Piece> = []): Array<Array<number | boolean>> {
+	getMove(x: number, y: number, others: Array<Piece> = []): Array<boolean | Array<Piece>> {
+		return Piece.move(this.moves, this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
+	}
+
+	getMoves(others: Array<Piece> | undefined = []): Array<Array<number | boolean>> {
 		return Piece.getMoves(this.moves, this.x, this.y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
 	}
 
-	getChecks(others: Array<Piece> = [] = []): Array<Piece> {
+	getChecks(others: Array<Piece> = []): Array<Piece> {
 		return Piece.getChecks(this.x, this.y, this.direction, others);
 	}
 
-	showAlerts(others: Array<Piece> = [] = []): void {
+	showAlerts(others: Array<Piece> = []): void {
 		Piece.showAlerts(this.name, this.moves, this.x, this.y, this.direction, others);
 	}
 
@@ -290,13 +307,14 @@ class King extends Piece {
 	constructor(x: number, y: number, direction: number = 1, turns: number = 0,
 		xLim: number = 8, yLim: number = 8, lxLim: number = 0, lyLim: number = 0, colors: Array<string> = ["#FF00FF", "#00FFFF"]) {
 		super(x, y, "k1*", direction, turns, xLim, yLim, lxLim, lyLim, colors);
+		this.value = 99;
 	}
 
 	override plot(canvas: HTMLCanvasElement, xSquares: number = 8, ySquares: number = 8): void {
 		let ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
 		ctx.textAlign = "center";
 		ctx.fillStyle = this.color;
-		ctx.font = String(Math.min(canvas.width / this.xLim, canvas.height / this.yLim)) + "px sans-serif";
+		ctx.font = String(Math.min(canvas.width / this.xLim, canvas.height / this.yLim)) + "px " + this.fontFamily;
 		ctx.fillText((this.direction == 1 ? "\u{2654}" : "\u{265A}"), canvas.width / this.xLim * (this.x + 0.5), canvas.height / this.yLim * (this.y + 0.875));
 	}
 }
@@ -305,13 +323,14 @@ class Queen extends Piece {
 	constructor(x: number, y: number, direction: number = 1, turns: number = 0,
 		xLim: number = 8, yLim: number = 8, lxLim: number = 0, lyLim: number = 0, colors: Array<string> = ["#FF00FF", "#00FFFF"]) {
 		super(x, y, "n*", direction, turns, xLim, yLim, lxLim, lyLim, colors);
+		this.value = 9;
 	}
 
 	override plot(canvas: HTMLCanvasElement, xSquares: number = 8, ySquares: number = 8): void {
 		let ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
 		ctx.textAlign = "center";
 		ctx.fillStyle = this.color;
-		ctx.font = String(Math.min(canvas.width / this.xLim, canvas.height / this.yLim)) + "px sans-serif";
+		ctx.font = String(Math.min(canvas.width / this.xLim, canvas.height / this.yLim)) + "px " + this.fontFamily;
 		ctx.fillText((this.direction == 1 ? "\u{2655}" : "\u{265B}"), canvas.width / this.xLim * (this.x + 0.5), canvas.height / this.yLim * (this.y + 0.875));
 	}
 }
@@ -320,13 +339,14 @@ class Rook extends Piece {
 	constructor(x: number, y: number, direction: number = 1, turns: number = 0,
 		xLim: number = 8, yLim: number = 8, lxLim: number = 0, lyLim: number = 0, colors: Array<string> = ["#FF00FF", "#00FFFF"]) {
 		super(x, y, "n+", direction, turns, xLim, yLim, lxLim, lyLim, colors);
+		this.value = 5;
 	}
 
 	override plot(canvas: HTMLCanvasElement, xSquares: number = 8, ySquares: number = 8): void {
 		let ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
 		ctx.textAlign = "center";
 		ctx.fillStyle = this.color;
-		ctx.font = String(Math.min(canvas.width / this.xLim, canvas.height / this.yLim)) + "px sans-serif";
+		ctx.font = String(Math.min(canvas.width / this.xLim, canvas.height / this.yLim)) + "px " + this.fontFamily;
 		ctx.fillText((this.direction == 1 ? "\u{2656}" : "\u{265C}"), canvas.width / this.xLim * (this.x + 0.5), canvas.height / this.yLim * (this.y + 0.875));
 	}
 }
@@ -335,13 +355,14 @@ class Bishop extends Piece {
 	constructor(x: number, y: number, direction: number = 1, turns: number = 0,
 		xLim: number = 8, yLim: number = 8, lxLim: number = 0, lyLim: number = 0, colors: Array<string> = ["#FF00FF", "#00FFFF"]) {
 		super(x, y, "nx", direction, turns, xLim, yLim, lxLim, lyLim, colors);
+		this.value = 3;
 	}
 
 	override plot(canvas: HTMLCanvasElement, xSquares: number = 8, ySquares: number = 8): void {
 		let ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
 		ctx.textAlign = "center";
 		ctx.fillStyle = this.color;
-		ctx.font = String(Math.min(canvas.width / this.xLim, canvas.height / this.yLim)) + "px sans-serif";
+		ctx.font = String(Math.min(canvas.width / this.xLim, canvas.height / this.yLim)) + "px " + this.fontFamily;
 		ctx.fillText((this.direction == 1 ? "\u{2657}" : "\u{265D}"), canvas.width / this.xLim * (this.x + 0.5), canvas.height / this.yLim * (this.y + 0.875));
 	}
 }
@@ -350,13 +371,14 @@ class Knight extends Piece {
 	constructor(x: number, y: number, direction: number = 1, turns: number = 0,
 		xLim: number = 8, yLim: number = 8, lxLim: number = 0, lyLim: number = 0, colors: Array<string> = ["#FF00FF", "#00FFFF"]) {
 		super(x, y, "~1/2", direction, turns, xLim, yLim, lxLim, lyLim, colors);
+		this.value = 3;
 	}
 
 	override plot(canvas: HTMLCanvasElement, xSquares: number = 8, ySquares: number = 8): void {
 		let ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
 		ctx.textAlign = "center";
 		ctx.fillStyle = this.color;
-		ctx.font = String(Math.min(canvas.width / this.xLim, canvas.height / this.yLim)) + "px sans-serif";
+		ctx.font = String(Math.min(canvas.width / this.xLim, canvas.height / this.yLim)) + "px " + this.fontFamily;
 		ctx.fillText((this.direction == 1 ? "\u{2658}" : "\u{265E}"), canvas.width / this.xLim * (this.x + 0.5), canvas.height / this.yLim * (this.y + 0.875));
 	}
 }
@@ -365,6 +387,7 @@ class Pawn extends Piece {
 	constructor(x: number, y: number, direction: number = 1, turns: number = 0,
 		xLim: number = 8, yLim: number = 8, lxLim: number = 0, lyLim: number = 0, colors: Array<string> = ["#FF00FF", "#00FFFF"]) {
 		super(x, y, "o1>+, c1X>, oi2>+", direction, turns, xLim, yLim, lxLim, lyLim, colors);
+		this.value = 1;
 	}
 
 	override move(x: number, y: number, others: Array<Piece> = []): boolean {
@@ -382,21 +405,9 @@ class Pawn extends Piece {
 			this.postTest();
 			return true;
 		}
-		let temp: Piece | undefined = Piece.getPiece(this.x - 1, this.y, others);
+		let temp = Piece.getPiece(x, this.y, others);
 		if (temp && temp.constructor.name == "Pawn" && temp.turns == 1 && temp.enPassant &&
-			Piece.move("o1Xl>", this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0]) {
-			this.preTest();
-			this.x = x;
-			this.y = y;
-			this.turns++;
-			temp.x = -1;
-			temp.y = -1;
-			this.postTest();
-			return true;
-		}
-		temp = Piece.getPiece(this.x + 1, this.y, others);
-		if (temp && temp.constructor.name == "Pawn" && temp.turns == 1 && temp.enPassant &&
-			Piece.move("o1Xr>", this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0]) {
+			Piece.move("o1X>", this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0]) {
 			this.preTest();
 			this.x = x;
 			this.y = y;
@@ -409,17 +420,33 @@ class Pawn extends Piece {
 		return false;
 	}
 
+	// x: int, y: int, other: array[Piece, ...] = [] -> array[bool, array[Piece, ...]]
+	override getMove(x: number, y: number, others: Array<Piece> = []): Array<boolean | Array<Piece>> {
+		let m: Array<boolean | Array<Piece>> = Piece.move(this.moves, this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
+		if (m[0])
+			return m;
+		let temp: Piece | undefined = Piece.getPiece(x, this.y, others);
+		if (temp && temp.constructor.name == "Pawn" && temp.turns == 1 && temp.enPassant) {
+			m = Piece.move("o1X>", this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
+			if (m[0]) {
+				(m[1] as Array<Piece>).push(temp);
+				return m;
+			}
+		}
+		return [false];
+	}
+
 	override getMoves(others: Array<Piece> = []): Array<Array<number | boolean>> {
 		let m: Array<Array<number | boolean>> = Piece.getMoves(this.moves, this.x, this.y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
-		let temp: Piece | undefined = Piece.getPiece(this.x - 1, this.y, others);
+		let temp: Piece | undefined = Piece.getPiece(this.x - this.direction, this.y, others);
 		if (temp && temp.constructor.name == "Pawn" && temp.turns == 1 && temp.enPassant &&
-			Piece.move("o1Xl>", this.x, this.y, this.x - 1, this.y + this.direction, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0]) {
-			m.push([this.x - 1, this.y + this.direction, true]);
+			Piece.move("o1Xl>", this.x, this.y, this.x - this.direction, this.y + this.direction, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0]) {
+			m.push([this.x - this.direction, this.y + this.direction, true]);
 		}
-		temp = Piece.getPiece(this.x + 1, this.y, others);
+		temp = Piece.getPiece(this.x + this.direction, this.y, others);
 		if (temp && temp.constructor.name == "Pawn" && temp.turns == 1 && temp.enPassant &&
-			Piece.move("o1Xr>", this.x, this.y, this.x + 1, this.y + this.direction, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0]) {
-			m.push([this.x + 1, this.y + this.direction, true]);
+			Piece.move("o1Xr>", this.x, this.y, this.x + this.direction, this.y + this.direction, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0]) {
+			m.push([this.x + this.direction, this.y + this.direction, true]);
 		}
 		return m;
 	}
@@ -428,29 +455,42 @@ class Pawn extends Piece {
 		let ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
 		ctx.textAlign = "center";
 		ctx.fillStyle = this.color;
-		ctx.font = String(Math.min(canvas.width / this.xLim, canvas.height / this.yLim)) + "px sans-serif";
+		ctx.font = String(Math.min(canvas.width / this.xLim, canvas.height / this.yLim)) + "px " + this.fontFamily;
 		ctx.fillText((this.direction == 1 ? "\u{2659}" : "\u{265F}"), canvas.width / this.xLim * (this.x + 0.5), canvas.height / this.yLim * (this.y + 0.875));
 	}
 
 	override postTest(): void {
 		if (this.y == ((this.direction == -1) ? 0 : ((this.direction == 1) ? this.yLim - 1 : false))) {
-			let choices: Array<string> = ["Queen",
-				"Bishop",
-				"Rook",
-				"Pawn",
-				"Knight"];
-			let str: string | null = null;
-			while (!str || !choices.includes(str)) {
-				str = prompt(JSON.stringify(choices), "queen")
-				if (str) {
-					str = str.trim();
-					str = str[0].toUpperCase() + str.slice(1).toLowerCase();
-				}
-			}
-			let p: Piece = eval(`new ${str}(${this.x}, ${this.y}, ${this.direction}, ${this.turns}, ${this.xLim}, ${this.yLim}, ${this.lxLim}, ${this.lyLim})`);
+			let p: Queen = new Queen(this.x, this.y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim);
 			Object.assign(this, p);
 			this.plot = p.plot;
 			this.postTest = p.postTest;
 		}
 	}
 }
+
+/*
+let p0 = new Piece(0, 0, "1>+, 2i>+, 1c>x"); // Test Move Coordinates
+console.log(p0.move(0, 2));
+
+let p1 = new Piece(0, 0, "nx", 1); // Test Attack Piece Coordinates
+console.log(p1.attack(3, 3, [new Piece(3, 3, "", -1)]));
+
+let p2 = new Piece(0, 0, "n*, n(~1/2)", 1); // Test Rider
+console.log(p2.move(3, 6));
+
+let p3 = new Piece(0, 0, "1x.n+", 1); // Test Then
+console.log(p3.move(1, 3));
+
+let p4 = new Piece(0, 0, "n(1x.2+)", 1); // Test Then in Rider
+console.log(p4.move(2, 6));
+
+let p5 = new Piece(0, 0, "n(~1/2).1*", 1); // Test Rider in Then
+console.log(p5.move(3, 7));
+
+let p6 = new Piece(0, 0, "n(1x.2+).n(~2*)", -1); // Test Then in Rider in Then
+console.log(p6.move(6, 6));
+
+let p7 = new Piece(3, 3, "cn(^2x), o1x", 1); // Test Hopper
+console.log(p7.attack(5, 5, [new Piece(4, 4, "", -1), new Piece(6, 6, "", -1)]));
+*/
