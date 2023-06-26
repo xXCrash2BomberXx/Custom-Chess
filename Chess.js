@@ -21,7 +21,7 @@ String.prototype.count = function(char=" ") {
 /**
  * Recommended Order:
  * * \<conditions> \<move type> \<distance> \<direction> \<other>
- * 
+ *
  * Move Commands:
  * * '1', '2', '3', ..., 'n'/'N' = Distance of N
  * * '*' = Orthogonal of Diagonal Movement
@@ -43,7 +43,7 @@ String.prototype.count = function(char=" ") {
  * * 'o'/'O' = Only Use on Not Capturing Piece
  * * ',' = Add Different Movements to a Piece
  * * 'k'/'K' = King flag that enables notifications when placed into check by another piece
- * 
+ *
  * Missing:
  * * Castling
  */
@@ -156,7 +156,7 @@ class Piece {
                 // attack = true; move = false
                 if (move[0])
                     arr.push([x2, y2, (move[1].length > 0)]);
-                
+
             }
         return arr;
     }
@@ -395,7 +395,7 @@ class Pawn extends Piece {
             return true;
         }
         let temp = Piece.getPiece(this.x-1, this.y, others);
-        if (temp != null && temp.constructor.name == "Pawn" && temp.turns == 1 && temp.enPassant && 
+        if (temp != null && temp.constructor.name == "Pawn" && temp.turns == 1 && temp.enPassant &&
             Piece.move("o1Xl>", this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0]) {
             this.preTest();
             this.x = x;
@@ -407,7 +407,7 @@ class Pawn extends Piece {
             return true;
         }
         temp = Piece.getPiece(this.x+1, this.y, others);
-        if (temp != null && temp.constructor.name == "Pawn" && temp.turns == 1 && temp.enPassant && 
+        if (temp != null && temp.constructor.name == "Pawn" && temp.turns == 1 && temp.enPassant &&
             Piece.move("o1Xr>", this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0]) {
             this.preTest();
             this.x = x;
@@ -445,12 +445,12 @@ class Pawn extends Piece {
     getMoves(others = []) {
         let m = Piece.getMoves(this.moves, this.x, this.y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
         let temp = Piece.getPiece(this.x-1, this.y, others);
-        if (temp != null && temp.constructor.name == "Pawn" && temp.turns == 1 && temp.enPassant && 
+        if (temp != null && temp.constructor.name == "Pawn" && temp.turns == 1 && temp.enPassant &&
             Piece.move("o1Xl>", this.x, this.y, this.x-1, this.y+this.direction, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0]) {
             m.push([this.x-1, this.y+this.direction, true]);
         }
         temp = Piece.getPiece(this.x+1, this.y, others);
-        if (temp != null && temp.constructor.name == "Pawn" && temp.turns == 1 && temp.enPassant && 
+        if (temp != null && temp.constructor.name == "Pawn" && temp.turns == 1 && temp.enPassant &&
             Piece.move("o1Xr>", this.x, this.y, this.x+1, this.y+this.direction, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0]) {
             m.push([this.x+1, this.y+this.direction, true]);
         }
