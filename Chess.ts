@@ -101,7 +101,7 @@ class Piece {
 		if (!move.includes(">") && !move.includes("<") && move.includes("=") && y1 != y2)
 			return false;
 		// Distance (1, 2, 3, ..., n)
-		if (!match2 && match1 != null &&
+		if (!match2 && match1 &&
 			(match1[0] != "n" && parseInt(match1[0]) != Math.abs(x1 - x2) &&
 				parseInt(match1[0]) != Math.abs(y1 - y2)))
 			return false;
@@ -142,7 +142,7 @@ class Piece {
 		for (let i = 0; i < moves.length; i++) {
 			// Leaper (~)
 			if (!moves[i].includes("~") && !moves[i].includes("^") && Piece.path(x1, y1, x2, y2).slice(0, -1).filter(
-				value => Piece.getPiece(value[0], value[1], others) != null).length != 0)
+				value => Piece.getPiece(value[0], value[1], others)).length != 0)
 				continue;
 			// Base Move
 			if (!Piece.#move(moves[i].replaceAll("^", "~"), x1, y1, x2, y2, direction, turns, xLim, yLim, lxLim, lyLim))
@@ -278,16 +278,13 @@ class Piece {
 	}
 
 	// Runs before the piece is moved to a new location
-	// null -> null
-	preTest() { }
+	preTest(): void { }
 
 	// Runs after the piece is moved to a new location
-	// null -> null
-	postTest() { }
+	postTest(): void { }
 
 	// Runs at the beginning of each player's turn
-	// null -> null
-	turnTest() { }
+	turnTest(): void { }
 }
 
 class King extends Piece {
@@ -387,7 +384,7 @@ class Pawn extends Piece {
 			return true;
 		}
 		let temp: Piece | undefined = Piece.getPiece(this.x - 1, this.y, others);
-		if (temp != null && temp.constructor.name == "Pawn" && temp.turns == 1 && temp.enPassant &&
+		if (temp && temp.constructor.name == "Pawn" && temp.turns == 1 && temp.enPassant &&
 			Piece.move("o1Xl>", this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0]) {
 			this.preTest();
 			this.x = x;
