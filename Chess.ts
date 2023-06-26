@@ -15,10 +15,10 @@ function range(start: number, end: number | undefined = NaN, step: number = 1): 
 
 /**
  * https://en.m.wikipedia.org/wiki/Fairy_chess_piece#0%E2%80%939
- * 
+ *
  * Recommended Order:
  * * \<conditions> \<move type> \<distance> \<direction> \<other>
- * 
+ *
  * Move Commands:
  * * '1', '2', '3', ..., 'n'/'N' = Distance of N
  * * 'X-Y' = Distance in Inclusive Range from X to Y
@@ -52,7 +52,7 @@ function range(start: number, end: number | undefined = NaN, step: number = 1): 
  * * '.' = Then Operator (Aanca)
  * * '^' = Locust Operator (Checkers) (Must capture between each jump)
  * * 'k'/'K' = King flag that enables notifications when placed into check by another piece
- * 
+ *
  * Missing:
  * * Castling
  */
@@ -73,7 +73,7 @@ class Piece {
 	fontFamily: string;
 	value: number;
 	// Rider (n())
-	static #rider(move: string, x1: number, y1: number, x2: number, y2: number, direction: number = 1, turns: number = 0, 
+	static #rider(move: string, x1: number, y1: number, x2: number, y2: number, direction: number = 1, turns: number = 0,
 		xLim: number = 8, yLim: number = 8, lxLim: number = 0, lyLim: number = 0): Array<Array<number>> | boolean {
 		while ((move.match(/\(/g) || []).length > (move.match(/\)/g) || []).length)
 			move += ")";
@@ -152,7 +152,7 @@ class Piece {
 	}
 
 	// Then (.)
-	static #then(move: string, x1: number, y1: number, x3: number, y3: number, direction: number = 1, turns: number = 0, 
+	static #then(move: string, x1: number, y1: number, x3: number, y3: number, direction: number = 1, turns: number = 0,
 		xLim: number = 8, yLim: number = 8, lxLim: number = 0, lyLim: number = 0): Array<Array<number>> | boolean {
 		let p1: string = "";
 		let p2: string = "";
@@ -215,7 +215,7 @@ class Piece {
 	}
 
 	// General Move Function
-	static #move(move: string, x1: number, y1: number, x2: number, y2: number, direction: number = 1, turns: number = 0, 
+	static #move(move: string, x1: number, y1: number, x2: number, y2: number, direction: number = 1, turns: number = 0,
 		xLim: number = 8, yLim: number = 8, lxLim: number = 0, lyLim: number = 0): boolean {
 		let match1: RegExpMatchArray = move.match(/[0-9nN]+(-[0-9nN]+)?/g) as RegExpMatchArray; //.match(/[0-9n]+/g);
 		let match2: RegExpMatchArray = move.match(/[0-9nN]+(-[0-9nN]+)?\/[0-9nN]+(-[0-9nN]+)?/g) as RegExpMatchArray; //.match(/[0-9n]+\/[0-9n]+/g);
@@ -281,7 +281,7 @@ class Piece {
 					parseInt(match1[0]) != Math.abs(y1 - y2))))
 			return false;
 		// Two Orthogonal Moves (1/1, 1/1-2, 1/2, 1-2/1, 2/1, 1/1-2s, 1/2s, 1-2/1s, 2/1s, ..., n/n)
-		if (match2 && match3 && 
+		if (match2 && match3 &&
 			!(((match3[0].includes("-") ?
 				range(parseInt((match3[0].match(/[0-9n]+/g) as RegExpMatchArray)[0]),
 					parseInt((match3[0].match(/[0-9n]+/g) as RegExpMatchArray)[1]) + 1
@@ -322,12 +322,12 @@ class Piece {
 		return;
 	}
 
-	static move(moves: string | Array<string>, x1: number, y1: number, x2: number, y2: number, direction: number = 1, turns: number = 0, 
+	static move(moves: string | Array<string>, x1: number, y1: number, x2: number, y2: number, direction: number = 1, turns: number = 0,
 		xLim: number = 8, yLim: number = 8, lxLim: number = 0, lyLim: number = 0, others: Array<Piece> = []): Array<boolean | Array<Piece>> {
 		let other: Piece | undefined = Piece.getPiece(x2, y2, others);
 		if (other && (direction == other.direction || other.moves.toLowerCase().includes("d")))
 			return [false];
-		if (typeof(moves) === 'string')
+		if (typeof (moves) === 'string')
 			moves = moves.toLowerCase().replaceAll(" ", "").split(",");
 		for (let i = 0; i < moves.length; i++) {
 			// Leaper (~)
@@ -392,7 +392,7 @@ class Piece {
 		return [false];
 	}
 
-	static getMoves(moves: string, x1: number, y1: number, direction: number = 1, turns: number = 0, 
+	static getMoves(moves: string, x1: number, y1: number, direction: number = 1, turns: number = 0,
 		xLim: number = 8, yLim: number = 8, lxLim: number = 0, lyLim: number = 0, others: Array<Piece> = []): Array<Array<number | boolean>> {
 		let arr = [];
 		for (let x2 = lxLim; x2 < xLim; x2++)
@@ -434,7 +434,7 @@ class Piece {
 			throw Error("The Repeated Movement ('&') Operator has been deprecated, please use the Grouping ('()') Operator instead");
 	}
 
-	constructor(x: number, y: number, moves: string = "", direction: number = 1, turns: number = 0, 
+	constructor(x: number, y: number, moves: string = "", direction: number = 1, turns: number = 0,
 		xLim: number = 8, yLim: number = 8, lxLim: number = 0, lyLim: number = 0, colors: Array<string> = ["#FF00FF", "#00FFFF"]) {
 		this.name = this.constructor.name;
 		this.x = x;
@@ -530,7 +530,7 @@ class Piece {
 
 
 class Checker extends Piece {
-	constructor(x: number, y: number, direction: number = 1, turns: number = 0, 
+	constructor(x: number, y: number, direction: number = 1, turns: number = 0,
 		xLim: number = 8, yLim: number = 8, lxLim: number = 0, lyLim: number = 0, colors: Array<string> = ["#FF00FF", "#00FFFF"]) {
 		super(x, y, "n(^2x>), o1x>", direction, turns, xLim, yLim, lxLim, lyLim, colors);
 		this.value = 1;
@@ -566,7 +566,7 @@ class Checker extends Piece {
 }
 
 class King extends Piece {
-	constructor(x: number, y: number, direction: number = 1, turns: number = 0, 
+	constructor(x: number, y: number, direction: number = 1, turns: number = 0,
 		xLim: number = 8, yLim: number = 8, lxLim: number = 0, lyLim: number = 0, colors: Array<string> = ["#FF00FF", "#00FFFF"]) {
 		super(x, y, "k1*", direction, turns, xLim, yLim, lxLim, lyLim, colors);
 		this.value = 99;
@@ -582,7 +582,7 @@ class King extends Piece {
 }
 
 class Queen extends Piece {
-	constructor(x: number, y: number, direction: number = 1, turns: number = 0, 
+	constructor(x: number, y: number, direction: number = 1, turns: number = 0,
 		xLim: number = 8, yLim: number = 8, lxLim: number = 0, lyLim: number = 0, colors: Array<string> = ["#FF00FF", "#00FFFF"]) {
 		super(x, y, "n*", direction, turns, xLim, yLim, lxLim, lyLim, colors);
 		this.value = 9;
@@ -598,7 +598,7 @@ class Queen extends Piece {
 }
 
 class Rook extends Piece {
-	constructor(x: number, y: number, direction: number = 1, turns: number = 0, 
+	constructor(x: number, y: number, direction: number = 1, turns: number = 0,
 		xLim: number = 8, yLim: number = 8, lxLim: number = 0, lyLim: number = 0, colors: Array<string> = ["#FF00FF", "#00FFFF"]) {
 		super(x, y, "n+", direction, turns, xLim, yLim, lxLim, lyLim, colors);
 		this.value = 5;
@@ -614,7 +614,7 @@ class Rook extends Piece {
 }
 
 class Bishop extends Piece {
-	constructor(x: number, y: number, direction: number = 1, turns: number = 0, 
+	constructor(x: number, y: number, direction: number = 1, turns: number = 0,
 		xLim: number = 8, yLim: number = 8, lxLim: number = 0, lyLim: number = 0, colors: Array<string> = ["#FF00FF", "#00FFFF"]) {
 		super(x, y, "nx", direction, turns, xLim, yLim, lxLim, lyLim, colors);
 		this.value = 3;
@@ -630,7 +630,7 @@ class Bishop extends Piece {
 }
 
 class Knight extends Piece {
-	constructor(x: number, y: number, direction: number = 1, turns: number = 0, 
+	constructor(x: number, y: number, direction: number = 1, turns: number = 0,
 		xLim: number = 8, yLim: number = 8, lxLim: number = 0, lyLim: number = 0, colors: Array<string> = ["#FF00FF", "#00FFFF"]) {
 		super(x, y, "~1/2", direction, turns, xLim, yLim, lxLim, lyLim, colors);
 		this.value = 3;
@@ -646,7 +646,7 @@ class Knight extends Piece {
 }
 
 class Pawn extends Piece {
-	constructor(x: number, y: number, direction: number = 1, turns: number = 0, 
+	constructor(x: number, y: number, direction: number = 1, turns: number = 0,
 		xLim: number = 8, yLim: number = 8, lxLim: number = 0, lyLim: number = 0, colors: Array<string> = ["#FF00FF", "#00FFFF"]) {
 		super(x, y, "o1>+, c1X>, oi2>+", direction, turns, xLim, yLim, lxLim, lyLim, colors);
 		this.value = 1;
@@ -735,7 +735,7 @@ class PowerUp extends Piece {
 	movesList: Array<string>;
 	moveIndex: number;
 
-	constructor(x: number, y: number, direction: number = 1, turns: number = 0, 
+	constructor(x: number, y: number, direction: number = 1, turns: number = 0,
 		xLim: number = 8, yLim: number = 8, lxLim: number = 0, lyLim: number = 0, colors: Array<string> = ["#FF00FF", "#00FFFF"]) {
 		super(x, y, "", direction, turns, xLim, yLim, lxLim, lyLim, colors);
 		this.movesList = ["o1>+, c1X>, oi2>+", "1*", "~1/2", "nx", "n+", "n*"];
