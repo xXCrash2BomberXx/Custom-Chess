@@ -1,119 +1,345 @@
 <!DOCTYPE html>
 <html>
+
 <head>
+	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="0" />
+	<script type="text/javascript" src="Minimax.js"></script>
 	<script type="text/javascript" src="Chess.js"></script>
+	<link rel="stylesheet" href="Chess.css">
+	<script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
 	<script type="text/javascript">
-		function drawBoard (canvas, pieces=[]) {
+		var player_direction = 0;
+		var conn_id;
+		var connected = false;
+
+		function connect() {
+			let peer = new Peer();
+
+			peer.on('open', id => {
+				let element = document.getElementById('textbox');
+				if (element.value == "") {
+					element.readOnly = true;
+					element.value = peer._id;
+					alert("Until notified an opponent has joined the game, local play will be used");
+				} else {
+					conn_id = peer.connect(element.value);
+					element.remove();
+					document.getElementById('connect').remove();
+					conn_id.on('open', function () {
+						conn_id.send(true);
+						player_direction = -1;
+						connected = true;
+						alert("Opponent Connected");
+						init();
+					});
+				}
+			});
+			peer.on('connection', conn => {
+				conn.on('data', data => {
+					if (!connected) {
+						conn_id = peer.connect(conn.peer);
+						player_direction = 1;
+						connected = true;
+						document.getElementById('textbox').remove();
+						document.getElementById('connect').remove();
+						alert("Opponent Connected");
+						init();
+						return;
+					}
+					var temp;
+					try {
+						temp = JSON.parse(data);
+					} catch {
+						return;  // new player tried to join
+					}
+					if (temp.length == 4) {
+						global = temp;
+						let p = Piece.getPiece(global[0], global[1], [...p1, ...p2]);
+						if (p.move(global[2], global[3], [...p1, ...p2])) {
+							direction *= -1;
+							for (let i = 0; i < p1.length; i++)
+								p1[i].turnTest();
+							for (let i = 0; i < p2.length; i++)
+								p2[i].turnTest();
+							showAlerts(direction == 1 ? p1 : p2, [...p1, ...p2]);
+							drawBoard(canvas, [...p1, ...p2]);
+							global = [];
+						} else
+							alert("OpponentOutOfSyncError: Non-Symmetric Piece Modifications may have occurred.");
+					} else if (temp.length == 3) {
+						if (confirm(`Allow coordinate (${temp[0]}, ${temp[1]}) to be modified?`)) {
+							change(...temp);
+							alert(`Piece (${temp[0]}, ${temp[1]}) Updated`);
+						} else {
+							let currCoords = [global[global.length-2], global[global.length-1]];
+							fillInfo(temp[0], temp[1]);
+							change(temp[0], temp[1]);
+							fillInfo(...currCoords);
+						}
+					}
+				});
+			});
+
+			peer.on('close', () => {
+				connected = false;
+				peer.destroy();
+				alert('PeerClosedError: Peer has been destroyed.');
+			});
+
+			peer.on('disconnected', () => {
+				alert('OpponentDisconnectedError: Opponent has Disconnected from the Server.');
+			});
+		}
+	</script>
+
+	<script type="text/javascript">
+		function drawBoard(canvas, pieces = []) {
 			var ctx = canvas.getContext("2d");
-			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			ctx.fillStyle = "#7F7F7F";
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			for (var y = 0; y < 8; y++)
 				for (var x = 0; x < 8; x++)
-					if ((x%2 == 0 && y%2 !== 0) || (x%2 !== 0 && y%2 == 0)) {
-						ctx.fillRect(x*canvas.width/8,
-							y*canvas.height/8,
-							canvas.width/8,
-							canvas.height/8);
-					}
+					if ((x % 2 == 0 && y % 2 !== 0) || (x % 2 !== 0 && y % 2 == 0))
+						ctx.fillRect(x * canvas.width / 8,
+							y * canvas.height / 8,
+							canvas.width / 8,
+							canvas.height / 8);
 			for (let i = 0; i < pieces.length; i++)
 				pieces[i].plot(canvas);
 		}
 
-		function draw (canvas, moves, checks, attack="rgba(255, 0, 0, 0.5)", move="rgba(0, 255, 0, 0.5)", check="rgba(255, 255, 0, 0.5)") {
+		function draw(canvas, moves, checks, attack = "rgba(255, 0, 0, 0.5)", move = "rgba(0, 255, 0, 0.5)", check = "rgba(255, 255, 0, 0.5)") {
 			var ctx = canvas.getContext("2d");
 			for (let i = 0; i < moves.length; i++) {
 				if (moves[i][2])
 					ctx.fillStyle = attack;
 				else
 					ctx.fillStyle = move;
-				ctx.fillRect(moves[i][0]*canvas.width/8, moves[i][1]*canvas.height/8, canvas.width/8, canvas.height/8);
+				ctx.fillRect(moves[i][0] * canvas.width / 8, moves[i][1] * canvas.height / 8, canvas.width / 8, canvas.height / 8);
 			}
 			ctx.fillStyle = check;
 			for (let i = 0; i < checks.length; i++)
-				ctx.fillRect(checks[i].x*canvas.width/8, checks[i].y*canvas.height/8, canvas.width/8, canvas.height/8)
+				ctx.fillRect(checks[i].x * canvas.width / 8, checks[i].y * canvas.height / 8, canvas.width / 8, canvas.height / 8)
 		}
 
-		function showAlerts (pieces, others = []) {
+		function reFont(pieces = [], font = "MS Gothic") {
+			if (font == "Add Font") {
+				font = prompt("Font")
+				document.getElementById("fontStyle").value = font;
+				for (opt of document.getElementById("fontStyle").options)
+					if (opt.value == font)
+						return reFont(pieces, font);
+				let option = document.createElement('option');
+				option.value = font;
+				option.innerHTML = font;
+				option.style.fontFamily = font;
+				document.getElementById("customFonts").appendChild(option);
+				return reFont(pieces, font);
+			}
+			for (let i = 0; i < pieces.length; i++)
+				pieces[i].fontFamily = font;
+			drawBoard(canvas, pieces);
+			[document.getElementById("textbox"),
+			document.getElementById("connect"),
+			document.getElementById("guide"),
+			document.getElementById("info"),
+			document.getElementById("fontStyle")].forEach(f => f.style.fontFamily = font);
+		}
+
+		function showAlerts(pieces, others = []) {
+			if (connected && pieces[0].direction != player_direction)
+				return;
 			for (let i = 0; i < pieces.length; i++) {
 				pieces[i].showAlerts(others);
 			}
 		}
 
-		function win (p1, p2) {
+		function win(p1, p2) {
 			for (let i = 0; i < p1.length; i++)
 				if (p1[i].hasLost()) {
 					alert("Player 2 has won the game");
 					return true;
 				}
-			for(let i = 0; i < p2.length; i++)
+			for (let i = 0; i < p2.length; i++)
 				if (p2[i].hasLost()) {
 					alert("Player 1 has won the game");
 					return true;
 				}
 			return false;
 		}
-	</script>
-</head>
-<body>
-	<div>
-		<canvas id="canvas"></canvas>
-		<script type="text/javascript">
-			var canvas = document.getElementById("canvas");
-			canvas.height = Math.min(window.innerWidth-50, window.innerHeight-100);
-			canvas.width = canvas.height;
 
-			var global = [];
-			var p1 = [new Rook(0, 0, 1),
-					new Knight(1, 0, 1),
-					new Bishop(2, 0, 1),
-					new King(3, 0, 1),
-					new Queen(4, 0, 1),
-					new Bishop(5, 0, 1),
-					new Knight(6, 0, 1),
-					new Rook(7, 0, 1),
-					new Pawn(0, 1, 1),
-					new Pawn(1, 1, 1),
-					new Pawn(2, 1, 1),
-					new Pawn(3, 1, 1),
-					new Pawn(4, 1, 1),
-					new Pawn(5, 1, 1),
-					new Pawn(6, 1, 1),
-					new Pawn(7, 1, 1)];
-			var p2 = [new Pawn(0, 6, -1),
-					new Pawn(1, 6, -1),
-					new Pawn(2, 6, -1),
-					new Pawn(3, 6, -1),
-					new Pawn(4, 6, -1),
-					new Pawn(5, 6, -1),
-					new Pawn(6, 6, -1),
-					new Pawn(7, 6, -1),
-					new Rook(0, 7, -1),
-					new Knight(1, 7, -1),
-					new Bishop(2, 7, -1),
-					new King(3, 7, -1),
-					new Queen(4, 7, -1),
-					new Bishop(5, 7, -1),
-					new Knight(6, 7, -1),
-					new Rook(7, 7, -1)];
+		function init() {
+			global = [];
+			p1 = [new Rook(0, 0, 1),
+			new Knight(1, 0, 1),
+			new Bishop(2, 0, 1),
+			new King(3, 0, 1),
+			new Queen(4, 0, 1),
+			new Bishop(5, 0, 1),
+			new Knight(6, 0, 1),
+			new Rook(7, 0, 1),
+			new Pawn(0, 1, 1),
+			new Pawn(1, 1, 1),
+			new Pawn(2, 1, 1),
+			new Pawn(3, 1, 1),
+			new Pawn(4, 1, 1),
+			new Pawn(5, 1, 1),
+			new Pawn(6, 1, 1),
+			new Pawn(7, 1, 1)];
+			p2 = [new Pawn(0, 6, -1),
+			new Pawn(1, 6, -1),
+			new Pawn(2, 6, -1),
+			new Pawn(3, 6, -1),
+			new Pawn(4, 6, -1),
+			new Pawn(5, 6, -1),
+			new Pawn(6, 6, -1),
+			new Pawn(7, 6, -1),
+			new Rook(0, 7, -1),
+			new Knight(1, 7, -1),
+			new Bishop(2, 7, -1),
+			new King(3, 7, -1),
+			new Queen(4, 7, -1),
+			new Bishop(5, 7, -1),
+			new Knight(6, 7, -1),
+			new Rook(7, 7, -1)];
 			//p1 = [new Checker(5, 3, 1)];
 			//p2 = [new Pawn(0, 6, -1), new Pawn(4, 4, -1), new Pawn(4, 6, -1)];
 			drawBoard(canvas, [...p1, ...p2]);
-			var direction = 1;
+			direction = 1;
+		}
+	</script>
+</head>
 
-			canvas.addEventListener("click", function (event) {
-				if (win(p1, p2))
+<body>
+	<div id="main">
+		<div id="connections">
+			<input type="text" name="textbox" id="textbox">
+			<input type="submit" name="connect" id="connect" value="Connect" onclick="connect()">
+		</div>
+		<canvas id="canvas"></canvas>
+		<script type="text/javascript">
+			var canvas = document.getElementById("canvas");
+			if (window.innerWidth > window.innerHeight)
+				canvas.height = Math.min(window.innerWidth / 2 - 50, window.innerHeight - 100);
+			else
+				canvas.height = Math.min(window.innerHeight / 2 - 50, window.innerWidth - 100);
+			canvas.width = canvas.height;
+
+			var holding = false;
+			var global;
+			var globalTemp = false;
+			var p1;
+			var p2;
+			var direction;
+			init();
+
+			async function aiMove(steps = 3) {
+				let best = await Minimax(direction == 1 ? p1 : p2, direction == -1 ? p1 : p2, steps);
+				let p = Piece.getPiece(best[0], best[1], [...p1, ...p2]);
+				if (p != null && p.direction == direction && (connected ? direction == player_direction : true) && p.move(best[2], best[3], [...p1, ...p2])) {
+					if (connected)
+						conn_id.send(JSON.stringify(best));
+					direction *= -1;
+					for (let i = 0; i < p1.length; i++)
+						p1[i].turnTest();
+					for (let i = 0; i < p2.length; i++)
+						p2[i].turnTest();
+					showAlerts(direction == 1 ? p1 : p2, [...p1, ...p2]);
+					drawBoard(canvas, [...p1, ...p2]);
+				}
+				return best;
+			}
+
+			function globalUpdate(event) {
+				if (globalTemp)
 					return;
-				global.push(Math.floor((event.clientX-event.target.getBoundingClientRect().left)/canvas.width*8));
-				global.push(Math.floor((event.clientY-event.target.getBoundingClientRect().top)/canvas.height*8));
+				if (holding) {
+					let p = Piece.getPiece(global[global.length - 2], global[global.length - 1], [...p1, ...p2]);
+					if (p != null && p.direction == direction && (connected ? direction == player_direction : true)) {
+						var curr = [p.x, p.y];
+						if (event.constructor.prototype == TouchEvent.prototype) {
+							// Touch
+							p.x = Math.floor((event.targetTouches[0].clientX - event.target.getBoundingClientRect().left) / canvas.width * 8);
+							p.y = Math.floor((event.targetTouches[0].clientY - event.target.getBoundingClientRect().top) / canvas.height * 8);
+						} else {
+							// Mouse
+							p.x = Math.floor((event.clientX - event.target.getBoundingClientRect().left) / canvas.width * 8);
+							p.y = Math.floor((event.clientY - event.target.getBoundingClientRect().top) / canvas.height * 8);
+						}
+						drawBoard(canvas, [...p1, ...p2]);
+						p.x = curr[0];
+						p.y = curr[1];
+						if (p != null && p.direction == direction && (connected ? direction == player_direction : true)) {
+							draw(canvas, p.getMoves([...p1, ...p2]), p.getChecks([...p1, ...p2]));
+						}
+					}
+				}
+			}
+			canvas.addEventListener("mousemove", globalUpdate);
+			canvas.addEventListener("touchmove", globalUpdate);
+
+			function globalStart(event) {
+				if (globalTemp || win(p1, p2))
+					return;
+				holding = true;
+				if (event.constructor.prototype == TouchEvent.prototype) {
+					// Touch
+					global.push(Math.floor((event.targetTouches[0].clientX - event.target.getBoundingClientRect().left) / canvas.width * 8));
+					global.push(Math.floor((event.targetTouches[0].clientY - event.target.getBoundingClientRect().top) / canvas.height * 8));
+				} else {
+					// Mouse
+					global.push(Math.floor((event.clientX - event.target.getBoundingClientRect().left) / canvas.width * 8));
+					global.push(Math.floor((event.clientY - event.target.getBoundingClientRect().top) / canvas.height * 8));
+				}
+				global = global.slice(global.length - 4);
+				if (global[0] == global[2] && global[1] == global[3])
+					global = global.slice(2);
+				else if (global.length == 4)
+					// move to empty square by click
+					if (Piece.getPiece(global[2], global[3], [...p1, ...p2]) == null)
+						global = global.slice(0, 2);
+					else {
+						// move to filled square by click
+						const p = Piece.getPiece(global[0], global[1], [...p1, ...p2]);
+						if (p != null && p.direction == direction && (connected ? direction == player_direction : true) && p.getMove(global[2], global[3], [...p1, ...p2])[0])
+							global = global.slice(0, 2);
+						else
+							global = global.slice(2);
+					}
+				fillInfo(global[global.length - 2], global[global.length - 1]);
+			}
+			canvas.addEventListener("mousedown", globalStart);
+			canvas.addEventListener("touchstart", globalStart);
+
+			function globalEnd(event) {
+				if (globalTemp)
+					return;
+				holding = false;
+				if (event.constructor.prototype == TouchEvent.prototype) {
+					// Touch
+					global.push(Math.floor((event.changedTouches[0].clientX - event.target.getBoundingClientRect().left) / canvas.width * 8));
+					global.push(Math.floor((event.changedTouches[0].clientY - event.target.getBoundingClientRect().top) / canvas.height * 8));
+				} else {
+					// Mouse
+					global.push(Math.floor((event.clientX - event.target.getBoundingClientRect().left) / canvas.width * 8));
+					global.push(Math.floor((event.clientY - event.target.getBoundingClientRect().top) / canvas.height * 8));
+				}
+				global = global.slice(global.length - 4);
 				drawBoard(canvas, [...p1, ...p2]);
 				p = Piece.getPiece(global[0], global[1], [...p1, ...p2]);
-				if (p != null && p.direction == direction) {
+				if (p != null && p.direction == direction && (connected ? direction == player_direction : true))
 					draw(canvas, p.getMoves([...p1, ...p2]), p.getChecks([...p1, ...p2]));
-				}
 				if (global.length == 4) {
 					global = global.slice(2);
-					// move/attack
-					if (p != null && p.direction == direction && p.move(global[0], global[1], [...p1, ...p2])) {
+					if (p != null)
+						var moved = [p.x, p.y, global[0], global[1]];
+					if (p != null && p.direction == direction && (connected ? direction == player_direction : true) && p.move(global[0], global[1], [...p1, ...p2])) {
+						// move/attack
+						if (connected)
+							conn_id.send(JSON.stringify(moved));
 						direction *= -1;
 						for (let i = 0; i < p1.length; i++)
 							p1[i].turnTest();
@@ -121,103 +347,212 @@
 							p2[i].turnTest();
 						showAlerts(direction == 1 ? p1 : p2, [...p1, ...p2]);
 						drawBoard(canvas, [...p1, ...p2]);
-					// new selection
 					} else {
+						// new selection
 						p = Piece.getPiece(global[0], global[1], [...p1, ...p2]);
-						if (p != null && p.direction == direction) {
+						if (p != null && p.direction == direction && (connected ? direction == player_direction : true)) {
 							drawBoard(canvas, [...p1, ...p2]);
 							draw(canvas, p.getMoves([...p1, ...p2]), p.getChecks([...p1, ...p2]));
 						} else
 							drawBoard(canvas, [...p1, ...p2]);
 					}
 				}
-				fillInfo(global[0], global[1]);
+				fillInfo(global[global.length - 2], global[global.length - 1]);
+			}
+			canvas.addEventListener("mouseup", globalEnd);
+			canvas.addEventListener("touchend", globalEnd);
+
+			document.addEventListener("copy", event => {
+				try {
+					let p = Piece.getPiece(global[global.length - 2], global[global.length - 1], [...p1, ...p2]);
+					event.clipboardData.setData("text/plain", JSON.stringify([p.__proto__.constructor.name, p]));
+					event.preventDefault();
+				} catch (error) { if (error.name != "TypeError") console.error(error); }
 			});
 
-		function fillInfo (px, py) {
-			p = Piece.getPiece(px, py, [...p1, ...p2]);
-			if (p != null)
-				document.getElementById('guide').value = "Piece: "+p.name+
-					"\nMovement: "+p.moves+
-					"\nLocation: "+"abcdefgh"[p.x]+(8-p.y)+
-					"\nDirection: "+p.direction+
-					"\nMoves: "+p.turns+
-					"\nColor: "+p.color;
-			else
-				document.getElementById('guide').value = "Piece: null"+
-														"\nMovement: null"+
-														"\nLocation: "+"abcdefgh"[px]+(8-py)+
-														"\nDirection: null"+
-														"\nMoves: null"+
-														"\nColor: null";
-		}
-
-		function change (px, py) {
-			nl = document.getElementById('guide').value.indexOf("\n");
-			piece = document.getElementById('guide').value.slice(document.getElementById('guide').value.indexOf("Piece: ")+"Piece: ".length, nl).trim();
-			nl = document.getElementById('guide').value.indexOf("\n", nl+1);
-			movement = document.getElementById('guide').value.slice(document.getElementById('guide').value.indexOf("Movement: ")+"Movement: ".length, nl).trim();
-			nl = document.getElementById('guide').value.indexOf("\n", nl+1);
-			loc = document.getElementById('guide').value.slice(document.getElementById('guide').value.indexOf("Location: ")+"Location: ".length, nl).trim();
-			nl = document.getElementById('guide').value.indexOf("\n", nl+1);
-			dir = parseInt(document.getElementById('guide').value.slice(document.getElementById('guide').value.indexOf("Direction: ")+"Direction: ".length, nl));
-			nl = document.getElementById('guide').value.indexOf("\n", nl+1);
-			moves = parseInt(document.getElementById('guide').value.slice(document.getElementById('guide').value.indexOf("Moves: ")+"Moves: ".length, nl));
-			color = document.getElementById('guide').value.slice(document.getElementById('guide').value.indexOf("Color: ")+"Color: ".length);
-			p = Piece.getPiece(px, py, [...p1, ...p2]);
-			if (isNaN(dir))
-				dir = 1;
-			if (p == null && piece != "null") {
+			document.addEventListener("cut", event => {
 				try {
-					p = eval("new "+piece[0].toUpperCase()+piece.slice(1).toLowerCase()+"("+px+", "+py+", "+dir+")");
-				} catch {
-					p = new Checker(px, py, dir);
+					let p = Piece.getPiece(global[global.length - 2], global[global.length - 1], [...p1, ...p2]);
+					event.clipboardData.setData("text/plain", JSON.stringify([p.__proto__.constructor.name, p]));
+					let coords = [p.x, p.y];
+					p.x = -1;
+					p.y = -1;
+					drawBoard(canvas, [...p1, ...p2]);
+					fillInfo(global[global.length - 2], global[global.length - 1]);
+					change(...coords);
+					event.preventDefault();
+				} catch (error) { if (error.name != "TypeError") console.error(error); }
+			});
+
+			document.addEventListener("paste", event => {
+				try {
+					let temp = JSON.parse(event.clipboardData.getData("text/plain"));
+					let p = eval(`new ${temp[0]}(${global[global.length - 2]}, ${global[global.length - 1]}, ${temp[1].direction}, ${temp[1].turns}, ${temp[1].xLim}, ${temp[1].yLim}, ${temp[1].lxLim}, ${temp[1].lyLim})`);
+					p.moves = temp[1].moves;
+					p.color = temp[1].color;
+					(p.direction == 1 ? p1 : p2).push(p);
+					if (p.direction == direction)
+						draw(canvas, p.getMoves([...p1, ...p2]), p.getChecks([...p1, ...p2]));
+					fillInfo(global[global.length - 2], global[global.length - 1]);
+					change(p.x, p.y);
+					event.preventDefault();
+				} catch (error) { if (error.name != "TypeError") console.error(error); }
+			});
+
+			function fillInfo(px, py) {
+				p = Piece.getPiece(px, py, [...p1, ...p2]);
+				if (p != null)
+					document.getElementById('guide').value = "Piece: " + p.name +
+						"\nMovement: " + p.moves +
+						"\nLocation: " + "abcdefgh"[p.x] + (8 - p.y) +
+						"\nDirection: " + p.direction +
+						"\nValue: " + p.value +
+						"\nMoves: " + p.turns +
+						"\nColor: " + p.color;
+				else
+					document.getElementById('guide').value = "Piece: null" +
+						"\nMovement: null" +
+						"\nLocation: " + "abcdefgh"[px] + (8 - py) +
+						"\nDirection: null" +
+						"\nValue: null" +
+						"\nMoves: null" +
+						"\nColor: null";
+			}
+
+			function change(px, py, guideInfo = null) {
+				if (guideInfo == null) {
+					guideInfo = document.getElementById('guide').value;
+					if (connected)
+						conn_id.send(JSON.stringify([px, py, guideInfo]));
 				}
-				(dir==p1[0].dir?p1:p2).push(p);
+				nl = guideInfo.indexOf("\n");
+				piece = guideInfo.slice(guideInfo.indexOf("Piece: ") + "Piece: ".length, nl).trim();
+				nl = guideInfo.indexOf("\n", nl + 1);
+				movement = guideInfo.slice(guideInfo.indexOf("Movement: ") + "Movement: ".length, nl).trim();
+				nl = guideInfo.indexOf("\n", nl + 1);
+				loc = guideInfo.slice(guideInfo.indexOf("Location: ") + "Location: ".length, nl).trim();
+				nl = guideInfo.indexOf("\n", nl + 1);
+				dir = parseInt(guideInfo.slice(guideInfo.indexOf("Direction: ") + "Direction: ".length, nl));
+				nl = guideInfo.indexOf("\n", nl + 1);
+				val = parseInt(guideInfo.slice(guideInfo.indexOf("Value: ") + "Value: ".length, nl));
+				nl = guideInfo.indexOf("\n", nl + 1);
+				moves = parseInt(guideInfo.slice(guideInfo.indexOf("Moves: ") + "Moves: ".length, nl));
+				color = guideInfo.slice(guideInfo.indexOf("Color: ") + "Color: ".length);
+				p = Piece.getPiece(px, py, [...p1, ...p2]);
+				if (isNaN(dir))
+					dir = 1;
+				if (piece != "null") {
+					if (p == null && piece != "null") {
+						try {
+							p = eval(`new ${piece[0].toUpperCase()}${piece.slice(1).toLowerCase()}(${px}, ${py}, ${dir})`);
+						} catch {
+							p = new Checker(px, py, dir);
+						}
+						(dir == p1[0].dir ? p1 : p2).push(p);
+					}
+					p.name = piece;
+					if (movement != "null")
+						p.moves = movement;
+					if (loc != "null") {
+						p.x = "abcdefgh".indexOf(loc[0]);
+						p.y = 8 - parseInt(loc[1]);
+					}
+					p.direction = dir;
+					if (!isNaN(val))
+						p.value = val;
+					if (!isNaN(moves))
+						p.turns = moves;
+					if (color != "null")
+						p.color = color;
+				} else if (p != null) {
+					p.x = -1;
+					p.y = -1;
+				}
+				drawBoard(canvas, [...p1, ...p2]);
+				globalTemp = false;
 			}
-			p.name = piece;
-			if (movement != "null")
-				p.moves = movement;
-			if (loc != "null") {
-				p.x = "abcdefgh".indexOf(loc[0]);
-				p.y = 8-parseInt(loc[1]);
-			}
-			p.direction = dir;
-			if (!isNaN(moves))
-				p.turns = moves;
-			if (color != "null")
-				p.color = color;
-			drawBoard(canvas, [...p1, ...p2]);
-		}
 		</script>
-		<textarea spellcheck=false id="guide" onchange="change(global[global.length-2], global[global.length-1]);"></textarea>
-		<textarea spellcheck=false id="info" onchange="change(global[global.length-2], global[global.length-1]);" disabled></textarea>
+	</div>
+	<div id="extras">
+		<select name="fontStyle" id="fontStyle"
+			onchange="reFont([...p1, ...p2], document.getElementById('fontStyle').value);">
+			<optgroup label="Default Options">
+				<option style="font-family: Verdana;" value="Verdana">Verdana</option>
+				<option style="font-family: MS Gothic;" value="MS Gothic">MS Gothic</option>
+			</optgroup>
+			<optgroup label="Other Options" id="otherFonts"></optgroup>
+			<optgroup label="Custom Options" id="customFonts">
+				<option value="Add Font">Add Font</option>
+			</optgroup>
+		</select>
+		<div id="textareas">
+			<textarea spellcheck=false id="guide" onfocus="globalTemp=true;"
+				onfocusout="change(global[global.length-2], global[global.length-1]);"></textarea>
+			<textarea spellcheck=false id="info" readonly></textarea>
+		</div>
 		<script type="text/javascript">
-			document.getElementById("guide").style.height =  document.getElementById("canvas").height+"px";
-			document.getElementById("guide").style.width = (window.innerWidth-50-document.getElementById("canvas").width)/2-50+"px";
-			document.getElementById("info").style.height =  document.getElementById("guide").style.height;
-			document.getElementById("info").style.width = document.getElementById("guide").style.width;
-			document.getElementById("info").value = '1, 2, ..., n - Distance of n\n\n'+
-													'x-y - Distance in Inclusive Range from X to Y\n\n'+
-													'* - Orthogonal of Diagonal Movement\n\n'+
-													'+ - Orthogonal Movement\n\n'+
-													'= - Orthogonally Sideways Movement\n\n'+
-													'x = Diagonal Movement\n\n'+
-													'> - Forwards Movement\n\n'+
-													'< - Backwards Movement\n\n'+
-													'x/y - Distance of X and Y in Different Orthogonal Directions\n\n'+
-													'x/ys - Strict Distance of X Horizontally and then Y Vertically in Different Orthogonal Directions\n\n'+
-													'i - Only Use on First Movement of Piece\n\n'+
-													'c - Only Use on Capturing Piece\n\n'+
-													'o - Only Use on Not Capturing Piece\n\n'+
-													', - Separate Movements of a Piece\n\n'+
-													'r - Right (Relative to Direction 1)\n\n'+
-													'l - Left (Relative to Direction 1)\n\n'+
-													'd - Cannot be Killed nor Moved\n\n'+
-													'() - Grouping Operator (Nightriders)\n\n'+
-													'. - Then Operator (Aanca)\n\n'+
-													'^ - Locust Operator (Checkers)';
+			const fontCheck = new Set([
+				'American Typewriter', 'Andale Mono', 'Arial', 'Arial Black', 'Arial Narrow', 'Arial Rounded MT Bold', 'Arial Unicode MS',
+				'Avenir', 'Avenir Next', 'Avenir Next Condensed', 'Bahnschrift', 'Baskerville', 'Big Caslon', 'Bodoni 72', 'Bodoni 72 Oldstyle',
+				'Bodoni 72 Smallcaps', 'Bradley Hand', 'Brush Script MT', 'Calibri', 'Cambria', 'Cambria Math', 'Candara', 'Chalkboard', 'Chalkboard SE',
+				'Chalkduster', 'Charter', 'Cochin', 'Comic Sans MS', 'Consolas', 'Constantia', 'Corbel', 'Copperplate', 'Courier', 'Courier New', 'Didot',
+				'DIN Alternate', 'DIN Condensed', 'Ebrima', 'Franklin Gothic Medium', 'Futura', 'Gabriola', 'Gadugi', 'Geneva', 'Georgia', 'Gill Sans',
+				'Helvetica', 'Helvetica Neue', 'Herculanum', 'Hoefler Text', 'HoloLens MDL2 Assets', 'Impact', 'Ink Free', 'Javanese Text', 'Leelawadee UI',
+				'Lucida Console', 'Lucida Grande', 'Lucida Sans Unicode', 'Luminari', 'Malgun Gothic', 'Marker Felt', 'Marlett', 'Menlo', 'Microsoft Himalaya',
+				'Microsoft JhengHei', 'Microsoft New Tai Lue', 'Microsoft PhagsPa', 'Microsoft Sans Serif', 'Microsoft Tai Le', 'Microsoft YaHei',
+				'Microsoft Yi Baiti', 'MingLiU-ExtB', 'Monaco', 'Mongolian Baiti', 'MS Gothic', 'MV Boli', 'Myanmar Text', 'Nirmala UI', 'Noteworthy', 'Optima',
+				'Palatino', 'Palatino Linotype', 'Papyrus', 'Phosphate', 'Rockwell', 'Savoye LET', 'Segoe MDL2 Assets', 'Segoe Print', 'Segoe Script',
+				'Segoe UI', 'Segoe UI Emoji', 'Segoe UI Historic', 'Segoe UI Symbol', 'SignPainter', 'SimSun', 'Sitka', 'Skia', 'Snell Roundhand', 'Sylfaen',
+				'Symbol', 'Tahoma', 'Times', 'Times New Roman', 'Trattatello', 'Trebuchet MS', 'Verdana', 'Webdings', 'Wingdings', 'Yu Gothic', 'Zapfino'
+			]);
+			(async () => {
+				await document.fonts.ready;
+				const fontAvailable = new Set();
+				for (const font of fontCheck.values())
+					if (document.fonts.check(`12px "${font}"`))
+						fontAvailable.add(font);
+			})();
+			fontCheck.forEach(font => {
+				let option = document.createElement('option');
+				option.value = font;
+				option.innerHTML = font;
+				option.style.fontFamily = font;
+				document.getElementById("otherFonts").appendChild(option);
+			});
+
+			let guide = document.getElementById("guide");
+			let info = document.getElementById("info");
+			let fontStyle = document.getElementById("fontStyle");
+			let textareas = document.getElementById("textareas");
+			let canvas_width = window.getComputedStyle(document.getElementById("canvas"), null).getPropertyValue('width');
+			document.getElementById("main").style.width = canvas_width;
+			document.getElementById("extras").style.width = canvas_width;
+			textareas.style.width = canvas_width;
+			textareas.style.height = window.getComputedStyle(document.getElementById("canvas"), null).getPropertyValue('height');
+			info.value = '1, 2, ..., n - Distance of n\n\n' +
+				'x-y - Distance in Inclusive Range from X to Y\n\n' +
+				'* - Orthogonal of Diagonal Movement\n\n' +
+				'+ - Orthogonal Movement\n\n' +
+				'= - Orthogonally Sideways Movement\n\n' +
+				'x = Diagonal Movement\n\n' +
+				'> - Forwards Movement\n\n' +
+				'< - Backwards Movement\n\n' +
+				'x/y - Distance of X and Y in Different Orthogonal Directions\n\n' +
+				'x/ys - Strict Distance of X Horizontally and then Y Vertically in Different Orthogonal Directions\n\n' +
+				'~ - Jumping Operator (Knights)\n\n' +
+				'i - Only Use on First Movement of Piece\n\n' +
+				'c - Only Use on Capturing Piece\n\n' +
+				'o - Only Use on Not Capturing Piece\n\n' +
+				'k - King Flag to Declare a Loss-Detection Piece\n\n' +
+				'r - Right Movement (Relative to Direction 1)\n\n' +
+				'l - Left Movement (Relative to Direction 1)\n\n' +
+				'd - Cannot be Killed nor Moved (Dummy)\n\n' +
+				'() - Grouping Operator (Repeated Movement) (Nightriders)\n\n' +
+				'. - Then Operator (Sequential Movement) (Aanca)\n\n' +
+				'^ - Locust Operator (Capture on Jump Over) (Checkers)\n\n' +
+				', - Separate Movements of a Piece';
 		</script>
 	</div>
 </body>
+
 </html>
