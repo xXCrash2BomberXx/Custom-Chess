@@ -55,9 +55,6 @@ function range(start: number, end: number | undefined = undefined, step: number 
  * * '.' = Then Operator (Aanca)
  * * '^' = Locust Operator (Checkers) (Must capture between each jump)
  * * 'k'/'K' = King flag that enables notifications when placed into check by another piece
- *
- * Missing:
- * * Castling
  */
 
 class Piece {
