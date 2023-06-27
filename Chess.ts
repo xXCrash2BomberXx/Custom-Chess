@@ -394,7 +394,7 @@ class Pawn extends Piece {
 	}
 
 	override move(x: number, y: number, others: Array<Piece> = []): boolean {
-		let test = Piece.move(this.moves, this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
+		let test: Array<boolean | Array<Piece>> = Piece.move(this.moves, this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
 		if (test[0]) {
 			this.preTest();
 			this.x = x;
@@ -408,7 +408,7 @@ class Pawn extends Piece {
 			this.postTest();
 			return true;
 		}
-		let temp = Piece.getPiece(x, this.y, others);
+		let temp: Piece | undefined = Piece.getPiece(x, this.y, others);
 		if (temp && temp.constructor.name == "Pawn" && temp.turns == 1 && temp.enPassant &&
 			Piece.move("o1X>", this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0]) {
 			this.preTest();
