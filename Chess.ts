@@ -55,9 +55,6 @@ function range(start: number, end: number | undefined = undefined, step: number 
  * * '.' = Then Operator (Aanca)
  * * '^' = Locust Operator (Checkers) (Must capture between each jump)
  * * 'k'/'K' = King flag that enables notifications when placed into check by another piece
- *
- * Missing:
- * * Castling
  */
 
 class Piece {
@@ -75,6 +72,7 @@ class Piece {
 	lyLim: number;
 	fontFamily: string;
 	value: number;
+
 	// Rider (n())
 	static #rider(move: string, x1: number, y1: number, x2: number, y2: number, direction: number = 1, turns: number = 0,
 		xLim: number = 8, yLim: number = 8, lxLim: number = 0, lyLim: number = 0): Array<Array<number>> | boolean {
