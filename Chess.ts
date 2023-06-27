@@ -589,26 +589,32 @@ class King extends Piece {
 			this.postTest();
 			return true;
 		}
-		let temp: Piece | undefined;
-		for (let x2 = this.lxLim; x2 < this.xLim; x2++) {
-			temp = Piece.getPiece(x2, y, others);
-			if (temp && temp.constructor.name == "Rook" && this.turns == 0 && temp.turns == 0 &&
-				Piece.move("io2=", this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0] &&
-				Piece.move("ion=", temp.x, temp.y, (this.x + x) >> 1, temp.y, temp.direction, temp.turns, temp.xLim, temp.yLim, temp.lxLim, temp.lyLim, others)[0]) {
-				this.preTest();
-				if (temp.x > this.x) {
-					this.x += 2;
-					temp.x = this.x - 1;
-				} else {
-					this.x -= 2;
-					temp.x = this.x + 1;
+		if (this.turns == 0) {
+			let temp: Piece | undefined;
+			let n: Array<boolean | Array<Piece>>;
+			for (let x2 = this.lxLim; x2 < this.xLim; x2++)
+				for (let y2 = this.lyLim; y2 < this.yLim; y2++) {
+					if (x2 == this.x && y2 == this.y)
+						continue;
+					temp = Piece.getPiece(x2, y2, others);
+					if (temp && temp.turns == 0 && this.direction == temp.direction) {
+						n = temp.getMove((this.x + x) >> 1, (this.y + y) >> 1, others);
+						if (Piece.move("io2*", this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0] &&
+							Piece.move(temp.moves, temp.x, temp.y, this.x, this.y)[0] &&
+							temp.getMove(x, y, others)[0] && n[0] && (n[1] as Array<Piece>).length == 0) {
+							this.preTest();
+							temp.x = (this.x + x) >> 1;
+							temp.y = (this.y + y) >> 1;
+							this.x = x;
+							this.y = y;
+							temp.turns++;
+							this.turns++;
+							temp.postTest();
+							this.postTest();
+							return true;
+						}
+					}
 				}
-				this.turns++;
-				temp.turns++;
-				this.postTest();
-				temp.postTest();
-				return true;
-			}
 		}
 		return false;
 	}
@@ -617,34 +623,54 @@ class King extends Piece {
 		let m: Array<boolean | Array<Piece>> = Piece.move(this.moves, this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
 		if (m[0])
 			return m;
-		let temp: Piece | undefined;
-		let n: Array<boolean | Array<Piece>>;
-		for (let x2 = this.lxLim; x2 < this.xLim; x2++) {
-			temp = Piece.getPiece(x2, y, others);
-			if (temp && temp.constructor.name == "Rook" && this.turns == 0 && temp.turns == 0) {
-				m = Piece.move("io2=", this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
-				n = Piece.move("ion=", temp.x, temp.y, (this.x+x)>>1, temp.y, temp.direction, temp.turns, temp.xLim, temp.yLim, temp.lxLim, temp.lyLim, others);
-				if (m[0] && n[0]) {
-					(m[1] as Array<Piece>).push(temp);
-					return m;
+		if (this.turns == 0) {
+			let temp: Piece | undefined;
+			let n: Array<boolean | Array<Piece>>;
+			for (let x2 = this.lxLim; x2 < this.xLim; x2++)
+				for (let y2 = this.lyLim; y2 < this.yLim; y2++) {
+					if (x2 == this.x && y2 == this.y)
+						continue;
+					temp = Piece.getPiece(x2, y2, others);
+					if (temp && temp.turns == 0 && temp.direction == this.direction) {
+						m = Piece.move("io2*", this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
+						n = temp.getMove((this.x + x) >> 1, (this.y + y) >> 1, others);
+						if (m[0] &&
+							Piece.move(temp.moves, temp.x, temp.y, this.x, this.y)[0] &&
+							temp.getMove(x, y, others)[0] && n[0] && (n[1] as Array<Piece>).length == 0) {
+							(m[1] as Array<Piece>).push(temp);
+							return m;
+						}
+					}
 				}
-			}
 		}
 		return [false];
 	}
 
 	override getMoves(others: Array<Piece> = []): Array<Array<number | boolean>> {
 		let m: Array<Array<number | boolean>> = Piece.getMoves(this.moves, this.x, this.y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
-		let temp: Piece | undefined;
-		for (let x = this.lxLim; x < this.xLim; x++) {
-			temp = Piece.getPiece(x, this.y, others);
-			if (temp && temp.constructor.name == "Rook" && this.turns == 0 && temp.turns == 0)
-				if (Piece.move("io2=", this.x, this.y, this.x - 2, this.y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0] &&
-					Piece.move("ion=", temp.x, temp.y, ((this.x<<1)-2)>>1, temp.y, temp.direction, temp.turns, temp.xLim, temp.yLim, temp.lxLim, temp.lyLim, others)[0])
-					m.push([this.x - 2, this.y, false]);
-				else if (Piece.move("io2=", this.x, this.y, this.x + 2, this.y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0] &&
-					Piece.move("ion=", temp.x, temp.y, ((this.x<<1)+2)>>1, temp.y, temp.direction, temp.turns, temp.xLim, temp.yLim, temp.lxLim, temp.lyLim, others)[0])
-					m.push([this.x + 2, this.y, false]);
+		if (this.turns == 0) {
+			let temp: Piece | undefined;
+			let n: Array<boolean | Array<Piece>>;
+			let moves: Array<Array<number | boolean>> = Piece.getMoves("io2*", this.x, this.y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
+			moves.forEach((coord: Array<number | boolean>): void => {
+				let x: number = coord[0] as number;
+				let y: number = coord[1] as number;
+				for (let x2 = this.lxLim; x2 < this.xLim; x2++)
+					for (let y2 = this.lyLim; y2 < this.yLim; y2++) {
+						if (x2 == this.x && y2 == this.y)
+							continue;
+						temp = Piece.getPiece(x2, y2, others);
+						if (temp && temp.turns == 0 && temp.direction == this.direction) {
+							n = temp.getMove((this.x + x) >> 1, (this.y + y) >> 1, others);
+							if (Piece.move("io2*", this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0] &&
+								Piece.move(temp.moves, temp.x, temp.y, this.x, this.y)[0] &&
+								temp.getMove(x, y, others)[0] && n[0] && (n[1] as Array<Piece>).length == 0) {
+								m.push([x, y, false]);
+								return;
+							}
+						}
+					}
+			});
 		}
 		return m;
 	}
