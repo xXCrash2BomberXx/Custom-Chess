@@ -55,15 +55,15 @@
 					} catch {
 						return;  // new player tried to join
 					}
-					if (temp.length == 4) {
+					if (temp.length == 5) {
 						global = temp;
 						let p = Piece.getPiece(global[0], global[1], [...p1, ...p2]);
 						if (p.move(global[2], global[3], [...p1, ...p2])) {
 							direction *= -1;
 							for (let i = 0; i < p1.length; i++)
-								p1[i].turnTest();
+								p1[i].turnTest(global[4]);
 							for (let i = 0; i < p2.length; i++)
-								p2[i].turnTest();
+								p2[i].turnTest(global[4]);
 							showAlerts(direction == 1 ? p1 : p2, [...p1, ...p2]);
 							drawBoard(canvas, [...p1, ...p2]);
 							global = [];
@@ -74,7 +74,7 @@
 							change(...temp);
 							alert(`Piece (${temp[0]}, ${temp[1]}) Updated`);
 						} else {
-							let currCoords = [global[global.length-2], global[global.length-1]];
+							let currCoords = [global[global.length - 2], global[global.length - 1]];
 							fillInfo(temp[0], temp[1]);
 							change(temp[0], temp[1]);
 							fillInfo(...currCoords);
@@ -336,13 +336,15 @@
 						var moved = [p.x, p.y, global[0], global[1]];
 					if (p != null && p.direction == direction && (connected ? direction == player_direction : true) && p.move(global[0], global[1], [...p1, ...p2])) {
 						// move/attack
-						if (connected)
-							conn_id.send(JSON.stringify(moved));
+						let extraData = {};
 						direction *= -1;
 						for (let i = 0; i < p1.length; i++)
-							p1[i].turnTest();
+							extraData = { ...extraData, ...p1[i].turnTest() };
 						for (let i = 0; i < p2.length; i++)
-							p2[i].turnTest();
+							extraData = { ...extraData, ...p2[i].turnTest() };
+						moved.push(extraData);
+						if (connected)
+							conn_id.send(JSON.stringify(moved));
 						showAlerts(direction == 1 ? p1 : p2, [...p1, ...p2]);
 						drawBoard(canvas, [...p1, ...p2]);
 					} else {

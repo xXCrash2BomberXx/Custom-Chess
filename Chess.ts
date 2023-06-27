@@ -1,6 +1,9 @@
 "use strict";
 
-// start: int, end: int = NaN, step: int = 1 -> array[int, ...]
+interface ExtraData {
+	PawnPromotion?: string
+}
+
 function range(start: number, end: number | undefined = undefined, step: number = 1): Array<number> {
 	if (end === undefined) {
 		end = start;
@@ -525,7 +528,7 @@ class Piece {
 	postTest(): void { }
 
 	// Runs at the beginning of each player's turn
-	turnTest(): void { }
+	turnTest(extraData: ExtraData = {}): ExtraData { return extraData; }
 }
 
 
@@ -570,6 +573,106 @@ class King extends Piece {
 		xLim: number = 8, yLim: number = 8, lxLim: number = 0, lyLim: number = 0, colors: Array<string> = ["#FF00FF", "#00FFFF"]) {
 		super(x, y, "k1*", direction, turns, xLim, yLim, lxLim, lyLim, colors);
 		this.value = 99;
+	}
+
+	override move(x: number, y: number, others: Array<Piece> = []): boolean {
+		let test: Array<boolean | Array<Piece>> = Piece.move(this.moves, this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
+		if (test[0]) {
+			this.preTest();
+			this.x = x;
+			this.y = y;
+			this.turns++;
+			for (let i = 0; i < (test[1] as Array<Piece>).length; i++) {
+				(test[1] as Array<Piece>)[i].x = -1;
+				(test[1] as Array<Piece>)[i].y = -1;
+			}
+			this.postTest();
+			return true;
+		}
+		if (this.turns == 0) {
+			let temp: Piece | undefined;
+			let n: Array<boolean | Array<Piece>>;
+			for (let x2 = this.lxLim; x2 < this.xLim; x2++)
+				for (let y2 = this.lyLim; y2 < this.yLim; y2++) {
+					if (x2 == this.x && y2 == this.y)
+						continue;
+					temp = Piece.getPiece(x2, y2, others);
+					if (temp && temp.turns == 0 && this.direction == temp.direction) {
+						n = temp.getMove((this.x + x) >> 1, (this.y + y) >> 1, others);
+						if (Piece.move("io2*", this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0] &&
+							Piece.move(temp.moves, temp.x, temp.y, this.x, this.y)[0] &&
+							temp.getMove(x, y, others)[0] && n[0] && (n[1] as Array<Piece>).length == 0) {
+							this.preTest();
+							temp.x = (this.x + x) >> 1;
+							temp.y = (this.y + y) >> 1;
+							this.x = x;
+							this.y = y;
+							temp.turns++;
+							this.turns++;
+							temp.postTest();
+							this.postTest();
+							return true;
+						}
+					}
+				}
+		}
+		return false;
+	}
+
+	override getMove(x: number, y: number, others: Array<Piece> = []): Array<boolean | Array<Piece>> {
+		let m: Array<boolean | Array<Piece>> = Piece.move(this.moves, this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
+		if (m[0])
+			return m;
+		if (this.turns == 0) {
+			let temp: Piece | undefined;
+			let n: Array<boolean | Array<Piece>>;
+			for (let x2 = this.lxLim; x2 < this.xLim; x2++)
+				for (let y2 = this.lyLim; y2 < this.yLim; y2++) {
+					if (x2 == this.x && y2 == this.y)
+						continue;
+					temp = Piece.getPiece(x2, y2, others);
+					if (temp && temp.turns == 0 && temp.direction == this.direction) {
+						m = Piece.move("io2*", this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
+						n = temp.getMove((this.x + x) >> 1, (this.y + y) >> 1, others);
+						if (m[0] &&
+							Piece.move(temp.moves, temp.x, temp.y, this.x, this.y)[0] &&
+							temp.getMove(x, y, others)[0] && n[0] && (n[1] as Array<Piece>).length == 0) {
+							(m[1] as Array<Piece>).push(temp);
+							return m;
+						}
+					}
+				}
+		}
+		return [false];
+	}
+
+	override getMoves(others: Array<Piece> = []): Array<Array<number | boolean>> {
+		let m: Array<Array<number | boolean>> = Piece.getMoves(this.moves, this.x, this.y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
+		if (this.turns == 0) {
+			let temp: Piece | undefined;
+			let n: Array<boolean | Array<Piece>>;
+			let moves: Array<Array<number | boolean>> = Piece.getMoves("io2*", this.x, this.y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
+			moves.forEach((coord: Array<number | boolean>): void => {
+				let x: number = coord[0] as number;
+				let y: number = coord[1] as number;
+				for (let x2 = this.lxLim; x2 < this.xLim; x2++)
+					for (let y2 = this.lyLim; y2 < this.yLim; y2++) {
+						if (x2 == this.x && y2 == this.y)
+							continue;
+						temp = Piece.getPiece(x2, y2, others);
+						if (temp && temp.turns == 0 && temp.direction == this.direction) {
+							n = temp.getMove((this.x + x) >> 1, (this.y + y) >> 1, others);
+							if (Piece.move("io2*", this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0] &&
+								Piece.move(temp.moves, temp.x, temp.y, this.x, this.y)[0] &&
+								temp.getMove(x, y, others)[0] && n[0] && (n[1] as Array<Piece>).length == 0) {
+								m.push([x, y, false]);
+								return;
+							}
+						}
+					}
+			});
+		}
+		return m;
 	}
 
 	override plot(canvas: HTMLCanvasElement, xSquares: number = 8, ySquares: number = 8): void {
@@ -653,7 +756,7 @@ class Pawn extends Piece {
 	}
 
 	override move(x: number, y: number, others: Array<Piece> = []): boolean {
-		let test = Piece.move(this.moves, this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
+		let test: Array<boolean | Array<Piece>> = Piece.move(this.moves, this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
 		if (test[0]) {
 			this.preTest();
 			this.x = x;
@@ -667,7 +770,7 @@ class Pawn extends Piece {
 			this.postTest();
 			return true;
 		}
-		let temp = Piece.getPiece(x, this.y, others);
+		let temp: Piece | undefined = Piece.getPiece(x, this.y, others);
 		if (temp && temp.constructor.name == "Pawn" && temp.turns == 1 && temp.enPassant &&
 			Piece.move("o1X>", this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0]) {
 			this.preTest();
@@ -682,7 +785,6 @@ class Pawn extends Piece {
 		return false;
 	}
 
-	// x: int, y: int, other: array[Piece, ...] = [] -> array[bool, array[Piece, ...]]
 	override getMove(x: number, y: number, others: Array<Piece> = []): Array<boolean | Array<Piece>> {
 		let m: Array<boolean | Array<Piece>> = Piece.move(this.moves, this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
 		if (m[0])
@@ -721,13 +823,37 @@ class Pawn extends Piece {
 		ctx.fillText((this.direction == 1 ? "\u{2659}" : "\u{265F}"), canvas.width / this.xLim * (this.x + 0.5), canvas.height / this.yLim * (this.y + 0.875));
 	}
 
-	override postTest(): void {
+	override turnTest(extraData: ExtraData = {}): ExtraData {
 		if (this.y == ((this.direction == -1) ? 0 : ((this.direction == 1) ? this.yLim - 1 : false))) {
-			let p: Queen = new Queen(this.x, this.y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim);
+			const choices: Array<string> = ["Queen",
+				"Bishop",
+				"Rook",
+				"Pawn",
+				"Knight"];
+			let str: string | null = null;
+			if (extraData.PawnPromotion !== undefined && choices.includes(extraData.PawnPromotion))
+				str = extraData.PawnPromotion;
+			else {
+				while (!str || !choices.includes(str)) {
+					str = prompt(JSON.stringify(choices), "queen")
+					if (str) {
+						str = str.trim();
+						str = str[0].toUpperCase() + str.slice(1).toLowerCase();
+					}
+				}
+			}
+
+			let p: Piece = eval(`new ${str}(${this.x}, ${this.y}, ${this.direction}, ${this.turns}, ${this.xLim}, ${this.yLim}, ${this.lxLim}, ${this.lyLim})`);
 			Object.assign(this, p);
+			this.move = p.move;
+			this.getMove = p.getMove;
+			this.getMoves = p.getMoves;
 			this.plot = p.plot;
-			this.postTest = p.postTest;
+			this.turnTest = p.turnTest;
+
+			return { PawnPromotion: str };
 		}
+		return {};
 	}
 }
 
