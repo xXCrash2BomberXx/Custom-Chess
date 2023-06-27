@@ -62,7 +62,7 @@ class Piece {
 	fontFamily: string;
 	value: number;
 
-	 General Move Function
+	// General Move Function
 	static #move(move: string, x1: number, y1: number, x2: number, y2: number, direction: number = 1, turns: number = 0,
 		xLim: number = 8, yLim: number = 8, lxLim: number = 0, lyLim: number = 0): boolean {
 		let match1: RegExpMatchArray = move.match(/[0-9nN]+(-[0-9nN]+)?/g) as RegExpMatchArray; //.match(/[0-9n]+/g);
