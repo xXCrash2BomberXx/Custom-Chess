@@ -45,9 +45,6 @@ function range(start: number, end: number | undefined = undefined, step: number 
  * * 'o'/'O' = Only Use on Not Capturing Piece
  * * '^' = Locust Operator (Checkers) (Must capture between each jump)
  * * 'k'/'K' = King flag that enables notifications when placed into check by another piece
- *
- * Missing:
- * * Castling
  */
 
 class Piece {
