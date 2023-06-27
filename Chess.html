@@ -70,6 +70,7 @@
 						} else
 							alert("OpponentOutOfSyncError: Non-Symmetric Piece Modifications may have occurred.");
 					} else if (temp.length == 3) {
+						window.focus();
 						if (confirm(`Allow coordinate (${temp[0]}, ${temp[1]}) to be modified?`)) {
 							change(...temp);
 							alert(`Piece (${temp[0]}, ${temp[1]}) Updated`);
