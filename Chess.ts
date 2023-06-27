@@ -313,6 +313,80 @@ class King extends Piece {
 		this.value = 99;
 	}
 
+	override move(x: number, y: number, others: Array<Piece> = []): boolean {
+		let test: Array<boolean | Array<Piece>> = Piece.move(this.moves, this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
+		if (test[0]) {
+			this.preTest();
+			this.x = x;
+			this.y = y;
+			this.turns++;
+			for (let i = 0; i < (test[1] as Array<Piece>).length; i++) {
+				(test[1] as Array<Piece>)[i].x = -1;
+				(test[1] as Array<Piece>)[i].y = -1;
+			}
+			this.postTest();
+			return true;
+		}
+		let temp: Piece | undefined;
+		for (let x2 = this.lxLim; x2 < this.xLim; x2++) {
+			temp = Piece.getPiece(x2, y, others);
+			if (temp && temp.constructor.name == "Rook" && this.turns == 0 && temp.turns == 0 &&
+				Piece.move("io2=", this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0] &&
+				Piece.move("ion=", temp.x, temp.y, (this.x + x) >> 1, temp.y, temp.direction, temp.turns, temp.xLim, temp.yLim, temp.lxLim, temp.lyLim, others)[0]) {
+				this.preTest();
+				if (temp.x > this.x) {
+					this.x += 2;
+					temp.x = this.x - 1;
+				} else {
+					this.x -= 2;
+					temp.x = this.x + 1;
+				}
+				this.turns++;
+				temp.turns++;
+				this.postTest();
+				temp.postTest();
+				return true;
+			}
+		}
+		return false;
+	}
+
+	override getMove(x: number, y: number, others: Array<Piece> = []): Array<boolean | Array<Piece>> {
+		let m: Array<boolean | Array<Piece>> = Piece.move(this.moves, this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
+		if (m[0])
+			return m;
+		let temp: Piece | undefined;
+		let n: Array<boolean | Array<Piece>>;
+		for (let x2 = this.lxLim; x2 < this.xLim; x2++) {
+			temp = Piece.getPiece(x2, y, others);
+			if (temp && temp.constructor.name == "Rook" && this.turns == 0 && temp.turns == 0) {
+				m = Piece.move("io2=", this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
+				n = Piece.move("ion=", temp.x, temp.y, (this.x + x) >> 1, temp.y, temp.direction, temp.turns, temp.xLim, temp.yLim, temp.lxLim, temp.lyLim, others);
+				if (m[0] && n[0]) {
+					(m[1] as Array<Piece>).push(temp);
+					return m;
+				}
+			}
+		}
+		return [false];
+	}
+
+	override getMoves(others: Array<Piece> = []): Array<Array<number | boolean>> {
+		let m: Array<Array<number | boolean>> = Piece.getMoves(this.moves, this.x, this.y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
+		let temp: Piece | undefined;
+		for (let x = this.lxLim; x < this.xLim; x++) {
+			temp = Piece.getPiece(x, this.y, others);
+			if (temp && temp.constructor.name == "Rook" && this.turns == 0 && temp.turns == 0)
+				if (Piece.move("io2=", this.x, this.y, this.x - 2, this.y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0] &&
+					Piece.move("ion=", temp.x, temp.y, ((this.x << 1) - 2) >> 1, temp.y, temp.direction, temp.turns, temp.xLim, temp.yLim, temp.lxLim, temp.lyLim, others)[0])
+					m.push([this.x - 2, this.y, false]);
+				else if (Piece.move("io2=", this.x, this.y, this.x + 2, this.y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others)[0] &&
+					Piece.move("ion=", temp.x, temp.y, ((this.x << 1) + 2) >> 1, temp.y, temp.direction, temp.turns, temp.xLim, temp.yLim, temp.lxLim, temp.lyLim, others)[0])
+					m.push([this.x + 2, this.y, false]);
+		}
+		return m;
+	}
+
 	override plot(canvas: HTMLCanvasElement, xSquares: number = 8, ySquares: number = 8): void {
 		let ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
 		ctx.textAlign = "center";
