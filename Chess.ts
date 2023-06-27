@@ -4,7 +4,6 @@ interface ExtraData {
 	PawnPromotion?: string
 }
 
-// start: int, end: int = NaN, step: int = 1 -> array[int, ...]
 function range(start: number, end: number | undefined = undefined, step: number = 1): Array<number> {
 	if (end === undefined) {
 		end = start;
@@ -63,7 +62,7 @@ class Piece {
 	fontFamily: string;
 	value: number;
 
-	// General Move Function
+	 General Move Function
 	static #move(move: string, x1: number, y1: number, x2: number, y2: number, direction: number = 1, turns: number = 0,
 		xLim: number = 8, yLim: number = 8, lxLim: number = 0, lyLim: number = 0): boolean {
 		let match1: RegExpMatchArray = move.match(/[0-9nN]+(-[0-9nN]+)?/g) as RegExpMatchArray; //.match(/[0-9n]+/g);
@@ -494,7 +493,6 @@ class Pawn extends Piece {
 		return false;
 	}
 
-	// x: int, y: int, other: array[Piece, ...] = [] -> array[bool, array[Piece, ...]]
 	override getMove(x: number, y: number, others: Array<Piece> = []): Array<boolean | Array<Piece>> {
 		let m: Array<boolean | Array<Piece>> = Piece.move(this.moves, this.x, this.y, x, y, this.direction, this.turns, this.xLim, this.yLim, this.lxLim, this.lyLim, others);
 		if (m[0])
