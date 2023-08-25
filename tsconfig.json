@@ -3,7 +3,7 @@
         "outDir": ".\\",
         "target": "esnext",
         "lib": ["esnext", "dom"],
-        "module": "NodeNext",
+        "module": "esnext",
         "moduleResolution": "nodenext",
         "strict": true,
         "allowSyntheticDefaultImports": false,
