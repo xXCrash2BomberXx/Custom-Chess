@@ -147,7 +147,8 @@
 			document.getElementById("connect"),
 			document.getElementById("guide"),
 			document.getElementById("info"),
-			document.getElementById("fontStyle")].forEach(f => f.style.fontFamily = font);
+			document.getElementById("fontStyle"),
+			document.getElementById("aiMove")].forEach(f => f.style.fontFamily = font);
 		}
 
 		function showAlerts(pieces, others = []) {
@@ -477,17 +478,20 @@
 		</script>
 	</div>
 	<div id="extras">
-		<select name="fontStyle" id="fontStyle"
-			onchange="reFont([...p1, ...p2], document.getElementById('fontStyle').value);">
-			<optgroup label="Default Options">
-				<option style="font-family: Verdana;" value="Verdana">Verdana</option>
-				<option style="font-family: MS Gothic;" value="MS Gothic">MS Gothic</option>
-			</optgroup>
-			<optgroup label="Other Options" id="otherFonts"></optgroup>
-			<optgroup label="Custom Options" id="customFonts">
-				<option value="Add Font">Add Font</option>
-			</optgroup>
-		</select>
+		<div id="extras2">
+			<input type="submit" name="aiMove" id="aiMove" value="AI Move" onclick="aiMove(3);"></input>
+			<select name="fontStyle" id="fontStyle"
+				onchange="reFont([...p1, ...p2], document.getElementById('fontStyle').value);">
+				<optgroup label="Default Options">
+					<option style="font-family: Verdana;" value="Verdana">Verdana</option>
+					<option style="font-family: MS Gothic;" value="MS Gothic">MS Gothic</option>
+				</optgroup>
+				<optgroup label="Other Options" id="otherFonts"></optgroup>
+				<optgroup label="Custom Options" id="customFonts">
+					<option value="Add Font">Add Font</option>
+				</optgroup>
+			</select>
+		</div>
 		<div id="textareas">
 			<textarea spellcheck=false id="guide" onfocus="globalTemp=true;"
 				onfocusout="change(global[global.length-2], global[global.length-1]);"></textarea>
