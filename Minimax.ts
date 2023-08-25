@@ -1,7 +1,7 @@
 "use strict";
 
 async function Minimax(p1: Array<Piece>, p2: Array<Piece>, steps: number = 3): Promise<Array<number>> {  // 130^steps
-	let best: Array<number> = [];
+	let best: Array<Array<number>> = [];
 	let bestScore: number = -Infinity;
 	for (const piece of p1)
 		if (piece.x != -1 || piece.y != -1)
@@ -24,10 +24,12 @@ async function Minimax(p1: Array<Piece>, p2: Array<Piece>, steps: number = 3): P
 					if (k.x == -1 && k.y == -1)
 						score += k.value;
 				});
-				if (score >= bestScore) {
+				if (score > bestScore) {
 					bestScore = score;
-					best = [piece.x, piece.y, move[0] as number, move[1] as number];
-				}
+					best = [[piece.x, piece.y, move[0] as number, move[1] as number]];
+				} else if (score == bestScore)
+					best.push([piece.x, piece.y, move[0] as number, move[1] as number]);
 			}
-	return best;
+	
+	return best[Math.floor(Math.random() * best.length)];
 }
