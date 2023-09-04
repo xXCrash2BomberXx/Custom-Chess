@@ -5,7 +5,6 @@
 	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 	<meta http-equiv="Pragma" content="no-cache" />
 	<meta http-equiv="Expires" content="0" />
-	<script type="text/javascript" src="Minimax.js"></script>
 	<script type="text/javascript" src="Chess.js"></script>
 	<link rel="stylesheet" href="Chess.css">
 	<script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
@@ -234,23 +233,6 @@
 			var p2;
 			var direction;
 			init();
-
-			async function aiMove(steps = 3) {
-				let best = await Minimax(direction == 1 ? p1 : p2, direction == -1 ? p1 : p2, steps);
-				let p = Piece.getPiece(best[0], best[1], [...p1, ...p2]);
-				if (p != null && p.direction == direction && (connected ? direction == player_direction : true) && p.move(best[2], best[3], [...p1, ...p2])) {
-					if (connected)
-						conn_id.send(JSON.stringify(best));
-					direction *= -1;
-					for (let i = 0; i < p1.length; i++)
-						p1[i].turnTest();
-					for (let i = 0; i < p2.length; i++)
-						p2[i].turnTest();
-					showAlerts(direction == 1 ? p1 : p2, [...p1, ...p2]);
-					drawBoard(canvas, [...p1, ...p2]);
-				}
-				return best;
-			}
 
 			function globalUpdate(event) {
 				if (globalTemp)
