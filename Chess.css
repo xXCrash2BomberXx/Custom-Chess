@@ -24,7 +24,7 @@ textarea {
 }
 
 select,
-#connect {
+input {
 	text-align: center;
 	border-width: medium;
 	border-radius: 10px;
@@ -58,14 +58,15 @@ textarea {
 		display: table;
 	}
 
-	select {
-		width: 97%;
-	}
-
 	#main,
 	#extras,
-	input {
+	#textbox,
+	#connect {
 		width: 50%;
+	}
+
+	#fontStyle {
+		width: 95%;
 	}
 
 	textarea {
@@ -83,11 +84,8 @@ textarea {
 		margin: 0 auto;
 	}
 
+	input,
 	select {
-		width: 99%;
-	}
-
-	input {
 		width: 49%;
 	}
 
