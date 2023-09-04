@@ -23,6 +23,14 @@ textarea {
 	font-family: Verdana;
 }
 
+canvas {
+    cursor: grab;
+}
+
+#info {
+    cursor: not-allowed;
+}
+
 select,
 input {
 	text-align: center;
@@ -30,6 +38,11 @@ input {
 	border-radius: 10px;
 	border-style: solid;
 	font-family: Verdana;
+    cursor: pointer;
+}
+
+#textbox {
+    cursor: auto;
 }
 
 #textareas {
