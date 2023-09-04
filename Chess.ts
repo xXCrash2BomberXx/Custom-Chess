@@ -855,6 +855,52 @@ class Pawn extends Piece {
 	}
 }
 
+class Amazon extends Piece {
+	constructor(x: number, y: number, direction: number = 1, turns: number = 0,
+		xLim: number = 8, yLim: number = 8, lxLim: number = 0, lyLim: number = 0, colors: Array<string> = ["#FF00FF", "#00FFFF"]) {
+		super(x, y, "n*, ~1/2", direction, turns, xLim, yLim, lxLim, lyLim, colors);
+		this.value = 9;
+	}
+
+	override plot(canvas: HTMLCanvasElement, xSquares: number = 8, ySquares: number = 8): void {
+		let ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
+		ctx.textAlign = "center";
+		ctx.fillStyle = this.color;
+		ctx.font = String(Math.min(canvas.width / this.xLim, canvas.height / this.yLim)) + "px " + this.fontFamily;
+		ctx.fillText((this.direction == 1 ? "\u{1FA4E}" : "\u{1FA51}"), canvas.width / this.xLim * (this.x + 0.5), canvas.height / this.yLim * (this.y + 0.875));
+	}
+}
+class Chancellor extends Piece {
+	constructor(x: number, y: number, direction: number = 1, turns: number = 0,
+		xLim: number = 8, yLim: number = 8, lxLim: number = 0, lyLim: number = 0, colors: Array<string> = ["#FF00FF", "#00FFFF"]) {
+		super(x, y, "n+, ~1/2", direction, turns, xLim, yLim, lxLim, lyLim, colors);
+		this.value = 9;
+	}
+
+	override plot(canvas: HTMLCanvasElement, xSquares: number = 8, ySquares: number = 8): void {
+		let ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
+		ctx.textAlign = "center";
+		ctx.fillStyle = this.color;
+		ctx.font = String(Math.min(canvas.width / this.xLim, canvas.height / this.yLim)) + "px " + this.fontFamily;
+		ctx.fillText((this.direction == 1 ? "\u{1FA4F}" : "\u{1FA52}"), canvas.width / this.xLim * (this.x + 0.5), canvas.height / this.yLim * (this.y + 0.875));
+	}
+}
+class Archbishop extends Piece {
+	constructor(x: number, y: number, direction: number = 1, turns: number = 0,
+		xLim: number = 8, yLim: number = 8, lxLim: number = 0, lyLim: number = 0, colors: Array<string> = ["#FF00FF", "#00FFFF"]) {
+		super(x, y, "nx, ~1/2", direction, turns, xLim, yLim, lxLim, lyLim, colors);
+		this.value = 9;
+	}
+
+	override plot(canvas: HTMLCanvasElement, xSquares: number = 8, ySquares: number = 8): void {
+		let ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
+		ctx.textAlign = "center";
+		ctx.fillStyle = this.color;
+		ctx.font = String(Math.min(canvas.width / this.xLim, canvas.height / this.yLim)) + "px " + this.fontFamily;
+		ctx.fillText((this.direction == 1 ? "\u{1FA50}" : "\u{1FA53}"), canvas.width / this.xLim * (this.x + 0.5), canvas.height / this.yLim * (this.y + 0.875));
+	}
+}
+
 class PowerUp extends Piece {
 	movesList: Array<string>;
 	moveIndex: number;
